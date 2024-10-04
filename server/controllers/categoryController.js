@@ -1,7 +1,7 @@
 import categoryModel from '../models/categoryModel.js';
 
 const categoryController = {
-	getHome: (req, res) => {
+	getCategory: (req, res) => {
 		res.send('Category');
 	},
 };
