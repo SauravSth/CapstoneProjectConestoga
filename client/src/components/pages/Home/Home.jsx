@@ -26,62 +26,6 @@ const Home = () => {
 
           {/* Cards Section */}
           <section className="grid grid-cols-3 gap-6">
-            {/* Card 1 */}
-            <div className="bg-white shadow-md p-4 rounded-lg">
-              <div className="text-lg font-semibold">
-                <PiSirenFill /> Emergency Fund
-              </div>
-              <div className="text-sm text-gray-500">
-                Last Paid on August 28, 2022
-              </div>
-              <div className="text-xl font-bold">$300 / $1000</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 my-2">
-                <div
-                  className="bg-blue-500 h-2.5 rounded-full"
-                  style={{ width: '30%' }}
-                ></div>
-              </div>
-              <div className="text-sm text-gray-500">30%</div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white shadow-md p-4 rounded-lg">
-              <div className="text-lg font-semibold">
-                <MdOutlineFlightTakeoff />
-                Travel Plan
-              </div>
-              <div className="text-sm text-gray-500">
-                Last Paid on June 1, 2022
-              </div>
-              <div className="text-xl font-bold">$10,000 / $20,000</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 my-2">
-                <div
-                  className="bg-blue-500 h-2.5 rounded-full"
-                  style={{ width: '50%' }}
-                ></div>
-              </div>
-              <div className="text-sm text-gray-500">50%</div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white shadow-md p-4 rounded-lg">
-              <div className="text-lg font-semibold">
-                <FaUniversity />
-                Education
-              </div>
-              <div className="text-sm text-gray-500">
-                Last Paid on May 14, 2022
-              </div>
-              <div className="text-xl font-bold">$7,000 / $10,000</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 my-2">
-                <div
-                  className="bg-blue-500 h-2.5 rounded-full"
-                  style={{ width: '70%' }}
-                ></div>
-              </div>
-              <div className="text-sm text-gray-500">70%</div>
-            </div>
-
             <DashboardCard
               cardIcon={<PiSirenFill />}
               cardTitle="Emergency Fund"

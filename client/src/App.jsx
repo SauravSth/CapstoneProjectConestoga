@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './components/pages/Home/Home';
+import RecentActivity from './components/pages/RecentActivity/RecentActivity';
+import AllExpenses from './components/pages/AllExpenses/AllExpenses';
+import Categories from './components/pages/Categories/Categories';
+import Settings from './components/pages/Settings/Settings';
+import Login from './components/pages/Login/Login';
+import Signup from './components/pages/Signup/Signup';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,12 +22,28 @@ function App() {
               element={<Home />}
             />
             <Route
-              path="/about"
-              element={<About />}
+              path="/recent-activity"
+              element={<RecentActivity />}
             />
             <Route
-              path="/contact"
-              element={<Contact />}
+              path="/all-expenses"
+              element={<AllExpenses />}
+            />
+            <Route
+              path="/categories"
+              element={<Categories />}
+            />
+            <Route
+              path="/settings"
+              element={<Settings />}
+            />
+            <Route
+              path="/login"
+              element={<Login />}
+            />
+            <Route
+              path="/signup"
+              element={<Signup />}
             />
           </Routes>
         </div>
@@ -40,8 +62,5 @@ function App() {
     </>
   );
 }
-
-const About = () => <h2>About Page</h2>;
-const Contact = () => <h2>Contact Page</h2>;
 
 export default App;
