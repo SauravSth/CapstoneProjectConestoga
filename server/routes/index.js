@@ -8,6 +8,11 @@ import itemController from '../controllers/itemController.js';
 import categoryController from '../controllers/categoryController.js';
 import groupController from '../controllers/groupController.js';
 import storeController from '../controllers/storeController.js';
+import authController from '../controllers/authController.js';
+
+// Middleware Imports
+import dataValidator from '../middlewares/dataValidator.js';
+import authenticateToken from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
@@ -36,9 +41,16 @@ router.get('/store', storeController.getStore);
 
 // User Routes
 router.get('/user', userController.getUser);
-router.get('/login', userController.getUserLogin);
-router.get('/signup', userController.getUserSignUp);
-router.post('/login', userController.getUserLogin);
-router.post('/signup', userController.getUserSignUp);
+router.get('/login', authController.getUserLogin);
+router.get('/signup', authController.getUserSignUp);
+
+// Auth Routes
+router.post('/login', authController.postUserLogin);
+router.post(
+	'/signup',
+	dataValidator.isValidUserData,
+	dataValidator.doPasswordsMatch,
+	authController.postUserSignUp
+);
 
 export default router;
