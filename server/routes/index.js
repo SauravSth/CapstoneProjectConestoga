@@ -11,7 +11,7 @@ import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
 
 // Middleware Imports
-import dataValidator from '../middlewares/dataValidator.js';
+import validate from '../middlewares/validate.js';
 import authenticateToken from '../middlewares/authenticate.js';
 
 const router = express.Router();
@@ -48,8 +48,7 @@ router.get('/signup', authController.getUserSignUp);
 router.post('/login', authController.postUserLogin);
 router.post(
 	'/signup',
-	dataValidator.isValidUserData,
-	dataValidator.doPasswordsMatch,
+	validate.doPasswordsMatch,
 	authController.postUserSignUp
 );
 

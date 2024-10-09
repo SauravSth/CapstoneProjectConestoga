@@ -1,7 +1,4 @@
-const dataValidator = {
-	isValidUserData: (req, res, next) => {
-		next();
-	},
+const validate = {
 	doPasswordsMatch: (req, res, next) => {
 		const { password, confirmPassword } = req.body;
 		if (password !== confirmPassword)
@@ -11,6 +8,9 @@ const dataValidator = {
 			});
 		next();
 	},
+	// ISEMPTY
+	// MATCH REGEX
+	// ISNUMBER
 };
 
-export default dataValidator;
+export default validate;

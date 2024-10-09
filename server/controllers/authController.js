@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 
 // Controller Imports
-import errorController from './errorController.js';
+import errorController from '../helpers/errorHandler.js';
 
 const authController = {
 	getUserLogin: (req, res) => {

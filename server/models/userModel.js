@@ -33,7 +33,7 @@ userSchema.pre('save', function (next) {
 	let user = this;
 	bcrypt.hash(user.password, 5, (error, hash) => {
 		if (error) {
-			console.log(error);
+			console.log('Hashing Error ' + error);
 		} else {
 			user.password = hash;
 		}
