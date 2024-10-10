@@ -45,6 +45,10 @@ function App() {
               path="/signup"
               element={<Signup />}
             />
+            <Route
+              path="*"
+              element={<h1>Page Not Found</h1>}
+            />
           </Routes>
         </div>
       </Router>
