@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/useAuthStore.js';
@@ -65,7 +64,11 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto mt-24 p-6 bg-white-900 shadow-md rounded-md">
-      <img src={Logo} alt="" className=" mx-24 mb-10"/>
+      <img
+        src={Logo}
+        alt=""
+        className=" mx-24 mb-10"
+      />
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label

@@ -27,6 +27,18 @@ const userSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter your password'],
 	},
+	userType: {
+		type: String,
+		default: 'user',
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
+	},
+	isActive: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 userSchema.pre('save', function (next) {

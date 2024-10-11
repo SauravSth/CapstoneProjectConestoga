@@ -3,6 +3,7 @@ import router from './routes/index.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 dotenv.config({ path: '../.env' });
 
@@ -17,6 +18,7 @@ mongoose
 	.catch((e) => console.log(e));
 
 // Express Middlewares
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
