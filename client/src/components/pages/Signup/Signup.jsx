@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import Logo from '../../../assets/img/Logo.png';
 const Signup = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -123,11 +123,9 @@ const Signup = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-gray-900 shadow-md rounded-lg">
+    <div className="max-w-md mx-auto mt-24 p-6 bg-white-900 shadow-md rounded-md">
       <form onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Let's Get Started!
-        </h1>
+      <img src={Logo} alt="" className=" mx-24 mb-10"/>
 
         {/* Username */}
         <div className="mb-4">
@@ -143,7 +141,7 @@ const Signup = () => {
             placeholder="Enter Username"
             value={formData.username}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.username && (
             <p className="text-red-500 text-sm">{errors.username}</p>
@@ -164,7 +162,7 @@ const Signup = () => {
             placeholder="Enter First Name"
             value={formData.fname}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.fname && (
             <p className="text-red-500 text-sm">{errors.fname}</p>
@@ -185,7 +183,7 @@ const Signup = () => {
             placeholder="Enter Last Name"
             value={formData.lname}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.lname && (
             <p className="text-red-500 text-sm">{errors.lname}</p>
@@ -206,7 +204,7 @@ const Signup = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email}</p>
@@ -227,7 +225,7 @@ const Signup = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password}</p>
@@ -248,7 +246,7 @@ const Signup = () => {
             placeholder="Repeat Password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
           />
           {errors.confirmPassword && (
             <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
@@ -260,9 +258,9 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full bg-greenPercent text-white py-2 rounded-md hover:bg-greenPercentHover focus:outline-none focus:ring focus:ring-greenPercent"
           >
-            {loading ? 'Submitting...' : 'Continue with Email'}
+            {loading ? 'Submitting...' : 'Sign Up'}
           </button>
         </div>
 
@@ -280,6 +278,7 @@ const Signup = () => {
             By continuing, you agree to our Terms of Service and Privacy Policy.
           </p>
         </div>
+        
       </form>
     </div>
   );
