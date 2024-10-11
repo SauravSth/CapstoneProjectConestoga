@@ -38,7 +38,7 @@ const Login = () => {
     if (valid) {
       // Make API call to log in
       try {
-        const response = await fetch(`${process.env.MONGO_URL}/login`, {
+        const response = await fetch(`http://localhost:3000/api/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

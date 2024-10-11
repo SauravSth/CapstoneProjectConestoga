@@ -80,22 +80,19 @@ const Signup = () => {
       setSuccessMessage('');
 
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/signup`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: formData.username,
-              firstName: formData.fname,
-              lastName: formData.lname,
-              email: formData.email,
-              password: formData.password,
-            }),
-          }
-        );
+        const response = await fetch(`http://localhost:3000/api/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            firstName: formData.fname,
+            lastName: formData.lname,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
 
         const data = await response.json();
 
@@ -125,7 +122,11 @@ const Signup = () => {
   return (
     <div className="max-w-md mx-auto mt-24 p-6 bg-white-900 shadow-md rounded-md">
       <form onSubmit={handleSubmit}>
-      <img src={Logo} alt="" className=" mx-24 mb-10"/>
+        <img
+          src={Logo}
+          alt=""
+          className=" mx-24 mb-10"
+        />
 
         {/* Username */}
         <div className="mb-4">
@@ -278,7 +279,6 @@ const Signup = () => {
             By continuing, you agree to our Terms of Service and Privacy Policy.
           </p>
         </div>
-        
       </form>
     </div>
   );
