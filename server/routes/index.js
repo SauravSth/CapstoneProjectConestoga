@@ -12,7 +12,8 @@ import authController from '../controllers/authController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
-import authenticateToken from '../middlewares/authenticate.js';
+import authentication from '../middlewares/authentication.js';
+import authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
 
@@ -41,10 +42,10 @@ router.get('/store', storeController.getStore);
 
 // User Routes
 router.get('/user', userController.getUser);
-router.get('/login', authController.getUserLogin);
-router.get('/signup', authController.getUserSignUp);
 
 // Auth Routes
+router.get('/login', authController.getUserLogin);
+router.get('/signup', authController.getUserSignUp);
 router.post('/login', authController.postUserLogin);
 router.post(
 	'/signup',

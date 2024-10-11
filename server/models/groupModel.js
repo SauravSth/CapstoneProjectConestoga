@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const groupSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
+		required: [true, 'Please provide a group name'],
 	},
 	members: {
 		type: Array,
