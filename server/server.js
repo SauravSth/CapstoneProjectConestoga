@@ -1,15 +1,26 @@
 import express from 'express';
 import router from './routes/index.js';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 dotenv.config({ path: '../.env' });
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-
 const PORT = process.env.PORT;
+const DB_URL = process.env.MONGO_URL;
 
+mongoose
+	.connect(DB_URL)
+	.then(console.log('Connected to Database'))
+	.catch((e) => console.log(e));
+
+// Express Middlewares
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.static('public'));
 app.use('/api', router);
 
 app.get('*', (req, res) => {
