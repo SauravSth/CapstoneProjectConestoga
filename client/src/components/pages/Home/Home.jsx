@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import DashboardCard from '../../ui/DashboardCard';
