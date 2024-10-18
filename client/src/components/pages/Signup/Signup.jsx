@@ -28,10 +28,10 @@ const Signup = () => {
     let formErrors = {};
 
     // Sanitize first and last name fields
-    const sanitizedFname = sanitizeInput(formData.fname.trim());
+    const sanitizedFname = sanitizeInput(formData.fname);
     console.log(sanitizedFname);
     debugger;
-    const sanitizedLname = sanitizeInput(formData.lname.trim());
+    const sanitizedLname = sanitizeInput(formData.lname);
     console.log(sanitizedLname);
     debugger;
     // Username validation
@@ -103,8 +103,8 @@ const Signup = () => {
           },
           body: JSON.stringify({
             username: formData.username,
-            firstName: sanitizeInput(formData.fname),
-            lastName: sanitizeInput(formData.lname),
+            firstName: sanitizeInput(formData.fname.trim()),
+            lastName: sanitizeInput(formData.lname.trim()),
             email: formData.email,
             password: formData.password,
             confirmPassword: formData.confirmPassword,
