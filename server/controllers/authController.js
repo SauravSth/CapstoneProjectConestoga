@@ -21,7 +21,6 @@ const authController = {
 		} catch (e) {
 			console.log('User login GET' + e);
 		}
-		res.send('Login User GET');
 	},
 	getUserSignUp: (req, res) => {
 		res.send('Sign Up User GET');
