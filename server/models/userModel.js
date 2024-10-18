@@ -41,9 +41,24 @@ const userSchema = mongoose.Schema({
 	},
 });
 
-userSchema.pre('save', function (next) {
+userSchema.statics.login = async function (email, password) {
 	let user = this;
-	bcrypt.hash(user.password, 5, (err, hash) => {
+
+	const userData = await user.findOne({ email });
+	if (userData) {
+		const auth = await bcrypt.compare(password, userData.password);
+		if (auth) {
+			return userData;
+		}
+		throw Error('Incorrect Password');
+	}
+	throw Error('Incorrect Email');
+};
+
+userSchema.pre('save', async function (next) {
+	let user = this;
+	// const salt = await bcrypt.genSalt()
+	await bcrypt.hash(user.password, 5, (err, hash) => {
 		if (err) {
 			console.log('Hashing Error ' + err);
 		} else {

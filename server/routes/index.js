@@ -12,13 +12,14 @@ import authController from '../controllers/authController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
+import sanitize from '../middlewares/sanitize.js';
 import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
 
 // Page Routes
-router.get('/home', pageController.getHomePage);
+router.get('/home', authentication, pageController.getHomePage);
 router.get('/budget', pageController.getBudgetPage);
 router.get('/category', pageController.getCategoryPage);
 router.get('/store', pageController.getStorePage);
@@ -49,8 +50,10 @@ router.get('/signup', authController.getUserSignUp);
 router.post('/login', authController.postUserLogin);
 router.post(
 	'/signup',
+	sanitize.trimmer,
 	validate.doPasswordsMatch,
 	authController.postUserSignUp
 );
+router.get('/logout', authController.getUserLogout);
 
 export default router;
