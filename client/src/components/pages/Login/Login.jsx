@@ -50,7 +50,8 @@ const Login = () => {
 
         if (response.ok) {
           // Successfully logged in
-          login(data.user);
+          console.log('Here', data);
+          login(data);
           navigate('/');
         } else {
           // Handle login error
