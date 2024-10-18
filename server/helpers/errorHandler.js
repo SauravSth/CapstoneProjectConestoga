@@ -1,5 +1,5 @@
-const errorController = {
-	handleSignUpErrors: (err) => {
+const errorHandler = {
+	handleErrors: (err) => {
 		let errors = {
 			username: '',
 			firstName: '',
@@ -7,6 +7,13 @@ const errorController = {
 			email: '',
 			password: '',
 		};
+
+		if (err.message === 'Incorrect Email') {
+			errors.email = 'Email is not registered';
+		}
+		if (err.message === 'Incorrect Password') {
+			errors.password = 'Password is incorrect';
+		}
 		if (err.code === 11000) {
 			if (Object.keys(err.keyValue)[0] === 'email') {
 				errors.email = 'Email is already registered';
@@ -25,4 +32,4 @@ const errorController = {
 	},
 };
 
-export default errorController;
+export default errorHandler;
