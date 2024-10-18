@@ -46,7 +46,6 @@ const authController = {
 	postUserSignUp: async (req, res) => {
 		try {
 			const { username, firstName, lastName, email, password } = req.body;
-
 			let newUser = await User.create({
 				username,
 				firstName,

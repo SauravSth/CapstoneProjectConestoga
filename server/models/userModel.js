@@ -55,10 +55,9 @@ userSchema.statics.login = async function (email, password) {
 	throw Error('Incorrect Email');
 };
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', function (next) {
 	let user = this;
-	// const salt = await bcrypt.genSalt()
-	await bcrypt.hash(user.password, 5, (err, hash) => {
+	bcrypt.hash(user.password, 5, (err, hash) => {
 		if (err) {
 			console.log('Hashing Error ' + err);
 		} else {
