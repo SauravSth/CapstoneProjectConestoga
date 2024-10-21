@@ -9,6 +9,17 @@ const validate = {
 		next();
 	},
 	// ISEMPTY
+	isFieldEmpty: (req, res, next) => {
+		for (let field of req.body) {
+			if (field == '') {
+				return res.status(400).json({
+					success: false,
+					message: 'Fields cannot be empty',
+				});
+			}
+		}
+		next();
+	},
 	// MATCH REGEX
 	// ISNUMBER
 };

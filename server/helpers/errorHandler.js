@@ -1,5 +1,5 @@
 const errorHandler = {
-	handleErrors: (err) => {
+	handleAuthErrors: (err) => {
 		let errors = {
 			username: '',
 			firstName: '',
@@ -27,6 +27,26 @@ const errorHandler = {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
+		}
+		return { success: false, errors };
+	},
+	handleStoreErrors: (err) => {
+		let errors = {
+			name: '',
+		};
+		console.log(err);
+		if (err.code === 11000) {
+			errors.name = 'Store already exists';
+			return { success: false, errors };
+		}
+		if (err.name == 'CastError') {
+			errors.name = 'Invalid ID';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Store validation failed')) {
+			// Object.values(err.errors).forEach(({ properties }) => {
+			errors[properties.path] = properties.message;
+			// });
 		}
 		return { success: false, errors };
 	},

@@ -19,12 +19,12 @@ import authorization from '../middlewares/authorization.js';
 const router = express.Router();
 
 // Page Routes
-router.get('/home', authentication, pageController.getHomePage);
-router.get('/budget', pageController.getBudgetPage);
-router.get('/category', pageController.getCategoryPage);
-router.get('/store', pageController.getStorePage);
-router.get('/item', pageController.getItemPage);
-router.get('/group', pageController.getGroupPage);
+router.get('/home', authentication, authorization, pageController.getHomePage);
+// router.get('/budget', pageController.getBudgetPage);
+// router.get('/category', pageController.getCategoryPage);
+// router.get('/store', pageController.getStorePage);
+// router.get('/item', pageController.getItemPage);
+// router.get('/group', pageController.getGroupPage);
 
 // Group Routes
 router.get('/group', groupController.getGroup);
@@ -40,6 +40,9 @@ router.get('/item', itemController.getItem);
 
 // Store Routes
 router.get('/store', storeController.getStore);
+router.post('/store', storeController.postStore);
+router.patch('/store', storeController.updateStore);
+router.delete('/store', storeController.deleteStore);
 
 // User Routes
 router.get('/user', userController.getUser);

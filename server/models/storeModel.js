@@ -4,12 +4,17 @@ const storeSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: [true, 'Please provide the store name'],
+		unique: true,
 	},
-	address: {
-		type: String,
-	},
-	postalCode: {
-		type: String,
+	// address: {
+	// 	type: String,
+	// },
+	// postalCode: {
+	// 	type: String,
+	// },
+	isActive: {
+		type: Boolean,
+		default: true,
 	},
 });
 

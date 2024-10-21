@@ -39,7 +39,7 @@ const authController = {
 				.status(200)
 				.json(userData._id);
 		} catch (e) {
-			const errors = errorHandler.handleErrors(e);
+			const errors = errorHandler.handleAuthErrors(e);
 			res.status(400).json(errors);
 		}
 	},
@@ -60,7 +60,7 @@ const authController = {
 				newUser,
 			});
 		} catch (e) {
-			const errors = errorHandler.handleErrors(e);
+			const errors = errorHandler.handleAuthErrors(e);
 			res.status(400).json(errors);
 		}
 	},
