@@ -11,12 +11,16 @@ const itemSchema = mongoose.Schema({
 		default: 1,
 	},
 	price: {
-		type: Number,
+		type: String,
 		required: [true, 'Please enter the price of the item'],
 	},
 	category: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',
+	},
+	isActive: {
+		type: Boolean,
+		default: true,
 	},
 });
 

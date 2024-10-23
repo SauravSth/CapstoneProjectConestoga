@@ -20,23 +20,30 @@ const router = express.Router();
 
 // Page Routes
 router.get('/home', authentication, authorization, pageController.getHomePage);
-// router.get('/budget', pageController.getBudgetPage);
-// router.get('/category', pageController.getCategoryPage);
-// router.get('/store', pageController.getStorePage);
-// router.get('/item', pageController.getItemPage);
-// router.get('/group', pageController.getGroupPage);
 
 // Group Routes
 router.get('/group', groupController.getGroup);
+router.post('/group', groupController.postGroup);
+router.patch('/group', groupController.updateGroup);
+router.delete('/group', groupController.deleteGroup);
 
 // Budget Routes
 router.get('/budget', budgetController.getBudget);
+router.post('/budget', budgetController.postBudget);
+router.patch('/budget', budgetController.updateBudget);
+router.delete('/budget', budgetController.deleteBudget);
 
 // Category Routes
 router.get('/category', categoryController.getCategory);
+router.post('/category', categoryController.postCategory);
+router.patch('/category', categoryController.updateCategory);
+router.delete('/category', categoryController.deleteCategory);
 
 // Item Routes
 router.get('/item', itemController.getItem);
+router.post('/item', itemController.postItem);
+router.patch('/item', itemController.updateItem);
+router.delete('/item', itemController.deleteItem);
 
 // Store Routes
 router.get('/store', storeController.getStore);
@@ -44,7 +51,7 @@ router.post('/store', storeController.postStore);
 router.patch('/store', storeController.updateStore);
 router.delete('/store', storeController.deleteStore);
 
-// User Routes
+// Admin Routes
 router.get('/user', userController.getUser);
 
 // Auth Routes

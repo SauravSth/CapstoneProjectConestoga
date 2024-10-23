@@ -9,6 +9,10 @@ const groupSchema = mongoose.Schema({
 		type: Array,
 		default: [],
 	},
+	isActive: {
+		type: Boolean,
+		default: true,
+	},
 });
 
 const group = mongoose.model('Group', groupSchema);

@@ -21,6 +21,10 @@ const budgetSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'Group',
 	},
+	isActive: {
+		type: Boolean,
+		default: true,
+	},
 });
 
 const budget = mongoose.model('Budget', budgetSchema);

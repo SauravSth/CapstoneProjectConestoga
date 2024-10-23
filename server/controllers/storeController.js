@@ -68,7 +68,7 @@ const storeController = {
 				deletedData,
 			});
 		} catch (e) {
-			console.log(e.message);
+			console.log(e);
 		}
 	},
 };

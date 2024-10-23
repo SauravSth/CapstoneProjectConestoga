@@ -34,19 +34,78 @@ const errorHandler = {
 		let errors = {
 			name: '',
 		};
-		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Store already exists';
 			return { success: false, errors };
 		}
-		if (err.name == 'CastError') {
-			errors.name = 'Invalid ID';
+
+		if (err.message.includes('Store validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleItemErrors: (err) => {
+		let errors = {
+			name: '',
+			quantity: '',
+			price: '',
+			category: '',
+		};
+
+		if (err.message.includes('Item validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleCategoryErrors: (err) => {
+		let errors = {
+			name: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Category already exists';
 			return { success: false, errors };
 		}
-		if (err.message.includes('Store validation failed')) {
-			// Object.values(err.errors).forEach(({ properties }) => {
-			errors[properties.path] = properties.message;
-			// });
+		if (err.message.includes('Category validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleBudgetErrors: (err) => {
+		let errors = {
+			name: '',
+			upperLimit: '',
+			lowerLimit: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Category already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Category validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleGroupErrors: (err) => {
+		let errors = {
+			name: '',
+			members: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Category already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Category validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
 		}
 		return { success: false, errors };
 	},

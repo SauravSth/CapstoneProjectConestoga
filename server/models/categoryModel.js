@@ -5,6 +5,10 @@ const categorySchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter the category name'],
 	},
+	isActive: {
+		type: Boolean,
+		default: true,
+	},
 });
 
 const category = mongoose.model('Category', categorySchema);
