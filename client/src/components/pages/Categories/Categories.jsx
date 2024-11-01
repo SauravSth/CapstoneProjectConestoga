@@ -10,13 +10,8 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-<<<<<<< HEAD
   const [editRowId, setEditRowId] = useState(null); // Track the row being edited
   const [editCategoryName, setEditCategoryName] = useState(''); // Track the edited category name
-=======
-  const [editRowId, setEditRowId] = useState(null);
-  const [editCategoryName, setEditCategoryName] = useState('');
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
 
   const columns = [
     {
@@ -43,7 +38,6 @@ const Categories = () => {
           onChange={(e) => handleStatusChange(rowData, e.target.value)}
           className="p-1 bg-white border border-gray-300 rounded"
         >
-<<<<<<< HEAD
           <option value="Active">
             <GoDotFill />
             Active
@@ -52,10 +46,6 @@ const Categories = () => {
             <GoDotFill />
             Inactive
           </option>
-=======
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
         </select>
       ),
     },
@@ -160,21 +150,12 @@ const Categories = () => {
 
   const handleDelete = async (rowData) => {
     try {
-<<<<<<< HEAD
       await fetch(`http://localhost:3000/api/category/`, {
         method: 'DELETE', // Use DELETE method
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id: rowData._id }),
-=======
-      await fetch(`http://localhost:3000/api/category`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id: rowData._id }),
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
       });
       setData((prevData) =>
         prevData.filter((item) => item._id !== rowData._id)

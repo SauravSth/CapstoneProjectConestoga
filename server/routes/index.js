@@ -1,10 +1,6 @@
 import express from 'express';
 
 // Controller Imports
-<<<<<<< HEAD
-// import pageController from '../controllers/pageController.js';
-=======
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
 import userController from '../controllers/userController.js';
 import budgetController from '../controllers/budgetController.js';
 import itemController from '../controllers/itemController.js';
@@ -21,12 +17,6 @@ import authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
 
-<<<<<<< HEAD
-// Page Routes
-// router.get('/home', authentication, authorization, pageController.getHomePage);
-
-=======
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
 // Group Routes
 router.get('/group', groupController.getGroup);
 router.post('/group', groupController.postGroup);
@@ -61,11 +51,6 @@ router.delete('/store', storeController.deleteStore);
 router.get('/user', userController.getUser);
 
 // Auth Routes
-<<<<<<< HEAD
-// router.get('/login', authController.getUserLogin);
-// router.get('/signup', authController.getUserSignUp);
-=======
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
 router.post('/login', authController.postUserLogin);
 router.post(
   '/signup',

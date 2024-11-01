@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import Navbar from '../../../layouts/Navbar';
-import Header from '../../../layouts/Header';
-
-const RecentActivity = () => {
-=======
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
@@ -48,7 +41,6 @@ const Budget = () => {
   //   fetchBudget();
   // }, []);
 
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -58,15 +50,6 @@ const Budget = () => {
 
       {/* Main Content */}
       <div className="flex flex-col flex-grow">
-<<<<<<< HEAD
-        <Header title="Recent Activity" />
-
-        {/* Main Content */}
-        <main className="p-6 space-y-6">
-          <div className="text-5xl font-bold">My Wallet</div>
-          <div className="text-gray-500">Keep track of your financial plan</div>
-        </main>
-=======
         <Header title="Budget" />
 
         <main className="p-6 space-y-6">
@@ -138,14 +121,9 @@ const Budget = () => {
             </div>
           </form>
         </CustomModal>
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
       </div>
     </div>
   );
 };
 
-<<<<<<< HEAD
-export default RecentActivity;
-=======
 export default Budget;
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9

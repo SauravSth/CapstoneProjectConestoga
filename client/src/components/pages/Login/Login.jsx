@@ -43,11 +43,7 @@ const Login = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email, password }),
-<<<<<<< HEAD
           credentials: 'include', // Important for sending cookies
-=======
-          credentials: 'include',
->>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
         });
 
         const data = await response.json();
