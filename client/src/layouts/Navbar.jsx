@@ -50,7 +50,7 @@ const Navbar = () => {
               className="flex items-center space-x-4"
             >
               <TbReceiptDollar size={20} />
-              <span>Recent Activity</span>
+              <span>Savings</span>
             </Link>
           </li>
 

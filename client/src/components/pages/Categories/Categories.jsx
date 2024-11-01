@@ -10,9 +10,25 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [editRowId, setEditRowId] = useState(null); // Track the row being edited
+  const [editCategoryName, setEditCategoryName] = useState(''); // Track the edited category name
 
   const columns = [
-    { field: 'name', headerName: 'Category' },
+    {
+      field: 'name',
+      headerName: 'Category',
+      render: (rowData) =>
+        editRowId === rowData._id ? (
+          <input
+            type="text"
+            value={editCategoryName}
+            onChange={(e) => setEditCategoryName(e.target.value)}
+            className="p-1 border border-gray-300 rounded w-full"
+          />
+        ) : (
+          rowData.name
+        ),
+    },
     {
       field: 'isActive',
       headerName: 'Status',
@@ -38,12 +54,21 @@ const Categories = () => {
       headerName: 'Action',
       render: (rowData) => (
         <div className="flex space-x-2">
-          <button
-            onClick={() => handleEdit(rowData)}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <FaEdit />
-          </button>
+          {editRowId === rowData._id ? (
+            <button
+              onClick={() => handleSaveEdit(rowData._id)}
+              className="text-green-500 hover:text-green-700"
+            >
+              <FaSave />
+            </button>
+          ) : (
+            <button
+              onClick={() => handleEdit(rowData)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit />
+            </button>
+          )}
           <button
             onClick={() => handleDelete(rowData)}
             className="text-red-500 hover:text-red-700"
@@ -66,7 +91,7 @@ const Categories = () => {
           },
         });
         const result = await response.json();
-        setData(Array.isArray(result) ? result : []);
+        setData(Array.isArray(result.categories) ? result.categories : []);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -98,15 +123,43 @@ const Categories = () => {
   };
 
   const handleEdit = (rowData) => {
-    console.log('Edit clicked for:', rowData);
+    setEditRowId(rowData._id);
+    setEditCategoryName(rowData.name);
+  };
+
+  const handleSaveEdit = async (id) => {
+    try {
+      await fetch(`http://localhost:3000/api/category/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: editCategoryName }),
+      });
+      setData((prevData) =>
+        prevData.map((item) =>
+          item._id === id ? { ...item, name: editCategoryName } : item
+        )
+      );
+      setEditRowId(null);
+      setEditCategoryName('');
+    } catch (error) {
+      console.error('Failed to save edited category:', error);
+    }
   };
 
   const handleDelete = async (rowData) => {
     try {
-      await fetch(`http://localhost:3000/api/category/${rowData.id}`, {
+      await fetch(`http://localhost:3000/api/category`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: rowData._id }),
       });
-      setData((prevData) => prevData.filter((item) => item.id !== rowData.id));
+      setData((prevData) =>
+        prevData.filter((item) => item._id !== rowData._id)
+      );
     } catch (error) {
       console.error('Failed to delete item:', error);
     }
@@ -161,7 +214,11 @@ const Categories = () => {
 
           <button
             onClick={handleAddNewCategory}
-            className="px-4 py-2 mb-4 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
+            style={{
+              backgroundColor: '#80C028',
+              opacity: '0.45',
+            }}
           >
             <FaPlus className="inline mr-2" /> New Category
           </button>
