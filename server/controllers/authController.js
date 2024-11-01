@@ -35,6 +35,8 @@ const authController = {
 			res.cookie('jwt', token, {
 				httpOnly: true,
 				maxAge: MAX_AGE * 1000,
+				secure: true,
+				sameSite: 'none',
 			})
 				.status(200)
 				.json(userData._id);
