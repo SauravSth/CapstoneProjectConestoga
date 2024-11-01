@@ -150,8 +150,8 @@ const Categories = () => {
 
   const handleDelete = async (rowData) => {
     try {
-      await fetch(`http://localhost:3000/api/category/`, {
-        method: 'DELETE', // Use DELETE method
+      await fetch(`http://localhost:3000/api/category`, {
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },

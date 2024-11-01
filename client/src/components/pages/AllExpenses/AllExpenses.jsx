@@ -43,7 +43,7 @@ const AllExpenses = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchExpenses = async () => {
       try {
         setLoading(true);
         const expenseResponse = await fetch(
