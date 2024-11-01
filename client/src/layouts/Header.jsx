@@ -19,7 +19,7 @@ const Header = ({ title }) => {
       <h1 className="text-2xl font-bold">{title}</h1>
       {isAuthenticated ? (
         <div className="flex items-center space-x-4">
-          <span>Hello, {user?.firstName}</span>
+          <span>Hello {user?.firstName}</span>
           <button
             onClick={() => logout()}
             className="flex items-center space-x-2"
