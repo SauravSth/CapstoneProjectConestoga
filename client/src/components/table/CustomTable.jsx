@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomTable = ({ columns, data }) => {
+const CustomTable = ({ columns, data = [] }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">
@@ -29,7 +29,7 @@ const CustomTable = ({ columns, data }) => {
                   key={col.field}
                   className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap"
                 >
-                  {col.render ? col.render(row[col.field]) : row[col.field]}
+                  {col.render ? col.render(row) : row[col.field]}
                 </td>
               ))}
             </tr>

@@ -3,21 +3,22 @@ import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import CustomTable from '../../table/CustomTable';
 import { GoDotFill } from 'react-icons/go';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
 
 const Categories = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const columns = [
     { field: 'name', headerName: 'Category' },
-    // { field: 'email', headerName: 'Email' },
     {
-      field: 'status',
+      field: 'isActive',
       headerName: 'Status',
       render: (rowData) => (
         <select
-          value={rowData.status ? 'Active' : 'Inactive'}
+          value={rowData.isActive ? 'Active' : 'Inactive'}
           onChange={(e) => handleStatusChange(rowData, e.target.value)}
           className="p-1 bg-white border border-gray-300 rounded"
         >
@@ -33,7 +34,7 @@ const Categories = () => {
       ),
     },
     {
-      field: 'action',
+      field: '_id',
       headerName: 'Action',
       render: (rowData) => (
         <div className="flex space-x-2">
@@ -54,14 +55,18 @@ const Categories = () => {
     },
   ];
 
-  // Fetch categories data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/category');
+        const response = await fetch('http://localhost:3000/api/category', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         const result = await response.json();
-        setData(result);
+        setData(Array.isArray(result) ? result : []);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -72,20 +77,19 @@ const Categories = () => {
     fetchData();
   }, []);
 
-  // Handle status change
   const handleStatusChange = async (rowData, newStatus) => {
     const updatedStatus = newStatus === 'Active';
     try {
-      await fetch(`http://localhost:3000/api/category/${rowData.id}`, {
+      await fetch(`http://localhost:3000/api/category/${rowData._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: updatedStatus }),
+        body: JSON.stringify({ isActive: updatedStatus }),
       });
       setData((prevData) =>
         prevData.map((item) =>
-          item.id === rowData.id ? { ...item, status: updatedStatus } : item
+          item._id === rowData._id ? { ...item, isActive: updatedStatus } : item
         )
       );
     } catch (error) {
@@ -93,13 +97,10 @@ const Categories = () => {
     }
   };
 
-  // Handle edit action
   const handleEdit = (rowData) => {
     console.log('Edit clicked for:', rowData);
-    // Add edit logic here
   };
 
-  // Handle delete action
   const handleDelete = async (rowData) => {
     try {
       await fetch(`http://localhost:3000/api/category/${rowData.id}`, {
@@ -111,21 +112,83 @@ const Categories = () => {
     }
   };
 
+  const handleAddNewCategory = () => {
+    setIsAddingNew(true);
+  };
+
+  const handleSaveNewCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    const newCategory = {
+      name: newCategoryName,
+      status: false, // default to inactive
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/category', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCategory),
+      });
+      const savedCategory = await response.json();
+      setData([savedCategory, ...data]);
+      setIsAddingNew(false);
+      setNewCategoryName('');
+    } catch (error) {
+      console.error('Failed to add category:', error);
+    }
+  };
+
+  const handleCancelNewCategory = () => {
+    setIsAddingNew(false);
+    setNewCategoryName('');
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-grow">
         <Header title="Categories" />
 
-        {/* Main Content */}
         <main className="p-6 space-y-6">
           <div className="text-5xl font-bold">My Wallet</div>
           <div className="text-gray-500">Keep track of your financial plan</div>
+
+          <button
+            onClick={handleAddNewCategory}
+            className="px-4 py-2 mb-4 text-white bg-blue-500 rounded hover:bg-blue-600"
+          >
+            <FaPlus className="inline mr-2" /> New Category
+          </button>
+
+          {isAddingNew && (
+            <div className="flex items-center space-x-4 p-4 bg-white border rounded shadow">
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Enter category name"
+                className="flex-grow p-2 border border-gray-300 rounded"
+              />
+              <button
+                onClick={handleSaveNewCategory}
+                className="text-green-500 hover:text-green-700"
+              >
+                <FaSave />
+              </button>
+              <button
+                onClick={handleCancelNewCategory}
+                className="text-red-500 hover:text-red-700"
+              >
+                <FaTrash />
+              </button>
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
