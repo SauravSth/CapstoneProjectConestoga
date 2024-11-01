@@ -8,7 +8,6 @@ const validate = {
 			});
 		next();
 	},
-	// ISEMPTY
 	isFieldEmpty: (req, res, next) => {
 		for (let field of req.body) {
 			if (field == '') {

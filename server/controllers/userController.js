@@ -1,7 +1,7 @@
-import User from '../models/userModel';
+import User from '../models/userModel.js';
 
 // Import Error Handler
-import errorHandler from '../helpers/errorHandler';
+import errorHandler from '../helpers/errorHandler.js';
 
 const userController = {
 	getUser: async (req, res) => {
