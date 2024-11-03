@@ -13,6 +13,17 @@ const categoryController = {
 			console.log(e);
 		}
 	},
+	getOneCategory: async (req, res) => {
+		try {
+			const id = req.params._id;
+
+			const category = await Category.findOne({ _id: id });
+
+			res.status(200).json({ category });
+		} catch (e) {
+			console.log(e);
+		}
+	},
 	postCategory: async (req, res) => {
 		try {
 			const { name } = req.body;

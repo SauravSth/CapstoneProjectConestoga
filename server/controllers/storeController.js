@@ -13,6 +13,17 @@ const storeController = {
 			console.log(e);
 		}
 	},
+	getOneStore: async (req, res) => {
+		try {
+			const id = req.params._id;
+
+			const store = await Store.findOne({ _id: id });
+
+			res.status(200).json({ store });
+		} catch (e) {
+			console.log(e);
+		}
+	},
 	postStore: async (req, res) => {
 		try {
 			const { name, address, postalCode } = req.body;

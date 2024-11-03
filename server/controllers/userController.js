@@ -13,6 +13,17 @@ const userController = {
 			console.log(e);
 		}
 	},
+	getOneUser: async (req, res) => {
+		try {
+			const id = req.params._id;
+
+			const user = await User.findOne({ _id: id });
+
+			res.status(200).json({ user });
+		} catch (e) {
+			console.log(e);
+		}
+	},
 	updateUser: async (req, res) => {
 		try {
 			const { _id, username, firstName, lastName, email, password } =

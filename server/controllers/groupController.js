@@ -13,6 +13,17 @@ const groupController = {
 			console.log(e);
 		}
 	},
+	getOneGroup: async (req, res) => {
+		try {
+			const id = req.params._id;
+
+			const group = await Group.findOne({ _id: id });
+
+			res.status(200).json({ group });
+		} catch (e) {
+			console.log(e);
+		}
+	},
 	postGroup: async (req, res) => {
 		try {
 			const { name, members } = req.body;

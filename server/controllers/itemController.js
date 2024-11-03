@@ -6,9 +6,20 @@ import errorHandler from '../helpers/errorHandler.js';
 const itemController = {
 	getItem: async (req, res) => {
 		try {
-			const items = await Item.find({});
+			const items = await Item.find({}).populate('category');
 
 			res.status(200).json({ items });
+		} catch (e) {
+			console.log(e);
+		}
+	},
+	getOneItem: async (req, res) => {
+		try {
+			const id = req.params._id;
+
+			const item = await Item.findOne({ _id: id }).populate('category');
+
+			res.status(200).json({ item });
 		} catch (e) {
 			console.log(e);
 		}

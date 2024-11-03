@@ -15,16 +15,6 @@ const createToken = (id, userType) => {
 };
 
 const authController = {
-	getUserLogin: (req, res) => {
-		try {
-			res.json();
-		} catch (e) {
-			console.log('User login GET' + e);
-		}
-	},
-	getUserSignUp: (req, res) => {
-		res.send('Sign Up User GET');
-	},
 	postUserLogin: async (req, res) => {
 		try {
 			const { email, password } = req.body;
