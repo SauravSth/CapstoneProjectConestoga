@@ -2,8 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import useNavbarStore from '../store/useNavbarStore';
 import Logo from '../assets/img/Logo.png';
-import { TbLayoutDashboard, TbReceiptDollar, TbSettings } from 'react-icons/tb';
+import {
+  TbLayoutDashboard,
+  TbReceiptDollar,
+  TbSettings,
+  TbLogout,
+} from 'react-icons/tb';
 import { FaBoxArchive, FaChartSimple } from 'react-icons/fa6';
+import {} from 'react-icons/tb';
 
 const Navbar = () => {
   const { activePage, setActivePage } = useNavbarStore();
@@ -39,18 +45,16 @@ const Navbar = () => {
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-              activePage === 'Recent Activity'
-                ? 'bg-green-700'
-                : 'hover:bg-green-700'
+              activePage === 'Budget' ? 'bg-green-700' : 'hover:bg-green-700'
             }`}
           >
             <Link
-              to="/recent-activity"
-              onClick={() => setActivePage('Recent Activity')}
+              to="/budget"
+              onClick={() => setActivePage('Budget')}
               className="flex items-center space-x-4"
             >
               <TbReceiptDollar size={20} />
-              <span>Savings</span>
+              <span>Budget</span>
             </Link>
           </li>
 
@@ -100,6 +104,20 @@ const Navbar = () => {
             >
               <TbSettings size={20} />
               <span>Settings</span>
+            </Link>
+          </li>
+
+          <li
+            className={
+              'flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer hover:bg-green-700'
+            }
+          >
+            <Link
+              to="/logout"
+              className="flex items-center space-x-4"
+            >
+              <TbLogout size={20} />
+              <span>Logout</span>
             </Link>
           </li>
         </ul>

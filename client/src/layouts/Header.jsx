@@ -14,6 +14,19 @@ const Header = ({ title }) => {
     }
   }, [isAuthenticated, navigate]);
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`http://localhost:3000/api/logout`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      logout();
+      // Update app state, e.g., set user to null
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   return (
     <header className="p-6 bg-white shadow-md flex justify-between items-center">
       <h1 className="text-2xl font-bold">{title}</h1>
@@ -21,7 +34,7 @@ const Header = ({ title }) => {
         <div className="flex items-center space-x-4">
           <span>Hello {user?.firstName}</span>
           <button
-            onClick={() => logout()}
+            onClick={() => handleLogout()}
             className="flex items-center space-x-2"
           >
             <FiLogOut />

@@ -10,8 +10,8 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [editRowId, setEditRowId] = useState(null); // Track the row being edited
-  const [editCategoryName, setEditCategoryName] = useState(''); // Track the edited category name
+  const [editRowId, setEditRowId] = useState(null);
+  const [editCategoryName, setEditCategoryName] = useState('');
 
   const columns = [
     {
@@ -38,14 +38,8 @@ const Categories = () => {
           onChange={(e) => handleStatusChange(rowData, e.target.value)}
           className="p-1 bg-white border border-gray-300 rounded"
         >
-          <option value="Active">
-            <GoDotFill />
-            Active
-          </option>
-          <option value="Inactive">
-            <GoDotFill />
-            Inactive
-          </option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
         </select>
       ),
     },
@@ -129,12 +123,12 @@ const Categories = () => {
 
   const handleSaveEdit = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/category/${id}`, {
+      await fetch(`http://localhost:3000/api/category/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: editCategoryName }),
+        body: JSON.stringify({ _id: id, name: editCategoryName }),
       });
       setData((prevData) =>
         prevData.map((item) =>
@@ -155,7 +149,7 @@ const Categories = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: rowData._id }),
+        body: JSON.stringify({ _id: rowData._id }),
       });
       setData((prevData) =>
         prevData.filter((item) => item._id !== rowData._id)

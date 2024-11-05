@@ -11,10 +11,10 @@ const AllExpenses = () => {
   const [categories, setCategories] = useState([]); // State for storing category data
 
   const columns = [
-    { field: 'expenseName', headerName: 'Expense Name' },
+    { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
-    { field: 'paidTo', headerName: 'Paid To' },
+    // { field: 'paidTo', headerName: 'Paid To' },
     { field: 'amount', headerName: 'Amount' },
   ];
 
@@ -127,7 +127,7 @@ const AllExpenses = () => {
         >
           <form>
             <div className="mb-4">
-              <label className="block text-gray-700">Expense Name</label>
+              <label className="block text-gray-700">Expense Title</label>
               <input
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
@@ -146,6 +146,13 @@ const AllExpenses = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount</label>
+              <input
+                type="date"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Amount</label>

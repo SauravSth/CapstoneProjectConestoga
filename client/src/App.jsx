@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './components/pages/Home/Home';
-import RecentActivity from './components/pages/RecentActivity/RecentActivity';
+import Budget from './components/pages/Budget/Budget';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
@@ -22,8 +22,8 @@ function App() {
               element={<Home />}
             />
             <Route
-              path="/recent-activity"
-              element={<RecentActivity />}
+              path="/budget"
+              element={<Budget />}
             />
             <Route
               path="/all-expenses"
@@ -43,6 +43,10 @@ function App() {
             />
             <Route
               path="/signup"
+              element={<Signup />}
+            />
+            <Route
+              path="/logout"
               element={<Signup />}
             />
             <Route
