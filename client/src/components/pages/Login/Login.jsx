@@ -36,7 +36,6 @@ const Login = () => {
     setErrors(newErrors);
 
     if (valid) {
-      // Make API call to log in
       try {
         const response = await fetch(`http://localhost:3000/api/login`, {
           method: 'POST',
@@ -44,14 +43,14 @@ const Login = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email, password }),
+          credentials: 'include', // Important for sending cookies
         });
 
         const data = await response.json();
 
         if (response.ok) {
           // Successfully logged in
-          console.log('Here', data);
-          login(data);
+          login(data); // Assuming login updates your app state
           navigate('/');
         } else {
           // Handle login error
