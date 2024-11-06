@@ -1,7 +1,6 @@
 import express from 'express';
 
 // Controller Imports
-import pageController from '../controllers/pageController.js';
 import userController from '../controllers/userController.js';
 import budgetController from '../controllers/budgetController.js';
 import itemController from '../controllers/itemController.js';
@@ -17,9 +16,6 @@ import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
-
-// Page Routes
-router.get('/home', authentication, authorization, pageController.getHomePage);
 
 // Group Routes
 router.get('/group', groupController.getGroup);
