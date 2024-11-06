@@ -51,8 +51,6 @@ router.delete('/store', storeController.deleteStore);
 router.get('/user', userController.getUser);
 
 // Auth Routes
-router.get('/login', authController.getUserLogin);
-router.get('/signup', authController.getUserSignUp);
 router.post('/login', authController.postUserLogin);
 router.post(
 	'/signup',
