@@ -39,18 +39,16 @@ const Navbar = () => {
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-              activePage === 'Recent Activity'
-                ? 'bg-green-700'
-                : 'hover:bg-green-700'
+              activePage === 'Budget' ? 'bg-green-700' : 'hover:bg-green-700'
             }`}
           >
             <Link
-              to="/recent-activity"
-              onClick={() => setActivePage('Recent Activity')}
+              to="/budget"
+              onClick={() => setActivePage('Budget')}
               className="flex items-center space-x-4"
             >
               <TbReceiptDollar size={20} />
-              <span>Recent Activity</span>
+              <span>Budget</span>
             </Link>
           </li>
 

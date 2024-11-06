@@ -1,7 +1,7 @@
 import express from 'express';
 
 // Controller Imports
-import pageController from '../controllers/pageController.js';
+// import pageController from '../controllers/pageController.js';
 import userController from '../controllers/userController.js';
 import budgetController from '../controllers/budgetController.js';
 import itemController from '../controllers/itemController.js';
@@ -19,7 +19,7 @@ import authorization from '../middlewares/authorization.js';
 const router = express.Router();
 
 // Page Routes
-router.get('/home', authentication, authorization, pageController.getHomePage);
+// router.get('/home', authentication, authorization, pageController.getHomePage);
 
 // Group Routes
 router.get('/group', groupController.getGroup);
@@ -55,14 +55,14 @@ router.delete('/store', storeController.deleteStore);
 router.get('/user', userController.getUser);
 
 // Auth Routes
-router.get('/login', authController.getUserLogin);
-router.get('/signup', authController.getUserSignUp);
+// router.get('/login', authController.getUserLogin);
+// router.get('/signup', authController.getUserSignUp);
 router.post('/login', authController.postUserLogin);
 router.post(
-	'/signup',
-	sanitize.trimmer,
-	validate.doPasswordsMatch,
-	authController.postUserSignUp
+  '/signup',
+  sanitize.trimmer,
+  validate.doPasswordsMatch,
+  authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 
