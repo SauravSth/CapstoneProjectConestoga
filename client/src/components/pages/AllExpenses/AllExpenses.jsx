@@ -26,6 +26,22 @@ const AllExpenses = () => {
     setIsModalOpen(false);
   };
 
+  const handleFormSubmit = () => {
+    const newExpense = {
+      id: data.length + 1, // Sample ID, update based on real data
+      expenseName,
+      category,
+      date: new Date().toISOString().slice(0, 10), // Current date
+      amount,
+    };
+
+    setData((prevData) => [...prevData, newExpense]);
+    setIsModalOpen(false); // Close modal after submission
+    setExpenseName(''); // Reset input fields
+    setCategory('');
+    setAmount('');
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
@@ -71,12 +87,10 @@ const AllExpenses = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-grow">
         <Header title="All Expenses" />
 
@@ -135,9 +149,13 @@ const AllExpenses = () => {
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Category</label>
-              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              >
                 <option value="">Select Category</option>
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <option
                     key={category.id}
                     value={category.id}
@@ -158,10 +176,27 @@ const AllExpenses = () => {
               <label className="block text-gray-700">Amount</label>
               <input
                 type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
-            {/* Add more input fields as needed */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                onClick={handleFormSubmit}
+              >
+                Confirm
+              </button>
+            </div>
           </form>
         </CustomModal>
       </div>

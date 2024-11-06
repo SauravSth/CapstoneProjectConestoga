@@ -60,10 +60,10 @@ router.get('/user', userController.getUser);
 // Auth Routes
 router.post('/login', authController.postUserLogin);
 router.post(
-	'/signup',
-	sanitize.trimmer,
-	validate.doPasswordsMatch,
-	authController.postUserSignUp
+  '/signup',
+  sanitize.trimmer,
+  validate.doPasswordsMatch,
+  authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 
