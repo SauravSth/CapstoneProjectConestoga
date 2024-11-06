@@ -38,7 +38,7 @@ const expenseController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'Expense created successfully.',
+				message: 'Expense added successfully.',
 				newExpense,
 			});
 		} catch (e) {

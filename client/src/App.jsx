@@ -46,6 +46,10 @@ function App() {
               element={<Signup />}
             />
             <Route
+              path="/logout"
+              element={<Signup />}
+            />
+            <Route
               path="*"
               element={<h1>Page Not Found</h1>}
             />

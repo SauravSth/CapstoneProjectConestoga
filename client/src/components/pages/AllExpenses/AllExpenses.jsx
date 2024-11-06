@@ -8,6 +8,7 @@ const AllExpenses = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+<<<<<<< HEAD
   const [categories, setCategories] = useState([]);
   const [expenseName, setExpenseName] = useState('');
   const [category, setCategory] = useState('');
@@ -18,6 +19,15 @@ const AllExpenses = () => {
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'paidTo', headerName: 'Paid To' },
+=======
+  const [categories, setCategories] = useState([]); // State for storing category data
+
+  const columns = [
+    { field: 'title', headerName: 'Expense Title' },
+    { field: 'category', headerName: 'Category' },
+    { field: 'date', headerName: 'Date' },
+    // { field: 'paidTo', headerName: 'Paid To' },
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
     { field: 'amount', headerName: 'Amount' },
   ];
 
@@ -29,6 +39,7 @@ const AllExpenses = () => {
     setIsModalOpen(false);
   };
 
+<<<<<<< HEAD
   const handleFormSubmit = () => {
     const newExpense = {
       id: data.length + 1, // Sample ID, update based on real data
@@ -47,6 +58,10 @@ const AllExpenses = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+=======
+  useEffect(() => {
+    const fetchExpenses = async () => {
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
       try {
         setLoading(true);
         const expenseResponse = await fetch(
@@ -61,6 +76,7 @@ const AllExpenses = () => {
       }
     };
 
+<<<<<<< HEAD
     fetchData();
   }, []);
 
@@ -75,6 +91,27 @@ const AllExpenses = () => {
         // Ensure categoryData is an array before setting it
         setCategories(Array.isArray(categoryData) ? categoryData : []);
         console.log('Categories', categoryData);
+=======
+    fetchExpenses();
+  }, []);
+
+  // Fetch categories for the dropdown
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/category', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const result = await response.json();
+
+        // Ensure result is an array of categories
+        setCategories(
+          Array.isArray(result.categories) ? result.categories : []
+        );
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -96,6 +133,10 @@ const AllExpenses = () => {
           <div className="text-5xl font-bold">My Wallet</div>
           <div className="text-gray-500">Keep track of your financial plan</div>
 
+<<<<<<< HEAD
+=======
+          {/* Search, Filter, and New Expense */}
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -119,6 +160,10 @@ const AllExpenses = () => {
             </button>
           </div>
 
+<<<<<<< HEAD
+=======
+          {/* Expenses Table */}
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
@@ -129,11 +174,16 @@ const AllExpenses = () => {
           )}
         </main>
 
+<<<<<<< HEAD
+=======
+        {/* Custom Modal for Adding New Expense */}
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
         <CustomModal
           title="Add New Expense"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
+<<<<<<< HEAD
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="mb-4">
               <label className="block text-gray-700">Expense Name</label>
@@ -141,11 +191,19 @@ const AllExpenses = () => {
                 type="text"
                 value={expenseName}
                 onChange={(e) => setExpenseName(e.target.value)}
+=======
+          <form>
+            <div className="mb-4">
+              <label className="block text-gray-700">Expense Title</label>
+              <input
+                type="text"
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Category</label>
+<<<<<<< HEAD
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -153,6 +211,11 @@ const AllExpenses = () => {
               >
                 <option value="">Select Category</option>
                 {categories?.map((category) => (
+=======
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                <option value="">Select Category</option>
+                {categories.map((category) => (
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
                   <option
                     key={category.id}
                     value={category.id}
@@ -165,6 +228,7 @@ const AllExpenses = () => {
             <div className="mb-4">
               <label className="block text-gray-700">Amount</label>
               <input
+<<<<<<< HEAD
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -187,6 +251,20 @@ const AllExpenses = () => {
                 Confirm
               </button>
             </div>
+=======
+                type="date"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount</label>
+              <input
+                type="number"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            {/* Add more input fields as needed */}
+>>>>>>> 3e6bac7d5918cc7f6c6dbb0b1141acee3d62dae9
           </form>
         </CustomModal>
       </div>
