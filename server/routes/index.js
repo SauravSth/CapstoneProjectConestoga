@@ -8,6 +8,7 @@ import categoryController from '../controllers/categoryController.js';
 import groupController from '../controllers/groupController.js';
 import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
+import expenseController from '../controllers/expenseController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
@@ -46,6 +47,12 @@ router.get('/store', storeController.getStore);
 router.post('/store', storeController.postStore);
 router.patch('/store', storeController.updateStore);
 router.delete('/store', storeController.deleteStore);
+
+// Expense Routes
+router.get('/expense', expenseController.getExpense);
+router.post('/expense', expenseController.postExpense);
+router.patch('/expense', expenseController.updateExpense);
+router.delete('/expense', expenseController.deleteExpense);
 
 // Admin Routes
 router.get('/user', userController.getUser);
