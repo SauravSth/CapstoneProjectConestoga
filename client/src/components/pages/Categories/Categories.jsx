@@ -129,12 +129,12 @@ const Categories = () => {
 
   const handleSaveEdit = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/category/${id}`, {
+      await fetch(`http://localhost:3000/api/category/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: editCategoryName }),
+        body: JSON.stringify({ _id: id, name: editCategoryName }),
       });
       setData((prevData) =>
         prevData.map((item) =>
@@ -150,8 +150,8 @@ const Categories = () => {
 
   const handleDelete = async (rowData) => {
     try {
-      await fetch(`http://localhost:3000/api/category`, {
-        method: 'DELETE',
+      await fetch(`http://localhost:3000/api/category/`, {
+        method: 'DELETE', // Use DELETE method
         headers: {
           'Content-Type': 'application/json',
         },
