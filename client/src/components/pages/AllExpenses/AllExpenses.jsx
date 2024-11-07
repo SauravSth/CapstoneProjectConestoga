@@ -8,17 +8,13 @@ const AllExpenses = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [expenseName, setExpenseName] = useState('');
-  const [category, setCategory] = useState('');
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
-  const [comment, setComment] = useState('');
+  const [categories, setCategories] = useState([]); // State for storing category data
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
+    // { field: 'paidTo', headerName: 'Paid To' },
     { field: 'amount', headerName: 'Amount' },
   ];
 
@@ -32,19 +28,18 @@ const AllExpenses = () => {
 
   const handleFormSubmit = () => {
     const newExpense = {
-      id: data.length + 1,
-      title: expenseName,
+      id: data.length + 1, // Sample ID, update based on real data
+      expenseName,
       category,
-      date,
+      date: new Date().toISOString().slice(0, 10), // Current date
       amount,
     };
 
     setData((prevData) => [...prevData, newExpense]);
-    setIsModalOpen(false);
-    setExpenseName('');
+    setIsModalOpen(false); // Close modal after submission
+    setExpenseName(''); // Reset input fields
     setCategory('');
     setAmount('');
-    setDate('');
   };
 
   useEffect(() => {
@@ -52,11 +47,10 @@ const AllExpenses = () => {
       try {
         setLoading(true);
         const expenseResponse = await fetch(
-          'http://localhost:3000/api/expense'
+          'http://localhost:3000/api/expenses'
         );
         const expenseData = await expenseResponse.json();
-        console.log('expense', expenseData);
-        setData(Array.isArray(expenseData) ? expenseData : []);
+        setData(expenseData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -67,11 +61,19 @@ const AllExpenses = () => {
     fetchExpenses();
   }, []);
 
+  // Fetch categories for the dropdown
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/category');
+        const response = await fetch('http://localhost:3000/api/category', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         const result = await response.json();
+
+        // Ensure result is an array of categories
         setCategories(
           Array.isArray(result.categories) ? result.categories : []
         );
@@ -96,6 +98,7 @@ const AllExpenses = () => {
           <div className="text-5xl font-bold">My Wallet</div>
           <div className="text-gray-500">Keep track of your financial plan</div>
 
+          {/* Search, Filter, and New Expense */}
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -109,13 +112,17 @@ const AllExpenses = () => {
             </div>
             <button
               className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
-              style={{ backgroundColor: '#80C028', opacity: '0.45' }}
+              style={{
+                backgroundColor: '#80C028',
+                opacity: '0.45',
+              }}
               onClick={handleNewExpense}
             >
               + New Expense
             </button>
           </div>
 
+          {/* Expenses Table */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
@@ -126,18 +133,17 @@ const AllExpenses = () => {
           )}
         </main>
 
+        {/* Custom Modal for Adding New Expense */}
         <CustomModal
           title="Add New Expense"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form>
             <div className="mb-4">
               <label className="block text-gray-700">Expense Title</label>
               <input
                 type="text"
-                value={expenseName}
-                onChange={(e) => setExpenseName(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -160,11 +166,9 @@ const AllExpenses = () => {
               </select>
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700">Date</label>
+              <label className="block text-gray-700">Amount</label>
               <input
                 type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -175,16 +179,6 @@ const AllExpenses = () => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Comment</label>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                rows="3"
-                placeholder="Add any notes or details here"
               />
             </div>
             <div className="flex justify-end">

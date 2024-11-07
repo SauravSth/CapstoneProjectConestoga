@@ -12,7 +12,6 @@ const Categories = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editRowId, setEditRowId] = useState(null);
   const [editCategoryName, setEditCategoryName] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const columns = [
     {
@@ -194,10 +193,6 @@ const Categories = () => {
     setNewCategoryName('');
   };
 
-  const filteredData = data.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="flex h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow-lg">
@@ -210,17 +205,6 @@ const Categories = () => {
         <main className="p-6 space-y-6">
           <div className="text-5xl font-bold">My Wallet</div>
           <div className="text-gray-500">Keep track of your financial plan</div>
-
-          {/* Search Field */}
-          <div className="flex items-center space-x-4 mb-4">
-            <input
-              type="text"
-              placeholder="Search categories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-grow p-2 border border-gray-300 rounded"
-            />
-          </div>
 
           <button
             onClick={handleAddNewCategory}
@@ -262,7 +246,7 @@ const Categories = () => {
           ) : (
             <CustomTable
               columns={columns}
-              data={filteredData}
+              data={data}
             />
           )}
         </main>
