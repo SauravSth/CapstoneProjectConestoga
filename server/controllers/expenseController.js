@@ -3,7 +3,10 @@ import Expense from '../models/expenseModel.js';
 const expenseController = {
 	getExpense: async (req, res) => {
 		try {
-			const expenses = await Expense.find({}).populate('category user');
+			const { uid } = req.body;
+			const expenses = await Expense.find({ user: uid }).populate(
+				'category user'
+			);
 
 			res.status(200).json({ expenses });
 		} catch (e) {
