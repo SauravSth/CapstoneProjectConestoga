@@ -1,7 +1,8 @@
+import tokenVerifier from '../helpers/tokenVerifier.js';
 import jwt from 'jsonwebtoken';
 
-const tokenVerifier = (req, res) => {
-	const { token } = req.body;
+const tokenDecoder = (req, res, next) => {
+	const token = req.cookies.jwt;
 	if (token) {
 		jwt.verify(
 			token,
@@ -13,12 +14,15 @@ const tokenVerifier = (req, res) => {
 						message: err.message,
 					});
 				} else {
-					// console.log(decodedToken);
-					res.status(200).json({ decodedToken });
+					req.user = {
+						uid: decodedToken.id,
+						userType: decodedToken.userType,
+					};
+					next();
 				}
 			}
 		);
 	}
 };
 
-export default tokenVerifier;
+export default tokenDecoder;

@@ -5,13 +5,24 @@ import errorHandler from '../helpers/errorHandler.js';
 
 const userController = {
 	testRoute: async (req, res) => {
-		res.send('Here');
+		res.send(req.user);
 	},
 	getUser: async (req, res) => {
 		try {
 			const users = await User.find({});
 
 			res.status(200).json({ users });
+		} catch (e) {
+			console.log(e);
+		}
+	},
+	getOneUser: async (req, res) => {
+		try {
+			const uid = req.user.uid;
+
+			const user = await User.findOne({ _id: uid });
+
+			res.status(200).json({ user });
 		} catch (e) {
 			console.log(e);
 		}
