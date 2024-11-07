@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
-import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
+import BudgetCard from './BudgetCard';
 
 const Budget = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const columns = [
-    { field: 'name', headerName: 'Group Name' },
-    { field: 'description', headerName: 'Description' },
-    { field: 'createdDate', headerName: 'Created Date' },
-    { field: 'totalAmount', headerName: 'Total Amount' },
-  ];
 
   const handleNewGroup = () => {
     setIsModalOpen(true);
@@ -28,7 +21,7 @@ const Budget = () => {
   //   const fetchBudget = async () => {
   //     try {
   //       setLoading(true);
-  //       const response = await fetch('http://localhost:3000/api/Budget');
+  //       const response = await fetch('http://localhost:3000/api/budget');
   //       const groupData = await response.json();
   //       setData(groupData);
   //     } catch (error) {
@@ -80,14 +73,21 @@ const Budget = () => {
             </button>
           </div>
 
-          {/* Budget Table */}
+          {/* Budget Cards */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
-              columns={columns}
-              data={data}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {data.map((budget, index) => (
+                <BudgetCard
+                  key={index}
+                  name={budget.name}
+                  description={budget.description}
+                  createdDate={budget.createdDate}
+                  totalAmount={budget.totalAmount}
+                />
+              ))}
+            </div>
           )}
         </main>
 
