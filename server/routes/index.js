@@ -15,7 +15,6 @@ import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
 import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
-import tokenVerifier from '../helpers/tokenVerifier.js';
 
 const router = express.Router();
 
@@ -57,15 +56,14 @@ router.delete('/expense', expenseController.deleteExpense);
 
 // Admin Routes
 router.get('/user', userController.getUser);
-router.get('/test', tokenVerifier, userController.testRoute);
 
 // Auth Routes
 router.post('/login', authController.postUserLogin);
 router.post(
-	'/signup',
-	sanitize.trimmer,
-	validate.doPasswordsMatch,
-	authController.postUserSignUp
+  '/signup',
+  sanitize.trimmer,
+  validate.doPasswordsMatch,
+  authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 

@@ -3,10 +3,7 @@ import Budget from '../models/budgetModel.js';
 const budgetController = {
 	getBudget: async (req, res) => {
 		try {
-			const { uid } = req.body;
-			const budgets = await Budget.find({ user: uid }).populate(
-				'user group'
-			);
+			const budgets = await Budget.find({}).populate('user group');
 
 			res.status(200).json({ budgets });
 		} catch (e) {

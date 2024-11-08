@@ -6,8 +6,7 @@ import errorHandler from '../helpers/errorHandler.js';
 const groupController = {
 	getGroup: async (req, res) => {
 		try {
-			const { uid } = req.body;
-			const groups = await Group.find({ user: uid });
+			const groups = await Group.find({});
 
 			res.status(200).json({ groups });
 		} catch (e) {
