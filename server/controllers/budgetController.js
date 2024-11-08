@@ -28,12 +28,12 @@ const budgetController = {
 	},
 	postBudget: async (req, res) => {
 		try {
-			const { title, upperLimit, lowerLimit, user_id, group_id } =
+			const { title, amount, remainingAmount, user_id, group_id } =
 				req.body;
 			let newBudget = await Budget.create({
 				title,
-				upperLimit,
-				lowerLimit,
+				amount,
+				remainingAmount,
 				user_id,
 				group_id,
 			});
@@ -50,12 +50,12 @@ const budgetController = {
 	},
 	updateBudget: async (req, res) => {
 		try {
-			const { _id, title, upperLimit, lowerLimit, user_id, group_id } =
+			const { _id, title, amount, remainingAmount, user_id, group_id } =
 				req.body;
 
 			const updatedData = await Budget.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, upperLimit, lowerLimit, user_id, group_id } },
+				{ $set: { title, amount, remainingAmount, user_id, group_id } },
 				{ new: true }
 			);
 
