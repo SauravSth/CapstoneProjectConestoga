@@ -13,19 +13,28 @@ const expenseSchema = mongoose.Schema({
 		type: Number,
 		required: [true, 'Amount is required'],
 	},
-	category: {
+	description: {
+		type: String,
+	},
+	category_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',
-		required: [true, 'Expense should have a category'],
 	},
-	user: {
+	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',
-		required: [true, 'Expense should have a user'],
 	},
-	group: {
+	group_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Group',
+	},
+	budget_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'Budget',
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
 	},
 	isActive: {
 		type: Boolean,

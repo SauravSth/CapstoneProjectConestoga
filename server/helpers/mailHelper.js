@@ -6,15 +6,15 @@ const transporter = nodemailer.createTransport({
 	port: 587,
 	secure: false, // true for port 465, false for other ports
 	auth: {
-		user: process.env.USER,
-		pass: process.env.PASSWORD,
+		user: 'percent.capstone@gmail.com',
+		pass: 'zbhw ntwu ytib wwkm',
 	},
 });
 
 const mailInfo = await transporter.sendMail({
 	from: {
 		name: 'PerCent Team',
-		address: process.env.USER,
+		address: 'percent.capstone@gmail.com',
 	},
 	to: 'percent.test@yopmail.com',
 	subject: 'Hello from the PerCent Team',
@@ -32,3 +32,4 @@ const sendMail = async (transporter, mailInfo) => {
 };
 
 sendMail(transporter, mailInfo);
+// zbhw ntwu ytib wwkm (App Password)

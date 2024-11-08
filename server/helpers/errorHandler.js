@@ -109,6 +109,23 @@ const errorHandler = {
 		}
 		return { success: false, errors };
 	},
+	handleExpenseErrors: (err) => {
+		let errors = {
+			title: '',
+			date: '',
+			amount: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Expense already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Expense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
 };
 
 export default errorHandler;

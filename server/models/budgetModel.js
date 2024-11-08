@@ -13,13 +13,17 @@ const budgetSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please set a lower limit'],
 	},
-	user: {
+	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',
 	},
-	group: {
+	group_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Group',
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
 	},
 	isActive: {
 		type: Boolean,

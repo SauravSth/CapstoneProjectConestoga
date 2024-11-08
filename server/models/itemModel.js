@@ -14,9 +14,13 @@ const itemSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter the price of the item'],
 	},
-	category: {
+	category_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
 	},
 	isActive: {
 		type: Boolean,

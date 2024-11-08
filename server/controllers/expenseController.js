@@ -1,4 +1,5 @@
 import Expense from '../models/expenseModel.js';
+import errorHandler from '../helpers/errorHandler.js';
 
 const expenseController = {
 	getExpense: async (req, res) => {
@@ -30,6 +31,7 @@ const expenseController = {
 		try {
 			const { title, date, amount, category_id, user_id, group_id } =
 				req.body;
+			console.log(req.body);
 			let newExpense = await Expense.create({
 				title,
 				date,
