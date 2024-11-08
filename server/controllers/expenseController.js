@@ -29,8 +29,15 @@ const expenseController = {
 	},
 	postExpense: async (req, res) => {
 		try {
-			const { title, date, amount, category_id, user_id, group_id } =
-				req.body;
+			const {
+				title,
+				date,
+				amount,
+				category_id,
+				user_id,
+				group_id,
+				budget_id,
+			} = req.body;
 			console.log(req.body);
 			let newExpense = await Expense.create({
 				title,
@@ -39,6 +46,7 @@ const expenseController = {
 				category_id,
 				user_id,
 				group_id,
+				budget_id,
 			});
 
 			res.status(200).json({
@@ -53,8 +61,16 @@ const expenseController = {
 	},
 	updateExpense: async (req, res) => {
 		try {
-			const { _id, title, date, amount, category_id, user_id, group_id } =
-				req.body;
+			const {
+				_id,
+				title,
+				date,
+				amount,
+				category_id,
+				user_id,
+				group_id,
+				budget_id,
+			} = req.body;
 
 			const updatedData = await Expense.findOneAndUpdate(
 				{ _id },
@@ -66,6 +82,7 @@ const expenseController = {
 						category_id,
 						user_id,
 						group_id,
+						budget_id,
 					},
 				},
 				{ new: true }
