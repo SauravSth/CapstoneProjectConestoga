@@ -79,8 +79,8 @@ const errorHandler = {
 	handleBudgetErrors: (err) => {
 		let errors = {
 			name: '',
-			upperLimit: '',
-			lowerLimit: '',
+			amount: '',
+			remainingAmount: '',
 		};
 		if (err.code === 11000) {
 			errors.name = 'Category already exists';
@@ -99,10 +99,10 @@ const errorHandler = {
 			members: '',
 		};
 		if (err.code === 11000) {
-			errors.name = 'Category already exists';
+			errors.name = 'Group already exists';
 			return { success: false, errors };
 		}
-		if (err.message.includes('Category validation failed')) {
+		if (err.message.includes('Group validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
