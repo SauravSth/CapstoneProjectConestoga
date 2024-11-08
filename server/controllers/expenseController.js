@@ -4,7 +4,10 @@ import errorHandler from '../helpers/errorHandler.js';
 const expenseController = {
 	getExpense: async (req, res) => {
 		try {
-			const expenses = await Expense.find({}).populate('category user');
+			const { uid } = req.body;
+			const expenses = await Expense.find({ user: uid }).populate(
+				'category_id user_id'
+			);
 
 			res.status(200).json({ expenses });
 		} catch (e) {
@@ -16,7 +19,7 @@ const expenseController = {
 			const id = req.params._id;
 
 			const expense = await Expense.findOne({ _id: id }).populate(
-				'category user'
+				'category_id user_id'
 			);
 
 			res.status(200).json({ expense });
