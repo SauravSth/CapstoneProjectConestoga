@@ -68,6 +68,7 @@ router.delete('/user', userController.deleteUser);
 
 // TEST ROUTES
 router.get('/test', tokenDecoder, userController.testRoute);
+router.get('/testemail', userController.sendemail);
 
 // Auth Routes
 router.post('/login', authController.postUserLogin);

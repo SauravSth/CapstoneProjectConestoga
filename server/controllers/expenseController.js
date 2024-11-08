@@ -6,7 +6,7 @@ const expenseController = {
 		try {
 			const { uid } = req.body;
 			const expenses = await Expense.find({ user: uid }).populate(
-				'category user'
+				'category_id user_id'
 			);
 
 			res.status(200).json({ expenses });
@@ -19,7 +19,7 @@ const expenseController = {
 			const id = req.params._id;
 
 			const expense = await Expense.findOne({ _id: id }).populate(
-				'category user'
+				'category_id user_id'
 			);
 
 			res.status(200).json({ expense });
