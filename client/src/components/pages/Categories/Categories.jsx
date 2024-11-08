@@ -190,7 +190,10 @@ const Categories = () => {
         }
       );
       const savedCategory = await response.json();
-      setData([savedCategory, ...data]);
+
+      setData((prevData) => [savedCategory, ...prevData]);
+
+      // Reset the state for the form fields
       setIsAddingNew(false);
       setNewCategoryName('');
     } catch (error) {

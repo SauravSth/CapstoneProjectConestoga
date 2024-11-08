@@ -10,12 +10,14 @@ const AllExpenses = () => {
   const { user } = useAuthStore();
 
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expenseName, setExpenseName] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
@@ -28,7 +30,6 @@ const AllExpenses = () => {
     setIsModalOpen(true);
   };
 
-  // Inside the AllExpenses component
   const handleFormSubmit = async () => {
     if (!expenseName || !category || !amount) {
       alert('Please fill out all fields');
@@ -78,6 +79,18 @@ const AllExpenses = () => {
     resetFormFields();
   };
 
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    // Filter the expenses based on the search term
+    const filtered = data.filter(
+      (expense) =>
+        expense.title.toLowerCase().includes(value.toLowerCase()) ||
+        expense.category.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,6 +116,7 @@ const AllExpenses = () => {
         }));
 
         setData(formattedData);
+        setFilteredData(formattedData); // Initialize filtered data with all data
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -152,7 +166,9 @@ const AllExpenses = () => {
             <div className="flex items-center space-x-4 max-w-lg">
               <input
                 type="text"
-                placeholder="Search..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                placeholder="Search by title or category"
                 className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
@@ -176,7 +192,7 @@ const AllExpenses = () => {
           ) : (
             <CustomTable
               columns={columns}
-              data={data}
+              data={filteredData} // Use filteredData instead of data
             />
           )}
         </main>
