@@ -12,6 +12,11 @@ const Budget = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Form state for creating a new budget
+  const [budgetTitle, setBudgetTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -21,6 +26,9 @@ const Budget = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setBudgetTitle(''); // Reset the form inputs
+    setAmount('');
+    setDescription('');
   };
 
   const handleBudgetCard = (budgetId) => {
@@ -53,16 +61,16 @@ const Budget = () => {
     };
 
     fetchBudget();
-  }, []);
+  }, [user]);
 
   const handleFormSubmit = async () => {
     try {
       const newBudget = {
-        title: budgetTitle, // Assuming budgetTitle is the state for the title input
-        date: new Date().toISOString().slice(0, 10), // Current date
-        amount: Number(amount), // Assuming amount is the state for the amount input
-        description: description, // Assuming description is the state for description input
+        title: budgetTitle,
+        amount: Number(amount),
+        description: description,
         user_id: user, // User ID from auth store
+        createdAt: new Date(),
       };
 
       console.log('newBudget', newBudget);
@@ -80,15 +88,11 @@ const Budget = () => {
       if (response.ok) {
         setData((prevData) => [...prevData, data.newBudget]); // Add new budget to the data state
         closeModal(); // Close the modal after submission
-        setBudgetTitle(''); // Reset input fields
-        setAmount('');
-        setDescription('');
       } else {
         console.error('Error:', data); // Log error to console
-        // Optionally, display an error message to the user here
       }
     } catch (error) {
-      console.error('Error submitting new budget:', error); // Catch and log fetch errors
+      console.error('Error submitting new budget:', error);
     }
   };
 
@@ -135,28 +139,14 @@ const Budget = () => {
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            // <div className="budget-cards">
-            //   {data.map((budget) => (
-            //     <div
-            //       key={budget._id}
-            //       className="budget-card"
-            //       onClick={() => handleCardClick(budget._id)}
-            //       style={{ cursor: 'pointer' }}
-            //     >
-            //       <h3>{budget.title}</h3>
-            //       <p>Budget: ${budget.upperLimit}</p>
-            //       <p>Remaining: ${budget.lowerLimit}</p>
-            //     </div>
-            //   ))}
-            // </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {data.map((budget, index) => (
+              {data.map((budget) => (
                 <BudgetCard
-                  key={index}
+                  key={budget._id}
                   name={budget.title}
-                  description={budget.user_id}
-                  createdDate={budget.createdDate}
-                  totalAmount={budget.totalAmount}
+                  description={budget.description}
+                  createdDate={budget.createdAt}
+                  totalAmount={budget.amount}
                   onClick={() => handleBudgetCard(budget._id)}
                 />
               ))}
@@ -175,6 +165,8 @@ const Budget = () => {
               <input
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={budgetTitle}
+                onChange={(e) => setBudgetTitle(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -182,6 +174,8 @@ const Budget = () => {
               <input
                 type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -189,6 +183,8 @@ const Budget = () => {
               <textarea
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="3"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
             <div className="flex justify-end">
