@@ -5,12 +5,13 @@ const budgetSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter a title'],
 	},
-	amount: {
+	upperLimit: {
 		type: Number,
 		required: [true, 'Please set an upper limit'],
 	},
-	remainingAmount: {
-		type: Number,
+	lowerLimit: {
+		type: String,
+		required: [true, 'Please set a lower limit'],
 	},
 	user_id: {
 		type: mongoose.Types.ObjectId,

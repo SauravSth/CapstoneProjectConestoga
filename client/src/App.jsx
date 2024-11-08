@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
+import BudgetExpense from './components/pages/Budget/BudgetExpense';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
@@ -24,6 +25,10 @@ function App() {
             <Route
               path="/budget"
               element={<Budget />}
+            />
+            <Route
+              path="/budget/:budgetId"
+              element={<BudgetExpense />}
             />
             <Route
               path="/all-expenses"

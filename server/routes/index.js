@@ -14,7 +14,6 @@ import expenseController from '../controllers/expenseController.js';
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
 import authentication from '../middlewares/authentication.js';
-import tokenDecoder from '../middlewares/tokenDecoder.js';
 
 const router = express.Router();
 
@@ -67,16 +66,14 @@ router.patch('/user', userController.updateUser);
 router.delete('/user', userController.deleteUser);
 
 // TEST ROUTES
-router.get('/test', tokenDecoder, userController.testRoute);
-router.get('/testemail', userController.sendemail);
 
 // Auth Routes
 router.post('/login', authController.postUserLogin);
 router.post(
-	'/signup',
-	sanitize.trimmer,
-	validate.doPasswordsMatch,
-	authController.postUserSignUp
+  '/signup',
+  sanitize.trimmer,
+  validate.doPasswordsMatch,
+  authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 

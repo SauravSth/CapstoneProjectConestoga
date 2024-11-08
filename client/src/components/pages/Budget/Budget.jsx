@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
-import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
+import BudgetCard from './BudgetCard';
+
+import useAuthStore from '../../../store/useAuthStore.js';
 
 const Budget = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const columns = [
-    { field: 'name', headerName: 'Group Name' },
-    { field: 'description', headerName: 'Description' },
-    { field: 'createdDate', headerName: 'Created Date' },
-    { field: 'totalAmount', headerName: 'Total Amount' },
-  ];
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
-  const handleNewGroup = () => {
+  const handleNewBudget = () => {
     setIsModalOpen(true);
   };
 
@@ -24,22 +23,37 @@ const Budget = () => {
     setIsModalOpen(false);
   };
 
-  // useEffect(() => {
-  //   const fetchBudget = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch('http://localhost:3000/api/Budget');
-  //       const groupData = await response.json();
-  //       setData(groupData);
-  //     } catch (error) {
-  //       console.error('Error fetching Budget:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  const handleBudgetCard = (budgetId) => {
+    navigate(`/budget/${budgetId}`);
+  };
 
-  //   fetchBudget();
-  // }, []);
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `http://localhost:3000/api/budget?_id=${user}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        const budgetData = await response.json();
+        console.log('budgetData', budgetData);
+        setData(
+          Array.isArray(budgetData) ? budgetData : budgetData.budgets || []
+        );
+      } catch (error) {
+        console.error('Error fetching Budget:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBudget();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -56,7 +70,7 @@ const Budget = () => {
           <div className="text-5xl font-bold">Budget</div>
           <div className="text-gray-500">Organize your expenses by Budget</div>
 
-          {/* Search, Filter, and New Group */}
+          {/* Search, Filter, and New Budget */}
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -74,34 +88,62 @@ const Budget = () => {
                 backgroundColor: '#80C028',
                 opacity: '0.45',
               }}
-              onClick={handleNewGroup}
+              onClick={handleNewBudget}
             >
-              + New Group
+              + Create Budget
             </button>
           </div>
 
-          {/* Budget Table */}
+          {/* Budget Cards */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
-              columns={columns}
-              data={data}
-            />
+            // <div className="budget-cards">
+            //   {data.map((budget) => (
+            //     <div
+            //       key={budget._id}
+            //       className="budget-card"
+            //       onClick={() => handleCardClick(budget._id)}
+            //       style={{ cursor: 'pointer' }}
+            //     >
+            //       <h3>{budget.title}</h3>
+            //       <p>Budget: ${budget.upperLimit}</p>
+            //       <p>Remaining: ${budget.lowerLimit}</p>
+            //     </div>
+            //   ))}
+            // </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {data.map((budget, index) => (
+                <BudgetCard
+                  key={index}
+                  name={budget.title}
+                  description={budget.user_id}
+                  createdDate={budget.createdDate}
+                  totalAmount={budget.totalAmount}
+                  onClick={() => handleBudgetCard(budget._id)}
+                />
+              ))}
+            </div>
           )}
         </main>
 
-        {/* Custom Modal for Adding New Group */}
         <CustomModal
-          title="Add New Group"
+          title="Create New Budget"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
           <form>
             <div className="mb-4">
-              <label className="block text-gray-700">Group Name</label>
+              <label className="block text-gray-700">Budget Title</label>
               <input
                 type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount</label>
+              <input
+                type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -111,13 +153,6 @@ const Budget = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="3"
               ></textarea>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Initial Amount</label>
-              <input
-                type="number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
             </div>
           </form>
         </CustomModal>
