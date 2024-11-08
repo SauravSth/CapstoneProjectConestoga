@@ -13,7 +13,7 @@ const userController = {
 			service: 'gmail',
 			host: 'smtp.gmail.com',
 			port: 587,
-			secure: false, // true for port 465, false for other ports
+			secure: false, // true for port 465, false for other ports blah
 			auth: {
 				user: process.env.USER,
 				pass: process.env.APP_PASSWORD,
