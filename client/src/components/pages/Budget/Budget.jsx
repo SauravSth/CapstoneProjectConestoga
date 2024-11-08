@@ -68,6 +68,7 @@ const Budget = () => {
       const newBudget = {
         title: budgetTitle,
         amount: Number(amount),
+        remainingAmount: Number(amount),
         description: description,
         user_id: user, // User ID from auth store
         createdAt: new Date(),
@@ -147,6 +148,7 @@ const Budget = () => {
                   description={budget.description}
                   createdDate={budget.createdAt}
                   totalAmount={budget.amount}
+                  remainingAmount={budget.remainingAmount}
                   onClick={() => handleBudgetCard(budget._id)}
                 />
               ))}
