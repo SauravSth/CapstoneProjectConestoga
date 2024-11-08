@@ -4,14 +4,21 @@ import Header from '../../../layouts/Header';
 import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
 
+import useAuthStore from '../../../store/useAuthStore.js';
+
 const AllExpenses = () => {
+  const { user } = useAuthStore();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]); // State for storing category data
+  const [categories, setCategories] = useState([]);
+  const [expenseName, setExpenseName] = useState('');
+  const [category, setCategory] = useState('');
+  const [amount, setAmount] = useState('');
 
   const columns = [
-    { field: 'title', headerName: 'Expense Title' },
+    { field: 'expenseName', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     // { field: 'paidTo', headerName: 'Paid To' },
@@ -28,7 +35,7 @@ const AllExpenses = () => {
 
   const handleFormSubmit = () => {
     const newExpense = {
-      id: data.length + 1, // Sample ID, update based on real data
+      id: data.length + 1,
       expenseName,
       category,
       date: new Date().toISOString().slice(0, 10), // Current date
@@ -43,11 +50,17 @@ const AllExpenses = () => {
   };
 
   useEffect(() => {
-    const fetchExpenses = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         const expenseResponse = await fetch(
-          'http://localhost:3000/api/expenses'
+          `http://localhost:3000/api/expenses?_id=${user}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
         );
         const expenseData = await expenseResponse.json();
         setData(expenseData);
@@ -58,25 +71,23 @@ const AllExpenses = () => {
       }
     };
 
-    fetchExpenses();
+    fetchData();
   }, []);
 
-  // Fetch categories for the dropdown
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/category', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const result = await response.json();
-
-        // Ensure result is an array of categories
-        setCategories(
-          Array.isArray(result.categories) ? result.categories : []
+        const categoryResponse = await fetch(
+          `http://localhost:3000/api/category?_id=${user}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
         );
+        const categoryData = await categoryResponse.json();
+        setCategories(categoryData.categories);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -98,7 +109,6 @@ const AllExpenses = () => {
           <div className="text-5xl font-bold">My Wallet</div>
           <div className="text-gray-500">Keep track of your financial plan</div>
 
-          {/* Search, Filter, and New Expense */}
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -122,7 +132,6 @@ const AllExpenses = () => {
             </button>
           </div>
 
-          {/* Expenses Table */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
@@ -133,17 +142,18 @@ const AllExpenses = () => {
           )}
         </main>
 
-        {/* Custom Modal for Adding New Expense */}
         <CustomModal
           title="Add New Expense"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
-          <form>
+          <form onSubmit={(e) => e.preventDefault()}>
             <div className="mb-4">
               <label className="block text-gray-700">Expense Title</label>
               <input
                 type="text"
+                value={expenseName}
+                onChange={(e) => setExpenseName(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -154,23 +164,16 @@ const AllExpenses = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
-                <option value="">Select Category</option>
-                {categories?.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                  >
-                    {category.name}
-                  </option>
-                ))}
+                {Array.isArray(categories) &&
+                  categories.map((category) => (
+                    <option
+                      key={category.id}
+                      value={category.id}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
               </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Amount</label>
-              <input
-                type="date"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Amount</label>
