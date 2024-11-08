@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
-import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
+import BudgetCard from './BudgetCard';
 
 const Budget = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const columns = [
-    { field: 'name', headerName: 'Group Name' },
-    { field: 'description', headerName: 'Description' },
-    { field: 'createdDate', headerName: 'Created Date' },
-    { field: 'totalAmount', headerName: 'Total Amount' },
-  ];
 
   const handleNewGroup = () => {
     setIsModalOpen(true);
@@ -24,22 +17,25 @@ const Budget = () => {
     setIsModalOpen(false);
   };
 
-  // useEffect(() => {
-  //   const fetchBudget = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch('http://localhost:3000/api/Budget');
-  //       const groupData = await response.json();
-  //       setData(groupData);
-  //     } catch (error) {
-  //       console.error('Error fetching Budget:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:3000/api/budget');
+        const budgetData = await response.json();
+        console.log('budgetData', budgetData);
+        setData(
+          Array.isArray(budgetData) ? budgetData : budgetData.budgets || []
+        );
+      } catch (error) {
+        console.error('Error fetching Budget:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchBudget();
-  // }, []);
+    fetchBudget();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -80,14 +76,35 @@ const Budget = () => {
             </button>
           </div>
 
-          {/* Budget Table */}
+          {/* Budget Cards */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
-              columns={columns}
-              data={data}
-            />
+            // <div className="budget-cards">
+            //   {data.map((budget) => (
+            //     <div
+            //       key={budget._id}
+            //       className="budget-card"
+            //       onClick={() => handleCardClick(budget._id)}
+            //       style={{ cursor: 'pointer' }}
+            //     >
+            //       <h3>{budget.title}</h3>
+            //       <p>Budget: ${budget.upperLimit}</p>
+            //       <p>Remaining: ${budget.lowerLimit}</p>
+            //     </div>
+            //   ))}
+            // </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {data.map((budget, index) => (
+                <BudgetCard
+                  key={index}
+                  name={budget.title}
+                  description={budget.description}
+                  createdDate={budget.createdDate}
+                  totalAmount={budget.totalAmount}
+                />
+              ))}
+            </div>
           )}
         </main>
 
