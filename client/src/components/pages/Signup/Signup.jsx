@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../../assets/img/Logo.png';
 
 const Signup = () => {
@@ -15,6 +16,8 @@ const Signup = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(String(email).toLowerCase());
@@ -30,10 +33,8 @@ const Signup = () => {
     // Sanitize first and last name fields
     const sanitizedFname = sanitizeInput(formData.fname);
     console.log(sanitizedFname);
-    debugger;
     const sanitizedLname = sanitizeInput(formData.lname);
     console.log(sanitizedLname);
-    debugger;
     // Username validation
     if (!formData.username) {
       formErrors.username = 'Username is required';
@@ -139,7 +140,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-24 p-6 bg-white-900 shadow-md rounded-md">
+    <div className="max-w-md mx-auto mt-24 p-6 bg-gray-200 shadow-md rounded-md">
       <form onSubmit={handleSubmit}>
         <img
           src={Logo}
@@ -292,6 +293,17 @@ const Signup = () => {
           <p className="text-red-500 text-sm mt-4">{errors.general}</p>
         )}
       </form>
+      <p className="mt-4 block text-sm text-gray-700">
+        <span className="mt-4 block text-sm text-gray-700">
+          Already With Us?{' '}
+          <Link
+            to="/login"
+            className="text-blue-600 hover:underline"
+          >
+            Login
+          </Link>
+        </span>
+      </p>
     </div>
   );
 };

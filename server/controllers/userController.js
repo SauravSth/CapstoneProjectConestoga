@@ -4,35 +4,9 @@ import User from '../models/userModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
 const userController = {
-<<<<<<< HEAD
-	testRoute: async (req, res) => {
-		res.send(req.user);
-	},
-	getUser: async (req, res) => {
-		try {
-			const users = await User.find({});
-
-			res.status(200).json({ users });
-		} catch (e) {
-			console.log(e);
-		}
-	},
-	getOneUser: async (req, res) => {
-		try {
-			const uid = req.user.uid;
-
-			const user = await User.findOne({ _id: uid });
-
-			res.status(200).json({ user });
-		} catch (e) {
-			console.log(e);
-		}
-	},
-	updateUser: async (req, res) => {
-		try {
-			const { _id, username, firstName, lastName, email, password } =
-				req.body;
-=======
+  testRoute: async (req, res) => {
+    res.send(req.user);
+  },
   getUser: async (req, res) => {
     try {
       const users = await User.find({});
@@ -42,10 +16,20 @@ const userController = {
       console.log(e);
     }
   },
+  getOneUser: async (req, res) => {
+    try {
+      const uid = req.user.uid;
+
+      const user = await User.findOne({ _id: uid });
+
+      res.status(200).json({ user });
+    } catch (e) {
+      console.log(e);
+    }
+  },
   updateUser: async (req, res) => {
     try {
       const { _id, username, firstName, lastName, email, password } = req.body;
->>>>>>> 899c4572cc63d7d25b44b07dd938d8f37a5202dc
 
       const updatedData = await User.findOneAndUpdate(
         { _id },

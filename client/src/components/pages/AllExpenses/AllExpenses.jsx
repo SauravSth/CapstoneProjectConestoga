@@ -18,7 +18,7 @@ const AllExpenses = () => {
   const [amount, setAmount] = useState('');
 
   const columns = [
-    { field: 'expenseName', headerName: 'Expense Title' },
+    { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     // { field: 'paidTo', headerName: 'Paid To' },
@@ -33,20 +33,41 @@ const AllExpenses = () => {
     setIsModalOpen(false);
   };
 
-  const handleFormSubmit = () => {
-    const newExpense = {
-      id: data.length + 1,
-      expenseName,
-      category,
-      date: new Date().toISOString().slice(0, 10), // Current date
-      amount,
-    };
+  const handleFormSubmit = async () => {
+    try {
+      const newExpense = {
+        title: expenseName,
+        date: new Date().toISOString().slice(0, 10), // Current date
+        amount: Number(amount),
+        category_id: category,
+        user_id: user,
+        group_id: null,
+      };
+      console.log('data', newExpense);
+      debugger;
+      const response = await fetch('http://localhost:3000/api/expense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newExpense),
+      });
 
-    setData((prevData) => [...prevData, newExpense]);
-    setIsModalOpen(false); // Close modal after submission
-    setExpenseName(''); // Reset input fields
-    setCategory('');
-    setAmount('');
+      const data = await response.json();
+
+      if (response.ok) {
+        setData((prevData) => [...prevData, data.newExpense]);
+        closeModal();
+        setExpenseName(''); // Reset input fields
+        setCategory('');
+        setAmount('');
+      } else {
+        console.error('Error:', data);
+        // You can also display an error message to the user here
+      }
+    } catch (error) {
+      console.error('Error submitting new expense:', error);
+    }
   };
 
   useEffect(() => {
@@ -54,7 +75,7 @@ const AllExpenses = () => {
       try {
         setLoading(true);
         const expenseResponse = await fetch(
-          `http://localhost:3000/api/expenses?_id=${user}`,
+          `http://localhost:3000/api/expense?_id=${user}`,
           {
             method: 'GET',
             headers: {
@@ -63,6 +84,7 @@ const AllExpenses = () => {
           }
         );
         const expenseData = await expenseResponse.json();
+        console.log('Expense Data', expenseData);
         setData(expenseData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -167,8 +189,8 @@ const AllExpenses = () => {
                 {Array.isArray(categories) &&
                   categories.map((category) => (
                     <option
-                      key={category.id}
-                      value={category.id}
+                      key={category._id}
+                      value={category._id}
                     >
                       {category.name}
                     </option>

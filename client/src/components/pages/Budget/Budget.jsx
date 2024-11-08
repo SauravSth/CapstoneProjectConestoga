@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import CustomModal from '../../modal/CustomModal';
 import BudgetCard from './BudgetCard';
+
+import useAuthStore from '../../../store/useAuthStore.js';
 
 const Budget = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleNewGroup = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleNewBudget = () => {
     setIsModalOpen(true);
   };
 
@@ -17,11 +23,23 @@ const Budget = () => {
     setIsModalOpen(false);
   };
 
+  const handleBudgetCard = (budgetId) => {
+    navigate(`/budget/${budgetId}`);
+  };
+
   useEffect(() => {
     const fetchBudget = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/api/budget');
+        const response = await fetch(
+          `http://localhost:3000/api/budget?_id=${user}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         const budgetData = await response.json();
         console.log('budgetData', budgetData);
         setData(
@@ -52,7 +70,7 @@ const Budget = () => {
           <div className="text-5xl font-bold">Budget</div>
           <div className="text-gray-500">Organize your expenses by Budget</div>
 
-          {/* Search, Filter, and New Group */}
+          {/* Search, Filter, and New Budget */}
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -70,9 +88,9 @@ const Budget = () => {
                 backgroundColor: '#80C028',
                 opacity: '0.45',
               }}
-              onClick={handleNewGroup}
+              onClick={handleNewBudget}
             >
-              + New Group
+              + Create Budget
             </button>
           </div>
 
@@ -99,9 +117,10 @@ const Budget = () => {
                 <BudgetCard
                   key={index}
                   name={budget.title}
-                  description={budget.description}
+                  description={budget.user_id}
                   createdDate={budget.createdDate}
                   totalAmount={budget.totalAmount}
+                  onClick={() => handleBudgetCard(budget._id)}
                 />
               ))}
             </div>
@@ -109,15 +128,22 @@ const Budget = () => {
         </main>
 
         <CustomModal
-          title="Add New Group"
+          title="Create New Budget"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
           <form>
             <div className="mb-4">
-              <label className="block text-gray-700">Group Name</label>
+              <label className="block text-gray-700">Budget Title</label>
               <input
                 type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount</label>
+              <input
+                type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -127,13 +153,6 @@ const Budget = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="3"
               ></textarea>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Initial Amount</label>
-              <input
-                type="number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
             </div>
           </form>
         </CustomModal>

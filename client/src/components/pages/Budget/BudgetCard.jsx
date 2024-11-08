@@ -1,16 +1,19 @@
-import React from 'react';
-
-const BudgetCard = ({ name, description, createdDate, totalAmount }) => {
+const BudgetCard = ({
+  name,
+  description,
+  createdDate,
+  totalAmount,
+  onClick,
+}) => {
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
-      <p className="text-gray-600 mb-2">{description}</p>
-      <div className="text-gray-500 text-sm">
-        <span>Created Date: {new Date(createdDate).toLocaleDateString()}</span>
-      </div>
-      <div className="text-gray-900 font-bold mt-4">
-        Total Amount: ${totalAmount}
-      </div>
+    <div
+      className="budget-card p-4 bg-white rounded-lg shadow-lg cursor-pointer"
+      onClick={onClick}
+    >
+      <h3 className="font-bold">{name}</h3>
+      <p>{description}</p>
+      <p>Created on: {new Date(createdDate).toLocaleDateString()}</p>
+      <p>Total Amount: ${totalAmount}</p>
     </div>
   );
 };
