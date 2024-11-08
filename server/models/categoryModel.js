@@ -3,7 +3,16 @@ import mongoose from 'mongoose';
 const categorySchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
+		required: [true, 'Please enter the category name'],
+		unique: true,
+	},
+	isActive: {
+		type: Boolean,
+		default: true,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
 	},
 });
 

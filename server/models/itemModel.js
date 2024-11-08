@@ -3,15 +3,28 @@ import mongoose from 'mongoose';
 const itemSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
+		required: [true, 'Please enter the item name'],
 	},
 	quantity: {
 		type: Number,
-		required: true,
+		required: [true, 'Please enter the quantity of the item'],
+		default: 1,
 	},
-	category: {
+	price: {
+		type: String,
+		required: [true, 'Please enter the price of the item'],
+	},
+	category_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
+	},
+	isActive: {
+		type: Boolean,
+		default: true,
 	},
 });
 
