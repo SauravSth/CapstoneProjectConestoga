@@ -55,6 +55,43 @@ const Budget = () => {
     fetchBudget();
   }, []);
 
+  const handleFormSubmit = async () => {
+    try {
+      const newBudget = {
+        title: budgetTitle, // Assuming budgetTitle is the state for the title input
+        date: new Date().toISOString().slice(0, 10), // Current date
+        amount: Number(amount), // Assuming amount is the state for the amount input
+        description: description, // Assuming description is the state for description input
+        user_id: user, // User ID from auth store
+      };
+
+      console.log('newBudget', newBudget);
+
+      const response = await fetch('http://localhost:3000/api/budget', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newBudget),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setData((prevData) => [...prevData, data.newBudget]); // Add new budget to the data state
+        closeModal(); // Close the modal after submission
+        setBudgetTitle(''); // Reset input fields
+        setAmount('');
+        setDescription('');
+      } else {
+        console.error('Error:', data); // Log error to console
+        // Optionally, display an error message to the user here
+      }
+    } catch (error) {
+      console.error('Error submitting new budget:', error); // Catch and log fetch errors
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -153,6 +190,22 @@ const Budget = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="3"
               ></textarea>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                onClick={handleFormSubmit}
+              >
+                Confirm
+              </button>
             </div>
           </form>
         </CustomModal>

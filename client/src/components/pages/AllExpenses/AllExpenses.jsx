@@ -21,7 +21,6 @@ const AllExpenses = () => {
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
-    // { field: 'paidTo', headerName: 'Paid To' },
     { field: 'amount', headerName: 'Amount' },
   ];
 
@@ -29,22 +28,22 @@ const AllExpenses = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
+  // Inside the AllExpenses component
   const handleFormSubmit = async () => {
+    if (!expenseName || !category || !amount) {
+      alert('Please fill out all fields');
+      return;
+    }
     try {
       const newExpense = {
         title: expenseName,
-        date: new Date().toISOString().slice(0, 10), // Current date
+        date: new Date().toISOString().slice(0, 10),
         amount: Number(amount),
         category_id: category,
         user_id: user,
         group_id: null,
       };
-      console.log('data', newExpense);
-      debugger;
+
       const response = await fetch('http://localhost:3000/api/expense', {
         method: 'POST',
         headers: {
@@ -58,16 +57,25 @@ const AllExpenses = () => {
       if (response.ok) {
         setData((prevData) => [...prevData, data.newExpense]);
         closeModal();
-        setExpenseName(''); // Reset input fields
-        setCategory('');
-        setAmount('');
+        resetFormFields();
       } else {
+        alert('Error submitting expense');
         console.error('Error:', data);
-        // You can also display an error message to the user here
       }
     } catch (error) {
       console.error('Error submitting new expense:', error);
     }
+  };
+
+  const resetFormFields = () => {
+    setExpenseName('');
+    setCategory('');
+    setAmount('');
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    resetFormFields();
   };
 
   useEffect(() => {
@@ -85,7 +93,16 @@ const AllExpenses = () => {
         );
         const expenseData = await expenseResponse.json();
         console.log('Expense Data', expenseData);
-        setData(expenseData);
+
+        // Map over the expenses to flatten the structure
+        const formattedData = expenseData.expenses.map((expense) => ({
+          ...expense,
+          category: expense.category_id?.name || 'Unknown Category', // Access category name
+          date: new Date(expense.date).toLocaleDateString(), // Format date
+          user: expense.user_id?.username || 'Unknown User', // Optional: Include username if needed
+        }));
+
+        setData(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -94,7 +111,7 @@ const AllExpenses = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const fetchCategories = async () => {
