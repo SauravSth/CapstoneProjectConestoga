@@ -5,7 +5,11 @@ import CustomTable from '../../table/CustomTable';
 import { GoDotFill } from 'react-icons/go';
 import { FaEdit, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
 
+import useAuthStore from '../../../store/useAuthStore.js';
+
 const Categories = () => {
+  const { user } = useAuthStore();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -78,12 +82,15 @@ const Categories = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/api/category', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `http://localhost:3000/api/category?_id=${user}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         const result = await response.json();
         setData(Array.isArray(result.categories) ? result.categories : []);
       } catch (error) {
@@ -168,17 +175,20 @@ const Categories = () => {
 
     const newCategory = {
       name: newCategoryName,
-      status: false, // default to inactive
+      status: true, // default to active
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/category', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCategory),
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/category?_id=${user}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newCategory),
+        }
+      );
       const savedCategory = await response.json();
       setData([savedCategory, ...data]);
       setIsAddingNew(false);
