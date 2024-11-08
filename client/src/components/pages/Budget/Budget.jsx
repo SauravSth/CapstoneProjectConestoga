@@ -108,7 +108,6 @@ const Budget = () => {
           )}
         </main>
 
-        {/* Custom Modal for Adding New Group */}
         <CustomModal
           title="Add New Group"
           isOpen={isModalOpen}
