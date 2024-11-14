@@ -9,11 +9,14 @@ import groupController from '../controllers/groupController.js';
 import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
 import expenseController from '../controllers/expenseController.js';
+import transactionController from '../controllers/transactionController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
+import tokenDecoder from '../middlewares/tokenDecoder.js';
 import authentication from '../middlewares/authentication.js';
+import user from '../models/userModel.js';
 
 const router = express.Router();
 
@@ -59,6 +62,13 @@ router.post('/expense', expenseController.postExpense);
 router.patch('/expense', expenseController.updateExpense);
 router.delete('/expense', expenseController.deleteExpense);
 
+// Transaction Routes
+router.get('/transaction', transactionController.getTransaction);
+router.get('/transaction/:_id', transactionController.getOneTransaction);
+router.post('/transaction', transactionController.postTransaction);
+router.patch('/transaction', transactionController.updateTransaction);
+router.delete('/transaction', transactionController.deleteTransaction);
+
 // Admin Routes
 router.get('/user', userController.getUser);
 router.get('/userDetail', userController.getOneUser);
@@ -66,14 +76,15 @@ router.patch('/user', userController.updateUser);
 router.delete('/user', userController.deleteUser);
 
 // TEST ROUTES
+router.get('/test', tokenDecoder, userController.testRoute);
 
 // Auth Routes
 router.post('/login', authController.postUserLogin);
 router.post(
-  '/signup',
-  sanitize.trimmer,
-  validate.doPasswordsMatch,
-  authController.postUserSignUp
+	'/signup',
+	sanitize.trimmer,
+	validate.doPasswordsMatch,
+	authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 

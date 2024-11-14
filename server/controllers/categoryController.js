@@ -6,7 +6,9 @@ import errorHandler from '../helpers/errorHandler.js';
 const categoryController = {
 	getCategory: async (req, res) => {
 		try {
-			const categories = await Category.find({});
+			const uid = req.params._id;
+			console.log('here' + uid);
+			const categories = await Category.find({ user_id: uid });
 
 			res.status(200).json({ categories });
 		} catch (e) {

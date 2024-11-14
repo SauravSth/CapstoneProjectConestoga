@@ -115,11 +115,30 @@ const errorHandler = {
 			date: '',
 			amount: '',
 		};
+		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Expense already exists';
 			return { success: false, errors };
 		}
 		if (err.message.includes('Expense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleTransactionErrors: (err) => {
+		let errors = {
+			title: '',
+			paidAmount: '',
+			date: '',
+		};
+		console.log(err);
+		if (err.code === 11000) {
+			errors.name = 'Transaction already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Transaction validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
