@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
+import People from './components/pages/People/People';
+import Group from './components/pages/Group/Group';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
@@ -33,6 +35,14 @@ function App() {
             <Route
               path="/all-expenses"
               element={<AllExpenses />}
+            />
+            <Route
+              path="/people"
+              element={<People />}
+            />
+            <Route
+              path="/groups"
+              element={<Group />}
             />
             <Route
               path="/categories"
