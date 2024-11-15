@@ -1,16 +1,8 @@
 import React from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import getInitials from '../../helpers/getInitials';
 
 const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
-
-// Helper function to get initials from the first and last name
-const getInitials = (name) => {
-  const nameParts = name.split(' ');
-  const firstInitial = nameParts[0]?.[0] || '';
-  const lastInitial =
-    nameParts.length > 1 ? nameParts[nameParts.length - 1][0] : '';
-  return `${firstInitial}${lastInitial}`.toUpperCase();
-};
 
 const BillCard = ({
   name = 'T&T shopping',

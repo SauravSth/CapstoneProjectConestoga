@@ -2,6 +2,7 @@ import React from 'react';
 import { FaEdit, FaTrash, FaMoneyBillWave } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { IoPerson } from 'react-icons/io5';
+import getInitials from '../../helpers/getInitials';
 
 const PersonCard = ({
   name,
@@ -17,12 +18,10 @@ const PersonCard = ({
     <div className="flex flex-col bg-white shadow-md rounded-lg p-6 space-y-4 w-full border-l-4 border-lime-500 hover:shadow-lg transition-shadow duration-200 ease-in-out">
       {/* Header with name and status */}
       <div className="flex items-center justify-between">
-        <div className="bg-gray-200 rounded-full">
-          <IoPerson
-            size={64}
-            className="m-2"
-          />
-          {/* <img src={'sda'} /> */}
+        <div className="flex items-center space-x-2 mt-4">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gray-300 text-gray-800 font-semibold text-2xl border-2 border-white shadow-sm">
+            {getInitials(name)}
+          </div>
         </div>
         <h2 className="text-2xl font-semibold text-gray-800">{name}</h2>
         <GoDotFill
