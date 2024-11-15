@@ -1,12 +1,12 @@
 import React from 'react';
-import Navbar from '../../../layouts/Navbar';
-import Header from '../../../layouts/Header';
+import Navbar from '../../../layouts/Navbar.jsx';
+import Header from '../../../layouts/Header.jsx';
 import { GoDotFill } from 'react-icons/go';
 import { FaEdit, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
-import CustomTable from '../../table/CustomTable';
+import CustomTable from '../../table/CustomTable.jsx';
 import useAuthStore from '../../../store/useAuthStore.js';
 
-const Group = () => {
+const SavingGroup = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow-lg">
@@ -68,4 +68,4 @@ const Group = () => {
   );
 };
 
-export default Group;
+export default SavingGroup;

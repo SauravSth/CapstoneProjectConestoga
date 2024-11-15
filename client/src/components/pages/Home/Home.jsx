@@ -6,7 +6,6 @@ import DashboardCard from '../../ui/DashboardCard';
 import { PiSirenFill } from 'react-icons/pi';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
 import { FaUniversity } from 'react-icons/fa';
-import BillSplit from '../../BillSplit/BillSplit';
 
 const Home = () => {
   return (
@@ -40,8 +39,6 @@ const Home = () => {
               cardTitle="Education"
             />
           </section>
-
-          <BillSplit />
         </main>
       </div>
     </div>
