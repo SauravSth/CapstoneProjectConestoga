@@ -53,7 +53,7 @@ const BillCard = ({
         {members.map((member, index) => (
           <div
             key={index}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-800 font-semibold text-sm border-2 border-white shadow-sm"
+            className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 text-gray-800 font-semibold text-base border-2 border-white shadow-sm"
           >
             {getInitials(member.name)}
           </div>
@@ -121,7 +121,7 @@ const BillCard = ({
         </button>
         <button
           onClick={onDelete}
-          className="flex items-center space-x-1 bg-gray-100 text-red-500 hover:text-red-700 focus:outline-none"
+          className="flex items-center space-x-1 bg-gray-200 text-gray-500 hover:text-gray-700 focus:outline-none"
           aria-label="Delete"
         >
           <FaTrash />
