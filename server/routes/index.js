@@ -16,7 +16,6 @@ import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
 import tokenDecoder from '../middlewares/tokenDecoder.js';
 import authentication from '../middlewares/authentication.js';
-import user from '../models/userModel.js';
 
 const router = express.Router();
 
@@ -87,5 +86,6 @@ router.post(
 	authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
+router.get('/verify/:verificationCode', authController.verifyUser);
 
 export default router;

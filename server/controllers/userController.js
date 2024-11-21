@@ -8,39 +8,6 @@ const userController = {
 	testRoute: async (req, res) => {
 		res.send(req.user);
 	},
-	sendemail: async (req, res) => {
-		const transporter = nodemailer.createTransport({
-			service: 'gmail',
-			host: 'smtp.gmail.com',
-			port: 587,
-			secure: false, // true for port 465, false for other ports blah
-			auth: {
-				user: process.env.USER,
-				pass: process.env.APP_PASSWORD,
-			},
-		});
-
-		const mailOptions = await transporter.sendMail({
-			from: {
-				name: 'PerCent Team',
-				address: process.env.USER,
-			},
-			to: 'piyush.mdhr@gmail.com',
-			subject: 'Oe MongoURL change garis?',
-			text: 'Oe MongoURL change garis?',
-			html: '<h1>Oe MongoURL change garis?</h1>',
-		});
-		const sendMail = async (transporter, mailOptions) => {
-			try {
-				await transporter.sendMail(mailOptions);
-				console.log('Mail Sent');
-			} catch (e) {
-				console.log(e);
-			}
-		};
-
-		sendMail(transporter, mailOptions);
-	},
 	getUser: async (req, res) => {
 		try {
 			const users = await User.find({});

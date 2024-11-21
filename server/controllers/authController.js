@@ -6,6 +6,10 @@ import User from '../models/userModel.js';
 // Controller Imports
 import errorHandler from '../helpers/errorHandler.js';
 
+// Helper Imports
+import sendMail from '../helpers/mailHelper.js';
+import verificationCodeGenerator from '../helpers/verificationCodeGenerator.js';
+
 const MAX_AGE = 3 * 24 * 60 * 60;
 
 const createToken = (id, userType) => {
@@ -38,14 +42,16 @@ const authController = {
 	postUserSignUp: async (req, res) => {
 		try {
 			const { username, firstName, lastName, email, password } = req.body;
+			const verificationCode = await verificationCodeGenerator();
 			let newUser = await User.create({
 				username,
 				firstName,
 				lastName,
 				email,
 				password,
+				verificationCode,
 			});
-
+			sendMail(email, verificationCode);
 			res.status(200).json({
 				success: true,
 				message: 'User created successfully.',
@@ -59,6 +65,22 @@ const authController = {
 	getUserLogout: (req, res) => {
 		res.cookie('jwt', '', { maxAge: 1 });
 		res.status(200).json({ success: true, message: 'Logged Out' });
+	},
+	verifyUser: async (req, res) => {
+		const verificationCode = req.params.verificationCode;
+
+		const user = await User.findOne({ verificationCode });
+
+		if (user) {
+			user.isVerified = true;
+			user.isActive = true;
+			await user.save();
+		} else {
+			res.status(400).json({
+				success: false,
+				message: 'Could not find user',
+			});
+		}
 	},
 };
 
