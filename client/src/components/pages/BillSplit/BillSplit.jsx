@@ -7,9 +7,9 @@ import CustomModal from '../../modal/CustomModal';
 
 const BillSplit = () => {
   const currentUser = {
-    name: 'Your Name',
-    email: 'yourname@example.com',
-    amountOwned: 200,
+    name: 'Piyush',
+    email: 'piyush@mdhr.com',
+    amountOwned: 0,
   };
 
   const [bills, setBills] = useState([

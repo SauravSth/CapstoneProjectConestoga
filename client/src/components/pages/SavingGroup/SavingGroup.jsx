@@ -17,10 +17,10 @@ const SavingGroup = () => {
         <Header title="Groups" />
 
         <main className="p-6 space-y-6">
-          {/* <div className="text-5xl font-bold">My Wallet</div> */}
-          {/* <div className="text-gray-500">Keep track of your financial plan</div> */}
+          <div className="text-5xl font-bold">Saving Groups</div>
+          <div className="text-gray-500">Save for the future</div>
           <button
-            onClick={handleAddNewGroup}
+            // onClick={handleAddNewGroup}
             className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
             style={{
               backgroundColor: '#80C028',
@@ -53,15 +53,6 @@ const SavingGroup = () => {
               </button>
             </div>
           )} */}
-
-          {loading ? (
-            <div className="text-center text-gray-500">Loading...</div>
-          ) : (
-            <CustomTable
-              columns={columns}
-              data={data}
-            />
-          )}
         </main>
       </div>
     </div>

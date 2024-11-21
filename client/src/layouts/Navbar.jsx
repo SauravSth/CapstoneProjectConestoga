@@ -99,18 +99,18 @@ const Navbar = () => {
               </li>
               <li
                 className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-                  activePage === 'People'
+                  activePage === 'Members'
                     ? 'bg-green-700'
                     : 'hover:bg-green-700'
                 }`}
               >
                 <Link
-                  to="/people"
-                  onClick={() => setActivePage('People')}
+                  to="/members"
+                  onClick={() => setActivePage('Members')}
                   className="flex items-center space-x-4"
                 >
                   <IoPeopleSharp size={20} />
-                  <span>People</span>
+                  <span>Members</span>
                 </Link>
               </li>
             </>

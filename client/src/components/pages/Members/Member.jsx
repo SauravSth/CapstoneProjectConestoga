@@ -5,9 +5,9 @@ import Header from '../../../layouts/Header';
 import PersonCard from '../../ui/PersonCard';
 import { FaPlus } from 'react-icons/fa';
 import CustomModal from '../../modal/CustomModal';
-const People = () => {
+const Member = () => {
   const navigate = useNavigate();
-  const [people, setPeople] = useState([
+  const [member, setMember] = useState([
     {
       id: 1,
       name: 'John Doe',
@@ -33,8 +33,8 @@ const People = () => {
     console.log(`Sending invite to ${newPerson.email}...`);
 
     // Add the new person to the list
-    setPeople((prevPeople) => [
-      ...prevPeople,
+    setMember((prevMember) => [
+      ...prevMember,
       {
         id: Date.now(),
         name: newPerson.name,
@@ -60,7 +60,7 @@ const People = () => {
       </aside>
 
       <div className="flex flex-col flex-grow">
-        <Header title="People" />
+        <Header title="Members" />
 
         <main className="p-6 space-y-6">
           <div className="flex items-center space-x-4 max-w-lg">
@@ -138,7 +138,7 @@ const People = () => {
           </CustomModal>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-            {people.map((person) => (
+            {member.map((person) => (
               <PersonCard
                 key={person.id}
                 name={person.name}
@@ -146,7 +146,7 @@ const People = () => {
                 contact={person.contact}
                 onEdit={() => console.log(`Editing ${person.id}`)}
                 onDelete={() =>
-                  setPeople((prev) => prev.filter((p) => p.id !== person.id))
+                  setMember((prev) => prev.filter((p) => p.id !== person.id))
                 }
               />
             ))}
@@ -157,4 +157,4 @@ const People = () => {
   );
 };
 
-export default People;
+export default Member;

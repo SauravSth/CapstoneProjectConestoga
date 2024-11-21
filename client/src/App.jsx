@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
-import People from './components/pages/People/People';
+import Member from './components/pages/Members/Member';
 import Group from './components/pages/SavingGroup/SavingGroup';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import BillSplit from './components/pages/BillSplit/BillSplit';
@@ -42,8 +42,8 @@ function App() {
               element={<BillSplit />}
             />
             <Route
-              path="/people"
-              element={<People />}
+              path="/members"
+              element={<Member />}
             />
             <Route
               path="/groups"
