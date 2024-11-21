@@ -4,7 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
+import Member from './components/pages/Members/Member';
+import Group from './components/pages/SavingGroup/SavingGroup';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
+import BillSplit from './components/pages/BillSplit/BillSplit';
 import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
 import Login from './components/pages/Login/Login';
@@ -33,6 +36,18 @@ function App() {
             <Route
               path="/all-expenses"
               element={<AllExpenses />}
+            />
+            <Route
+              path="/bill-split"
+              element={<BillSplit />}
+            />
+            <Route
+              path="/members"
+              element={<Member />}
+            />
+            <Route
+              path="/groups"
+              element={<Group />}
             />
             <Route
               path="/categories"

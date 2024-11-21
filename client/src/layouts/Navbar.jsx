@@ -1,18 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 import useNavbarStore from '../store/useNavbarStore';
+import useViewModeStore from '../store/useViewModeStore';
 import Logo from '../assets/img/Logo.png';
+import { IoPeopleSharp } from 'react-icons/io5';
+import { MdGroups } from 'react-icons/md';
 import {
   TbLayoutDashboard,
   TbReceiptDollar,
   TbSettings,
   TbLogout,
+  TbReceiptTax,
 } from 'react-icons/tb';
 import { FaBoxArchive, FaChartSimple } from 'react-icons/fa6';
-import {} from 'react-icons/tb';
 
 const Navbar = () => {
   const { activePage, setActivePage } = useNavbarStore();
+  const { viewMode } = useViewModeStore(); // Access viewMode from useViewModeStore
 
   return (
     <div className="flex flex-col h-screen w-64 bg-green-900 text-white py-10">
@@ -58,20 +62,72 @@ const Navbar = () => {
             </Link>
           </li>
 
+          {viewMode === 'Personal' ? (
+            <li
+              className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
+                activePage === 'All Expenses'
+                  ? 'bg-green-700'
+                  : 'hover:bg-green-700'
+              }`}
+            >
+              <Link
+                to="/all-expenses"
+                onClick={() => setActivePage('All Expenses')}
+                className="flex items-center space-x-4"
+              >
+                <FaChartSimple size={20} />
+                <span>All Expenses</span>
+              </Link>
+            </li>
+          ) : (
+            <>
+              <li
+                className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
+                  activePage === 'Bill Spilt'
+                    ? 'bg-green-700'
+                    : 'hover:bg-green-700'
+                }`}
+              >
+                <Link
+                  to="/bill-split"
+                  onClick={() => setActivePage('Bill Split')}
+                  className="flex items-center space-x-4"
+                >
+                  <TbReceiptTax size={20} />
+                  <span>Bill Split</span>
+                </Link>
+              </li>
+              <li
+                className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
+                  activePage === 'Members'
+                    ? 'bg-green-700'
+                    : 'hover:bg-green-700'
+                }`}
+              >
+                <Link
+                  to="/members"
+                  onClick={() => setActivePage('Members')}
+                  className="flex items-center space-x-4"
+                >
+                  <IoPeopleSharp size={20} />
+                  <span>Members</span>
+                </Link>
+              </li>
+            </>
+          )}
+
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-              activePage === 'All Expenses'
-                ? 'bg-green-700'
-                : 'hover:bg-green-700'
+              activePage === 'Groups' ? 'bg-green-700' : 'hover:bg-green-700'
             }`}
           >
             <Link
-              to="/all-expenses"
-              onClick={() => setActivePage('All Expenses')}
+              to="/groups"
+              onClick={() => setActivePage('Groups')}
               className="flex items-center space-x-4"
             >
-              <FaChartSimple size={20} />
-              <span>All Expenses</span>
+              <MdGroups size={20} />
+              <span>Saving Groups</span>
             </Link>
           </li>
 
