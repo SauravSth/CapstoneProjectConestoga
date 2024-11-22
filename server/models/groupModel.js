@@ -5,10 +5,12 @@ const groupSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please provide a group name'],
 	},
-	members: {
-		type: Array,
-		default: [],
-	},
+	members: [
+		{
+			user_id: mongoose.Types.ObjectId,
+			split: Number,
+		},
+	],
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',

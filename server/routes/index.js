@@ -10,6 +10,7 @@ import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
 import expenseController from '../controllers/expenseController.js';
 import transactionController from '../controllers/transactionController.js';
+import goalController from '../controllers/goalController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
