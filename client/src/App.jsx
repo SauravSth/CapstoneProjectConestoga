@@ -5,7 +5,7 @@ import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
 import Member from './components/pages/Members/Member';
-import Group from './components/pages/SavingGroup/SavingGroup';
+import Goals from './components/pages/Goals/Goals';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import BillSplit from './components/pages/BillSplit/BillSplit';
 import Categories from './components/pages/Categories/Categories';
@@ -46,8 +46,8 @@ function App() {
               element={<Member />}
             />
             <Route
-              path="/groups"
-              element={<Group />}
+              path="/goals"
+              element={<Goals />}
             />
             <Route
               path="/categories"

@@ -4,13 +4,13 @@ import useNavbarStore from '../store/useNavbarStore';
 import useViewModeStore from '../store/useViewModeStore';
 import Logo from '../assets/img/Logo.png';
 import { IoPeopleSharp } from 'react-icons/io5';
-import { MdGroups } from 'react-icons/md';
 import {
   TbLayoutDashboard,
   TbReceiptDollar,
   TbSettings,
   TbLogout,
   TbReceiptTax,
+  TbTargetArrow,
 } from 'react-icons/tb';
 import { FaBoxArchive, FaChartSimple } from 'react-icons/fa6';
 
@@ -122,12 +122,12 @@ const Navbar = () => {
             }`}
           >
             <Link
-              to="/groups"
-              onClick={() => setActivePage('Groups')}
+              to="/goals"
+              onClick={() => setActivePage('Goals')}
               className="flex items-center space-x-4"
             >
-              <MdGroups size={20} />
-              <span>Saving Groups</span>
+              <TbTargetArrow size={20} />
+              <span>Goals</span>
             </Link>
           </li>
 
