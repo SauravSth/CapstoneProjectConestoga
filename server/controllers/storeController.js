@@ -26,11 +26,9 @@ const storeController = {
 	},
 	postStore: async (req, res) => {
 		try {
-			const { name, address, postalCode } = req.body;
+			const { name } = req.body;
 			let newStore = await Store.create({
 				name,
-				// address,
-				// postalCode,
 			});
 
 			res.status(200).json({

@@ -14,6 +14,10 @@ const itemSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter the price of the item'],
 	},
+	user_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
+	},
 	category_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',

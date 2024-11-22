@@ -1,4 +1,4 @@
-import Expense from '../models/expenseModel.js';
+import GroupExpense from '../models/groupExpenseModel.js';
 import Budget from '../models/budgetModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
@@ -7,10 +7,6 @@ const editBudgetAmount = async (amount) => {
 	let remainingBudget = budgetAmount - amount;
 	if (remainingBudget > 0) {
 		await Budget.save({ remainingAmount: remainingBudget });
-		res.status(200).json({
-			success: true,
-			message: 'Added successfully to your budget',
-		});
 	} else {
 		res.status(400).json({
 			success: false,
@@ -19,32 +15,15 @@ const editBudgetAmount = async (amount) => {
 	}
 };
 
-const editGoalAmount = async (amount) => {
-	let goalAmount = await Goal.findOne({ goal_id }).select('amount');
-	let totalSaved = goalAmount + amount;
-	if (totalSaved <= goalAmount) {
-		await Budget.save({ amount: totalSaved });
-		res.status(200).json({
-			success: true,
-			message: 'Added successfully to your Goal',
-		});
-	} else {
-		res.status(400).json({
-			success: false,
-			message: 'You have saved up to your set limit',
-		});
-	}
-};
-
-const expenseController = {
+const groupExpenseController = {
 	getExpense: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const expenses = await Expense.find({ user_id: uid }).populate(
-				'category_id user_id paid_by budget_id group_id'
-			);
+			const groupExpenses = await GroupExpense.find({
+				user_id: uid,
+			}).populate('category_id user_id paid_by budget_id group_id');
 
-			res.status(200).json({ expenses });
+			res.status(200).json({ groupExpenses });
 		} catch (e) {
 			console.log(e);
 		}
@@ -53,11 +32,11 @@ const expenseController = {
 		try {
 			const id = req.params._id;
 
-			const expense = await Expense.findOne({ _id: id }).populate(
-				'category_id user_id paid_by budget_id group_id'
-			);
+			const groupExpense = await GroupExpense.findOne({
+				_id: id,
+			}).populate('category_id user_id paid_by budget_id group_id');
 
-			res.status(200).json({ expense });
+			res.status(200).json({ groupExpense });
 		} catch (e) {
 			console.log(e);
 		}
@@ -74,7 +53,6 @@ const expenseController = {
 				user_id,
 				group_id,
 				budget_id,
-				goal_id,
 			} = req.body;
 
 			paid_by = !group_id ? user_id : paid_by;
@@ -82,11 +60,8 @@ const expenseController = {
 			if (budget_id) {
 				editBudgetAmount(amount);
 			}
-			if (goal_id) {
-				editGoalAmount(amount);
-			}
 
-			let newExpense = await Expense.create({
+			let newExpense = await GroupExpense.create({
 				title,
 				date,
 				amount,
@@ -96,12 +71,11 @@ const expenseController = {
 				user_id,
 				group_id,
 				budget_id,
-				goal_id,
 			});
 
 			res.status(200).json({
 				success: true,
-				message: 'Expense added successfully.',
+				message: 'GroupExpense added successfully.',
 				newExpense,
 			});
 		} catch (e) {
@@ -122,7 +96,6 @@ const expenseController = {
 				user_id,
 				group_id,
 				budget_id,
-				goal_id,
 			} = req.body;
 
 			paid_by = !group_id ? user_id : paid_by;
@@ -130,11 +103,8 @@ const expenseController = {
 			if (budget_id) {
 				editBudgetAmount(amount);
 			}
-			if (goal_id) {
-				editGoalAmount(amount);
-			}
 
-			const updatedData = await Expense.findOneAndUpdate(
+			const updatedData = await GroupExpense.findOneAndUpdate(
 				{ _id },
 				{
 					$set: {
@@ -147,7 +117,6 @@ const expenseController = {
 						user_id,
 						group_id,
 						budget_id,
-						goal_id,
 					},
 				},
 				{ new: true }
@@ -155,7 +124,7 @@ const expenseController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'Expense Updated',
+				message: 'GroupExpense Updated',
 				updatedData,
 			});
 		} catch (e) {
@@ -167,7 +136,7 @@ const expenseController = {
 		try {
 			const { _id } = req.body;
 
-			const deletedData = await Expense.findOneAndUpdate(
+			const deletedData = await GroupExpense.findOneAndUpdate(
 				{ _id },
 				{ $set: { isActive: false } },
 				{ new: true }
@@ -175,7 +144,7 @@ const expenseController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'Expense Deleted',
+				message: 'GroupExpense Deleted',
 				deletedData,
 			});
 		} catch (e) {
@@ -184,4 +153,4 @@ const expenseController = {
 	},
 };
 
-export default expenseController;
+export default groupExpenseController;
