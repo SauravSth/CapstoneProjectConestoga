@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 
 const groupSchema = mongoose.Schema({
 	name: {
@@ -8,6 +8,10 @@ const groupSchema = mongoose.Schema({
 	members: {
 		type: Array,
 		default: [],
+	},
+	user_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
 	},
 	isActive: {
 		type: Boolean,

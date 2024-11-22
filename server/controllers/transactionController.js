@@ -1,10 +1,11 @@
 import Transaction from '../models/transactionModel.js';
 import errorHandler from '../helpers/errorHandler.js';
+import Expense from '../models/expenseModel.js';
 
 const transactionController = {
 	getTransaction: async (req, res) => {
 		try {
-			const { uid } = req.body;
+			const { uid } = req.user;
 			const transactions = await Transaction.find({ user: uid }).populate(
 				[
 					{ path: 'payer' },
@@ -45,7 +46,20 @@ const transactionController = {
 				expense_id,
 				date,
 				user_id,
+				group_id,
 			} = req.body;
+
+			let totalAmount = await Expense.findOne({
+				_id: expense_id,
+				group_id: group_id,
+			}).select('amount');
+			let newTotal = totalAmount - paidAmount;
+
+			if (newTotal > 0) {
+				await Expense.save({ amount: newTotal });
+			} else {
+				console.log('Paid Fully');
+			}
 
 			let newTransaction = await Transaction.create({
 				title,

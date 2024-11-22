@@ -6,12 +6,6 @@ const storeSchema = mongoose.Schema({
 		required: [true, 'Please provide the store name'],
 		unique: true,
 	},
-	// address: {
-	// 	type: String,
-	// },
-	// postalCode: {
-	// 	type: String,
-	// },
 	isActive: {
 		type: Boolean,
 		default: true,
