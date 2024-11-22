@@ -1,59 +1,59 @@
-import Budget from '../models/budgetModel.js';
+import Goal from '../models/goalModel.js';
 
-const budgetController = {
-	getBudget: async (req, res) => {
+const goalController = {
+	getGoal: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const budgets = await Budget.find({ user: uid }).populate(
+			const goals = await Goal.find({ user: uid }).populate(
 				'user_id group_id'
 			);
 
-			res.status(200).json({ budgets });
+			res.status(200).json({ goals });
 		} catch (e) {
 			console.log(e);
 		}
 	},
-	getOneBudget: async (req, res) => {
+	getOneGoal: async (req, res) => {
 		try {
 			const id = req.params._id;
 
-			const budget = await Budget.findOne({ _id: id }).populate(
+			const goal = await Goal.findOne({ _id: id }).populate(
 				'user_id group_id'
 			);
 
-			res.status(200).json({ budget });
+			res.status(200).json({ goal });
 		} catch (e) {
 			console.log(e);
 		}
 	},
-	postBudget: async (req, res) => {
+	postGoal: async (req, res) => {
 		try {
 			const { title, description, amount, user_id, group_id } = req.body;
 
-			let newBudget = await Budget.create({
+			let newGoal = await Goal.create({
 				title,
-				description,
 				amount,
+				description,
 				user_id,
 				group_id,
 			});
 
 			res.status(200).json({
 				success: true,
-				message: 'Budget created successfully.',
-				newBudget,
+				message: 'Goal created successfully.',
+				newGoal,
 			});
 		} catch (e) {
-			const errors = errorHandler.handleBudgetErrors(e);
+			const errors = errorHandler.handleGoalErrors(e);
 			res.status(400).json(errors);
 		}
 	},
-	updateBudget: async (req, res) => {
+	updateGoal: async (req, res) => {
 		try {
 			const { _id, title, description, amount, user_id, group_id } =
 				req.body;
 
-			const updatedData = await Budget.findOneAndUpdate(
+			const updatedData = await Goal.findOneAndUpdate(
 				{ _id },
 				{ $set: { title, description, amount, user_id, group_id } },
 				{ new: true }
@@ -61,19 +61,19 @@ const budgetController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'Budget Updated',
+				message: 'Goal Updated',
 				updatedData,
 			});
 		} catch (e) {
-			const errors = errorHandler.handleBudgetErrors(e);
+			const errors = errorHandler.handleGoalErrors(e);
 			res.status(400).json(errors);
 		}
 	},
-	deleteBudget: async (req, res) => {
+	deleteGoal: async (req, res) => {
 		try {
 			const { _id } = req.body;
 
-			const deletedData = await Budget.findOneAndUpdate(
+			const deletedData = await Goal.findOneAndUpdate(
 				{ _id },
 				{ $set: { isActive: false } },
 				{ new: true }
@@ -81,7 +81,7 @@ const budgetController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'Budget Deleted',
+				message: 'Goal Deleted',
 				deletedData,
 			});
 		} catch (e) {
@@ -90,4 +90,4 @@ const budgetController = {
 	},
 };
 
-export default budgetController;
+export default goalController;

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const expenseSchema = mongoose.Schema({
+const groupExpenseSchema = mongoose.Schema({
 	title: {
 		type: String,
 		required: [true, 'Please enter a title'],
@@ -46,6 +46,6 @@ const expenseSchema = mongoose.Schema({
 	},
 });
 
-const expense = mongoose.model('Expense', expenseSchema);
+const groupExpense = mongoose.model('GroupExpense', groupExpenseSchema);
 
-export default expense;
+export default groupExpense;

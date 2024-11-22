@@ -78,7 +78,7 @@ const errorHandler = {
 	},
 	handleBudgetErrors: (err) => {
 		let errors = {
-			name: '',
+			title: '',
 			amount: '',
 			remainingAmount: '',
 		};
@@ -87,6 +87,22 @@ const errorHandler = {
 			return { success: false, errors };
 		}
 		if (err.message.includes('Category validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleGoalErrors: (err) => {
+		let errors = {
+			title: '',
+			amount: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Goal already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Goal validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
@@ -115,11 +131,48 @@ const errorHandler = {
 			date: '',
 			amount: '',
 		};
+		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Expense already exists';
 			return { success: false, errors };
 		}
 		if (err.message.includes('Expense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleGroupExpenseErrors: (err) => {
+		let errors = {
+			title: '',
+			date: '',
+			amount: '',
+		};
+		console.log(err);
+		if (err.code === 11000) {
+			errors.name = 'GroupExpense already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('GroupExpense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleTransactionErrors: (err) => {
+		let errors = {
+			title: '',
+			paidAmount: '',
+			date: '',
+		};
+		console.log(err);
+		if (err.code === 11000) {
+			errors.name = 'Transaction already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Transaction validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});

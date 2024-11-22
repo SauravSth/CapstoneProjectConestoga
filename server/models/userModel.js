@@ -27,6 +27,9 @@ const userSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please enter your password'],
 	},
+	verificationCode: {
+		type: Number,
+	},
 	userType: {
 		type: String,
 		default: 'user',

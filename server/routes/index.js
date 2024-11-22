@@ -9,72 +9,106 @@ import groupController from '../controllers/groupController.js';
 import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
 import expenseController from '../controllers/expenseController.js';
+import transactionController from '../controllers/transactionController.js';
 
 // Middleware Imports
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
+import tokenDecoder from '../middlewares/tokenDecoder.js';
 import authentication from '../middlewares/authentication.js';
 
 const router = express.Router();
 
 // Group Routes
-router.get('/group', groupController.getGroup);
-router.get('/group/:_id', groupController.getOneGroup);
-router.post('/group', groupController.postGroup);
-router.patch('/group', groupController.updateGroup);
-router.delete('/group', groupController.deleteGroup);
+router.get('/group', tokenDecoder, groupController.getGroup);
+router.get('/group/:_id', tokenDecoder, groupController.getOneGroup);
+router.post('/group', tokenDecoder, groupController.postGroup);
+router.patch('/group/:id', tokenDecoder, groupController.updateGroup);
+router.delete('/group', tokenDecoder, groupController.deleteGroup);
 
 // Budget Routes
-router.get('/budget', budgetController.getBudget);
-router.get('/budget/:_id', budgetController.getOneBudget);
-router.post('/budget', budgetController.postBudget);
-router.patch('/budget', budgetController.updateBudget);
-router.delete('/budget', budgetController.deleteBudget);
+router.get('/budget', tokenDecoder, budgetController.getBudget);
+router.get('/budget/:_id', tokenDecoder, budgetController.getOneBudget);
+router.post('/budget', tokenDecoder, budgetController.postBudget);
+router.patch('/budget/:id', tokenDecoder, budgetController.updateBudget);
+router.delete('/budget', tokenDecoder, budgetController.deleteBudget);
+
+// Goal Routes
+router.get('/goal', tokenDecoder, goalController.getGoal);
+router.get('/goal/:_id', tokenDecoder, goalController.getOneGoal);
+router.post('/goal', tokenDecoder, goalController.postGoal);
+router.patch('/goal/:id', tokenDecoder, goalController.updateGoal);
+router.delete('/goal', tokenDecoder, goalController.deleteGoal);
 
 // Category Routes
-router.get('/category', categoryController.getCategory);
-router.get('/category/:_id', categoryController.getOneCategory);
-router.post('/category', categoryController.postCategory);
-router.patch('/category', categoryController.updateCategory);
-router.delete('/category', categoryController.deleteCategory);
+router.get('/category', tokenDecoder, categoryController.getCategory);
+router.get('/category/:_id', tokenDecoder, categoryController.getOneCategory);
+router.post('/category', tokenDecoder, categoryController.postCategory);
+router.patch('/category/:id', tokenDecoder, categoryController.updateCategory);
+router.delete('/category', tokenDecoder, categoryController.deleteCategory);
 
 // Item Routes
-router.get('/item', itemController.getItem);
-router.get('/item/:_id', itemController.getOneItem);
-router.post('/item', itemController.postItem);
-router.patch('/item', itemController.updateItem);
-router.delete('/item', itemController.deleteItem);
+router.get('/item', tokenDecoder, itemController.getItem);
+router.get('/item/:_id', tokenDecoder, itemController.getOneItem);
+router.post('/item', tokenDecoder, itemController.postItem);
+router.patch('/item/:id', tokenDecoder, itemController.updateItem);
+router.delete('/item', tokenDecoder, itemController.deleteItem);
 
 // Store Routes
-router.get('/store', storeController.getStore);
-router.get('/store/:_id', storeController.getOneStore);
-router.post('/store', storeController.postStore);
-router.patch('/store', storeController.updateStore);
-router.delete('/store', storeController.deleteStore);
+router.get('/store', tokenDecoder, storeController.getStore);
+router.get('/store/:_id', tokenDecoder, storeController.getOneStore);
+router.post('/store', tokenDecoder, storeController.postStore);
+router.patch('/store/:id', tokenDecoder, storeController.updateStore);
+router.delete('/store', tokenDecoder, storeController.deleteStore);
 
 // Expense Routes
-router.get('/expense', expenseController.getExpense);
-router.get('/expense/:_id', expenseController.getOneExpense);
-router.post('/expense', expenseController.postExpense);
-router.patch('/expense', expenseController.updateExpense);
-router.delete('/expense', expenseController.deleteExpense);
+router.get('/expense', tokenDecoder, expenseController.getExpense);
+router.get('/expense/:_id', tokenDecoder, expenseController.getOneExpense);
+router.post('/expense', tokenDecoder, expenseController.postExpense);
+router.patch('/expense/:id', tokenDecoder, expenseController.updateExpense);
+router.delete('/expense', tokenDecoder, expenseController.deleteExpense);
+
+// Transaction Routes
+router.get('/transaction', tokenDecoder, transactionController.getTransaction);
+router.get(
+	'/transaction/:_id',
+	tokenDecoder,
+	transactionController.getOneTransaction
+);
+router.post(
+	'/transaction',
+	tokenDecoder,
+	transactionController.postTransaction
+);
+router.patch(
+	'/transaction/:id',
+	tokenDecoder,
+	transactionController.updateTransaction
+);
+router.delete(
+	'/transaction',
+	tokenDecoder,
+	transactionController.deleteTransaction
+);
 
 // Admin Routes
-router.get('/user', userController.getUser);
-router.get('/userDetail', userController.getOneUser);
-router.patch('/user', userController.updateUser);
-router.delete('/user', userController.deleteUser);
+router.get('/user', tokenDecoder, userController.getUser);
+router.get('/userDetail', tokenDecoder, userController.getOneUser);
+router.patch('/user/:id', tokenDecoder, userController.updateUser);
+router.delete('/user', tokenDecoder, userController.deleteUser);
 
 // TEST ROUTES
+router.get('/test', tokenDecoder, userController.testRoute);
 
 // Auth Routes
 router.post('/login', authController.postUserLogin);
 router.post(
-  '/signup',
-  sanitize.trimmer,
-  validate.doPasswordsMatch,
-  authController.postUserSignUp
+	'/signup',
+	sanitize.trimmer,
+	validate.doPasswordsMatch,
+	authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
+router.get('/verify/:verificationCode', authController.verifyUser);
 
 export default router;

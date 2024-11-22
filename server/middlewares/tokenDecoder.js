@@ -1,4 +1,3 @@
-import tokenVerifier from '../helpers/tokenVerifier.js';
 import jwt from 'jsonwebtoken';
 
 const tokenDecoder = (req, res, next) => {

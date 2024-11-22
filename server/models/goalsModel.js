@@ -1,19 +1,16 @@
 import mongoose from 'mongoose';
 
-const budgetSchema = mongoose.Schema({
+const goalSchema = mongoose.Schema({
 	title: {
 		type: String,
 		required: [true, 'Please enter a title'],
 	},
-	amount: {
-		type: Number,
-		required: [true, 'Please set an amount'],
-	},
 	description: {
 		type: String,
 	},
-	remainingAmount: {
+	amount: {
 		type: Number,
+		required: [true, 'Please set an amount'],
 	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
@@ -33,6 +30,6 @@ const budgetSchema = mongoose.Schema({
 	},
 });
 
-const budget = mongoose.model('Budget', budgetSchema);
+const goal = mongoose.model('Goal', goalSchema);
 
-export default budget;
+export default goal;
