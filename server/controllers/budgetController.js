@@ -4,7 +4,7 @@ const budgetController = {
 	getBudget: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const budgets = await Budget.find({ user: uid }).populate(
+			const budgets = await Budget.find({ user_id: uid }).populate(
 				'user_id group_id'
 			);
 
@@ -28,13 +28,15 @@ const budgetController = {
 	},
 	postBudget: async (req, res) => {
 		try {
-			const { title, description, amount, user_id, group_id } = req.body;
+			const { title, description, amount, group_id } = req.body;
+
+			const { uid } = req.user;
 
 			let newBudget = await Budget.create({
 				title,
 				description,
 				amount,
-				user_id,
+				user_id: uid,
 				group_id,
 			});
 
@@ -50,12 +52,11 @@ const budgetController = {
 	},
 	updateBudget: async (req, res) => {
 		try {
-			const { _id, title, description, amount, user_id, group_id } =
-				req.body;
+			const { _id, title, description, amount, group_id } = req.body;
 
 			const updatedData = await Budget.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, description, amount, user_id, group_id } },
+				{ $set: { title, description, amount, group_id } },
 				{ new: true }
 			);
 

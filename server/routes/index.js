@@ -26,6 +26,16 @@ router.get('/group/:_id', tokenDecoder, groupController.getOneGroup);
 router.post('/group', tokenDecoder, groupController.postGroup);
 router.patch('/group/:id', tokenDecoder, groupController.updateGroup);
 router.delete('/group', tokenDecoder, groupController.deleteGroup);
+router.post(
+	'/group/inviteToGroup',
+	tokenDecoder,
+	groupController.inviteToGroup
+);
+router.post(
+	'/group/acceptedInvite/:email/:groupName',
+	tokenDecoder,
+	groupController.acceptedInvite
+);
 
 // Budget Routes
 router.get('/budget', tokenDecoder, budgetController.getBudget);
