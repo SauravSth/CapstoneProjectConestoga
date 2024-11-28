@@ -30,8 +30,12 @@ const Card = ({
       {/* Card Details */}
       <p className="mt-2 text-gray-600">{description}</p>
       <div className="flex items-center mt-4 space-x-4">
-        <p className="font-bold text-lg text-gray-800">Total: ${totalAmount}</p>
-        <p className="text-sm text-gray-600">Remaining: ${remainingAmount}</p>
+        <p className="font-bold text-lg text-gray-800">
+          {type === 'budget' ? 'Total' : 'Target'}: ${totalAmount}
+        </p>
+        <p className="text-sm text-gray-600">
+          {type === 'budget' ? 'Remaining' : 'Saved'}: ${remainingAmount}
+        </p>{' '}
       </div>
 
       {/* Progress Bar */}
@@ -46,7 +50,7 @@ const Card = ({
           ></div>
         </div>
         <p className="text-xs text-gray-600 mt-1">
-          {remainingPercentage}% Remaining
+          {remainingPercentage}% {type === 'budget' ? 'Remaining' : 'Saved'}
         </p>
       </div>
 

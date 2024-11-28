@@ -99,18 +99,18 @@ const Navbar = () => {
               </li>
               <li
                 className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-                  activePage === 'Members'
+                  activePage === 'Groups'
                     ? 'bg-green-700'
                     : 'hover:bg-green-700'
                 }`}
               >
                 <Link
-                  to="/members"
-                  onClick={() => setActivePage('Members')}
+                  to="/group"
+                  onClick={() => setActivePage('Groups')}
                   className="flex items-center space-x-4"
                 >
                   <IoPeopleSharp size={20} />
-                  <span>Members</span>
+                  <span>Groups</span>
                 </Link>
               </li>
             </>
@@ -118,7 +118,7 @@ const Navbar = () => {
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-              activePage === 'Groups' ? 'bg-green-700' : 'hover:bg-green-700'
+              activePage === 'Goals' ? 'bg-green-700' : 'hover:bg-green-700'
             }`}
           >
             <Link
