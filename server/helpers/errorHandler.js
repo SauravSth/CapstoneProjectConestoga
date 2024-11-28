@@ -80,13 +80,12 @@ const errorHandler = {
 		let errors = {
 			title: '',
 			amount: '',
-			remainingAmount: '',
 		};
 		if (err.code === 11000) {
-			errors.name = 'Category already exists';
+			errors.name = 'Budget already exists';
 			return { success: false, errors };
 		}
-		if (err.message.includes('Category validation failed')) {
+		if (err.message.includes('Budget validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});

@@ -21,6 +21,11 @@ const tokenDecoder = (req, res, next) => {
 				}
 			}
 		);
+	} else {
+		res.status(400).json({
+			success: false,
+			message: 'Not Logged In',
+		});
 	}
 };
 
