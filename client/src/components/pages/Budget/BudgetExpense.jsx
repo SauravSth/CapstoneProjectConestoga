@@ -53,6 +53,7 @@ const BudgetExpense = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(newExpense),
       });
 
@@ -101,6 +102,7 @@ const BudgetExpense = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }
         );
         const expenseData = await expenseResponse.json();
@@ -138,6 +140,7 @@ const BudgetExpense = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }
         );
         const categoryData = await categoryResponse.json();

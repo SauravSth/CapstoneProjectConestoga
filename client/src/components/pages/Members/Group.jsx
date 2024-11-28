@@ -39,6 +39,7 @@ const Group = () => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(newGroup),
     });
 
@@ -47,7 +48,11 @@ const Group = () => {
 
       // Refetch groups to ensure the UI updates correctly
       const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group');
+        const response = await fetch('http://localhost:3000/api/group', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
         const data = await response.json();
         setGroups(Array.isArray(data) ? data : data.groups || []);
       };
