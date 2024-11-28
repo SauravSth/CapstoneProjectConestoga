@@ -7,7 +7,10 @@ const GroupDetails = () => {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const response = await fetch(`/api/groups/${id}`);
+      const response = await fetch(`/api/groups/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
       const data = await response.json();
       setGroup(data);
     };

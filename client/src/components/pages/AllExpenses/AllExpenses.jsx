@@ -104,9 +104,7 @@ const AllExpenses = () => {
           'http://localhost:3000/api/expense',
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            credentials: 'include',
           }
         );
 
@@ -146,6 +144,7 @@ const AllExpenses = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }
         );
         const categoryData = await categoryResponse.json();
