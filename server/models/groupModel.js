@@ -1,16 +1,22 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 
 const groupSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: [true, 'Please provide a group name'],
+		unique: true,
 	},
 	members: [
 		{
 			user_id: mongoose.Types.ObjectId,
-			split: Number,
+			splitAmount: Number,
 		},
 	],
+	splitType: {
+		type: String,
+		enum: ['evenly', 'percent', 'amount'],
+		default: 'evenly',
+	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',

@@ -7,7 +7,7 @@ import User from '../models/userModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
 // Helper Imports
-import sendMail from '../helpers/mailHelper.js';
+import sendVerification from '../helpers/sendVerification.js';
 import verificationCodeGenerator from '../helpers/verificationCodeGenerator.js';
 
 const MAX_AGE = 3 * 24 * 60 * 60;
@@ -51,7 +51,7 @@ const authController = {
 				password,
 				verificationCode,
 			});
-			sendMail(email, verificationCode);
+			sendVerification(email, verificationCode);
 			res.status(200).json({
 				success: true,
 				message: 'User created successfully.',
@@ -67,19 +67,45 @@ const authController = {
 		res.status(200).json({ success: true, message: 'Logged Out' });
 	},
 	verifyUser: async (req, res) => {
-		const verificationCode = req.params.verificationCode;
+		try {
+			const verificationCode = req.params.verificationCode;
 
-		const user = await User.findOne({ verificationCode });
+			const user = await User.findOne({ verificationCode });
 
-		if (user) {
-			user.isVerified = true;
-			user.isActive = true;
-			await user.save();
-		} else {
-			res.status(400).json({
-				success: false,
-				message: 'Could not find user',
+			if (user) {
+				user.isVerified = true;
+				user.isActive = true;
+				await user.save();
+			} else {
+				res.status(400).json({
+					success: false,
+					message: 'Could not find user',
+				});
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	},
+	registerFromInvite: async (req, res) => {
+		try {
+			const { username, firstName, lastName, email, password } = req.body;
+			let newUser = await User.create({
+				username,
+				firstName,
+				lastName,
+				email,
+				password,
+				isVerified: true,
+				isActive: true,
 			});
+			res.status(200).json({
+				success: true,
+				message: 'User created successfully.',
+				newUser,
+			});
+		} catch (e) {
+			const errors = errorHandler.handleAuthErrors(e);
+			res.status(400).json(errors);
 		}
 	},
 };

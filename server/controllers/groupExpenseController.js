@@ -5,7 +5,7 @@ import errorHandler from '../helpers/errorHandler.js';
 const editBudgetAmount = async (amount) => {
 	let budgetAmount = await Budget.findOne({ budget_id }).select('amount');
 	let remainingBudget = budgetAmount - amount;
-	if (remainingBudget > 0) {
+	if (remainingBudget >= 0) {
 		await Budget.save({ remainingAmount: remainingBudget });
 	} else {
 		res.status(400).json({
@@ -50,12 +50,13 @@ const groupExpenseController = {
 				description,
 				paid_by,
 				category_id,
-				user_id,
 				group_id,
 				budget_id,
 			} = req.body;
 
-			paid_by = !group_id ? user_id : paid_by;
+			const { uid } = req.user;
+
+			paid_by = !group_id ? uid : paid_by;
 
 			if (budget_id) {
 				editBudgetAmount(amount);
@@ -68,7 +69,7 @@ const groupExpenseController = {
 				description,
 				paid_by,
 				category_id,
-				user_id,
+				user_id: uid,
 				group_id,
 				budget_id,
 			});
@@ -93,12 +94,9 @@ const groupExpenseController = {
 				description,
 				paid_by,
 				category_id,
-				user_id,
 				group_id,
 				budget_id,
 			} = req.body;
-
-			paid_by = !group_id ? user_id : paid_by;
 
 			if (budget_id) {
 				editBudgetAmount(amount);
@@ -114,7 +112,6 @@ const groupExpenseController = {
 						description,
 						paid_by,
 						category_id,
-						user_id,
 						group_id,
 						budget_id,
 					},

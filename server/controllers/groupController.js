@@ -1,7 +1,9 @@
 import Group from '../models/groupModel.js';
+import User from '../models/userModel.js';
 
 // Import Error Handler
 import errorHandler from '../helpers/errorHandler.js';
+import sendGroupInvite from '../helpers/inviteToGroup.js';
 
 const groupController = {
 	getGroup: async (req, res) => {
@@ -80,6 +82,50 @@ const groupController = {
 			});
 		} catch (e) {
 			console.log(e.message);
+		}
+	},
+	inviteToGroup: async (req, res) => {
+		try {
+			const { email, group_id } = req.body;
+
+			const groupName = await Group.findOne({ _id: group_id }).select(
+				'name'
+			);
+			const senderData = await User.findOne({ _id: req.user.uid });
+			const isExistingUser = (await User.findOne({ email }))
+				? true
+				: false;
+
+			await sendGroupInvite(email, groupName, senderData, isExistingUser);
+		} catch (e) {
+			console.log(e);
+		}
+	},
+	acceptedInvite: async (req, res) => {
+		try {
+			const { email, groupName } = req.params;
+
+			const userData = await User.findOne({ email });
+
+			const updateGroupData = await Group.findOneAndUpdate(
+				{ name: groupName },
+				{ $push: { members: userData._id } },
+				{ new: true }
+			);
+
+			if (updateGroupData) {
+				res.status(200).json({
+					success: true,
+					message: 'Member added to group successfully',
+				});
+			} else {
+				res.status(400).json({
+					success: false,
+					message: 'Something went wrong. Member not added',
+				});
+			}
+		} catch (e) {
+			console.log(e);
 		}
 	},
 };

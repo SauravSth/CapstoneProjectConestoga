@@ -28,13 +28,13 @@ const goalController = {
 	},
 	postGoal: async (req, res) => {
 		try {
-			const { title, description, amount, user_id, group_id } = req.body;
-
+			const { title, description, amount, group_id } = req.body;
+			const { uid } = req.user;
 			let newGoal = await Goal.create({
 				title,
 				amount,
 				description,
-				user_id,
+				user_id: uid,
 				group_id,
 			});
 
@@ -50,12 +50,11 @@ const goalController = {
 	},
 	updateGoal: async (req, res) => {
 		try {
-			const { _id, title, description, amount, user_id, group_id } =
-				req.body;
+			const { _id, title, description, amount, group_id } = req.body;
 
 			const updatedData = await Goal.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, description, amount, user_id, group_id } },
+				{ $set: { title, description, amount, group_id } },
 				{ new: true }
 			);
 

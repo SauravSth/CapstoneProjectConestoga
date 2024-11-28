@@ -45,10 +45,10 @@ const transactionController = {
 				paidAmount,
 				expense_id,
 				date,
-				user_id,
+
 				group_id,
 			} = req.body;
-
+			const { uid } = req.user;
 			let totalAmount = await Expense.findOne({
 				_id: expense_id,
 				group_id: group_id,
@@ -68,7 +68,7 @@ const transactionController = {
 				paidAmount,
 				expense_id,
 				date,
-				user_id,
+				user_id: uid,
 			});
 
 			res.status(200).json({
@@ -91,7 +91,6 @@ const transactionController = {
 				paidAmount,
 				expense_id,
 				date,
-				user_id,
 			} = req.body;
 
 			const updatedData = await Transaction.findOneAndUpdate(
@@ -104,7 +103,6 @@ const transactionController = {
 						paidAmount,
 						expense_id,
 						date,
-						user_id,
 					},
 				},
 				{ new: true }
