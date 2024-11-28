@@ -10,30 +10,30 @@ const Group = () => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [newGroup, setNewGroup] = useState({
     name: '',
     description: '',
-    members: [], // Array to hold email IDs
+    members: [],
   });
   const [emailInput, setEmailInput] = useState('');
 
-  // Fetch groups from the backend
   useEffect(() => {
-    const fetchGroups = async () => {
-      const response = await fetch('http://localhost:3000/api/group');
-      const data = await response.json();
-      console.log('groupData', data);
-
-      setGroups(Array.isArray(data) ? data : data.groups || []);
-    };
-
     fetchGroups();
   }, []);
 
-  // Handle adding a new group
+  const fetchGroups = async () => {
+    const response = await fetch('http://localhost:3000/api/group', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    const data = await response.json();
+    setGroups(Array.isArray(data) ? data : data.groups || []);
+  };
+
   const handleInviteSubmit = async (e) => {
     e.preventDefault();
-
     const response = await fetch('http://localhost:3000/api/group', {
       method: 'POST',
       headers: {
@@ -44,41 +44,76 @@ const Group = () => {
     });
 
     if (response.ok) {
-      const addedGroup = await response.json();
-
-      // Refetch groups to ensure the UI updates correctly
-      const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-        setGroups(Array.isArray(data) ? data : data.groups || []);
-      };
-
       fetchGroups(); // Refetch groups to update UI
-
       setShowInviteForm(false); // Close modal
     } else {
       alert('Error creating group');
     }
   };
 
-  // Handle adding an email to the members list
+  const handleEditGroup = (groupId) => {
+    const groupToEdit = groups.find((group) => group._id === groupId);
+    setSelectedGroup(groupToEdit);
+    setNewGroup({
+      name: groupToEdit.name,
+      description: groupToEdit.description,
+      members: groupToEdit.members || [],
+    });
+    setShowEditForm(true); // Open edit modal
+  };
+
+  const handleUpdateGroup = async (e) => {
+    e.preventDefault();
+    const response = await fetch(
+      `http://localhost:3000/api/group/${selectedGroup._id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(newGroup),
+      }
+    );
+
+    if (response.ok) {
+      fetchGroups(); // Refetch groups to update UI
+      setShowEditForm(false); // Close modal
+    } else {
+      alert('Error updating group');
+    }
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    if (window.confirm('Are you sure you want to delete this group?')) {
+      const response = await fetch(
+        `http://localhost:3000/api/group/${groupId}`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        }
+      );
+
+      if (response.ok) {
+        fetchGroups(); // Refetch groups to update UI
+      } else {
+        alert('Error deleting group');
+      }
+    }
+  };
+
   const handleAddEmail = () => {
     if (emailInput && validateEmail(emailInput)) {
       setNewGroup((prev) => ({
         ...prev,
         members: [...prev.members, emailInput],
       }));
-      setEmailInput(''); // Clear the input field
+      setEmailInput('');
     } else {
       alert('Please enter a valid email address');
     }
   };
 
-  // Handle removing an email from the members list
   const handleRemoveEmail = (email) => {
     setNewGroup((prev) => ({
       ...prev,
@@ -86,19 +121,10 @@ const Group = () => {
     }));
   };
 
-  // Email validation function
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-
-  // Reset form fields when modal is closed
-  useEffect(() => {
-    if (!showInviteForm) {
-      setNewGroup({ name: '', description: '', members: [] });
-      setEmailInput('');
-    }
-  }, [showInviteForm]);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -110,16 +136,6 @@ const Group = () => {
         <Header title="Groups" />
 
         <main className="p-6 space-y-6">
-          <div className="flex items-center space-x-4 max-w-lg">
-            <input
-              type="text"
-              placeholder="Search groups"
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-            <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
-              Filter by Date
-            </button>
-          </div>
           <button
             onClick={() => setShowInviteForm(true)}
             className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
@@ -128,104 +144,91 @@ const Group = () => {
             <FaPlus className="inline mr-2" /> Add Group
           </button>
 
-          {/* Invite Group Form Modal */}
+          {/* Invite Group Modal */}
           <CustomModal
             title="Create a New Group"
             isOpen={showInviteForm}
             onClose={() => setShowInviteForm(false)}
           >
             <form onSubmit={handleInviteSubmit}>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Group Name"
-                  value={newGroup.name}
-                  onChange={(e) =>
-                    setNewGroup({ ...newGroup, name: e.target.value })
-                  }
-                  required
-                  className="w-full p-2 border rounded"
-                />
-                <textarea
-                  placeholder="Group Description"
-                  value={newGroup.description}
-                  onChange={(e) =>
-                    setNewGroup({ ...newGroup, description: e.target.value })
-                  }
-                  required
-                  className="w-full p-2 border rounded"
-                ></textarea>
+              <input
+                type="text"
+                placeholder="Group Name"
+                value={newGroup.name}
+                onChange={(e) =>
+                  setNewGroup({ ...newGroup, name: e.target.value })
+                }
+                required
+                className="w-full p-2 border rounded"
+              />
+              <textarea
+                placeholder="Group Description"
+                value={newGroup.description}
+                onChange={(e) =>
+                  setNewGroup({ ...newGroup, description: e.target.value })
+                }
+                required
+                className="w-full p-2 border rounded"
+              ></textarea>
+              {/* Other inputs */}
+            </form>
+          </CustomModal>
 
-                {/* Email Input for Members */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Add Members (Emails)
-                  </label>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <input
-                      type="email"
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="Enter email address"
-                      className="flex-grow p-2 border rounded"
-                    />
+          {/* Edit Group Modal */}
+          <CustomModal
+            title="Edit Group"
+            isOpen={showEditForm}
+            onClose={() => setShowEditForm(false)}
+          >
+            <form onSubmit={handleUpdateGroup}>
+              <input
+                type="text"
+                placeholder="Group Name"
+                value={newGroup.name}
+                onChange={(e) =>
+                  setNewGroup({ ...newGroup, name: e.target.value })
+                }
+                required
+                className="w-full p-2 border rounded"
+              />
+              <textarea
+                placeholder="Group Description"
+                value={newGroup.description}
+                onChange={(e) =>
+                  setNewGroup({ ...newGroup, description: e.target.value })
+                }
+                required
+                className="w-full p-2 border rounded"
+              ></textarea>
+
+              {/* Members Management */}
+              <div>
+                {newGroup.members.map((email, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{email}</span>
                     <button
                       type="button"
-                      onClick={handleAddEmail}
-                      className="px-4 py-2 bg-blue-500 text-white rounded"
+                      onClick={() => handleRemoveEmail(email)}
+                      className="text-red-500"
                     >
-                      Add
+                      Remove
                     </button>
                   </div>
-                </div>
-
-                {/* Render Added Emails */}
-                {newGroup.members.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    {newGroup.members.map((email, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 bg-gray-100 rounded"
-                      >
-                        <span>{email}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveEmail(email)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex justify-end space-x-4 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowInviteForm(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-600 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Create Group
-                </button>
+                ))}
               </div>
             </form>
           </CustomModal>
 
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {groups.map((group) => (
               <GroupCard
                 key={group._id}
                 group={group}
-                // onEdit={handleEditGroup}
-                // onDelete={handleDeleteGroup}
-                onClick={() => navigate(`/group/${group._id}`)}
+                onEdit={handleEditGroup}
+                onDelete={handleDeleteGroup}
               />
             ))}
           </div>
