@@ -12,11 +12,6 @@ const groupSchema = mongoose.Schema({
 			splitAmount: Number,
 		},
 	],
-	splitType: {
-		type: String,
-		enum: ['evenly', 'percent', 'amount'],
-		default: 'evenly',
-	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',

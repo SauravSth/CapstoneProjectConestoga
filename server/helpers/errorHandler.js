@@ -111,13 +111,13 @@ const errorHandler = {
 	handleGroupErrors: (err) => {
 		let errors = {
 			name: '',
-			members: '',
 		};
 		if (err.code === 11000) {
 			errors.name = 'Group already exists';
 			return { success: false, errors };
 		}
 		if (err.message.includes('Group validation failed')) {
+			console.log(err.errors);
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});

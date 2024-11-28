@@ -76,7 +76,6 @@ const expenseController = {
 				goal_id,
 			} = req.body;
 			const { uid } = req.user;
-			paid_by = !group_id ? uid : paid_by;
 
 			if (budget_id) {
 				editBudgetAmount(amount);

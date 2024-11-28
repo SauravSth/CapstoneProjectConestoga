@@ -9,6 +9,7 @@ import groupController from '../controllers/groupController.js';
 import storeController from '../controllers/storeController.js';
 import authController from '../controllers/authController.js';
 import expenseController from '../controllers/expenseController.js';
+import groupExpenseController from '../controllers/groupExpenseController.js';
 import transactionController from '../controllers/transactionController.js';
 import goalController from '../controllers/goalController.js';
 
@@ -78,6 +79,25 @@ router.get('/expense/:_id', tokenDecoder, expenseController.getOneExpense);
 router.post('/expense', tokenDecoder, expenseController.postExpense);
 router.patch('/expense/:id', tokenDecoder, expenseController.updateExpense);
 router.delete('/expense', tokenDecoder, expenseController.deleteExpense);
+
+// GroupExpense Routes
+router.get('/groupExpense', tokenDecoder, groupExpenseController.getExpense);
+router.get(
+	'/groupExpense/:_id',
+	tokenDecoder,
+	groupExpenseController.getOneExpense
+);
+router.post('/groupExpense', tokenDecoder, groupExpenseController.postExpense);
+router.patch(
+	'/groupExpense/:id',
+	tokenDecoder,
+	groupExpenseController.updateExpense
+);
+router.delete(
+	'/groupExpense',
+	tokenDecoder,
+	groupExpenseController.deleteExpense
+);
 
 // Transaction Routes
 router.get('/transaction', tokenDecoder, transactionController.getTransaction);
