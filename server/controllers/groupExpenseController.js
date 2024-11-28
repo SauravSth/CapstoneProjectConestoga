@@ -1,4 +1,5 @@
 import GroupExpense from '../models/groupExpenseModel.js';
+import Group from '../models/groupModel.js';
 import Budget from '../models/budgetModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
@@ -47,16 +48,114 @@ const groupExpenseController = {
 				title,
 				date,
 				amount,
+				splitType,
 				description,
 				paid_by,
 				category_id,
 				group_id,
 				budget_id,
+				percentSplits,
+				amountSplits,
 			} = req.body;
 
 			const { uid } = req.user;
 
-			paid_by = !group_id ? uid : paid_by;
+			paid_by = !paid_by ? uid : paid_by;
+
+			const groupData = await Group.findById(group_id);
+
+			if (!groupData)
+				return res
+					.status(404)
+					.json({ success: false, message: 'Group not found' });
+
+			const members = groupData.members;
+
+			let amountsOwed = [];
+			let totalAmountOwed = 0;
+
+			if (splitType === 'evenly') {
+				const numMembers = members.length;
+				const amountPerMember = amount / numMembers;
+
+				amountsOwed = members
+					.map((member) => {
+						if (member.user_id.toString() !== paid_by.toString()) {
+							return {
+								user_id: member.user_id,
+								amountOwed: amountPerMember,
+							};
+						}
+						return null;
+					})
+					.filter((owed) => owed !== null);
+
+				totalAmountOwed = amountPerMember * (numMembers - 1);
+			} else if (splitType === 'percent') {
+				// Percent-based split: Use custom percentages if provided
+				let totalPercent = 0;
+				amountsOwed.forEach((member) => {
+					const userPercent = percentSplits.find(
+						(split) =>
+							split.user_id.toString() ===
+							member.user_id.toString()
+					);
+					if (userPercent) {
+						if (
+							userPercent.percent < 0 ||
+							userPercent.percent > 100
+						) {
+							throw new Error(
+								'Percent split must be between 0 and 100'
+							);
+						}
+						member.amountOwed =
+							(userPercent.percent / 100) * amount;
+						totalAmountOwed += member.amountOwed;
+						totalPercent += userPercent.percent;
+					}
+				});
+
+				// Ensure the total percentage sums to 100
+				if (totalPercent !== 100) {
+					throw new Error('Total percentage split must sum to 100');
+				}
+			} else if (splitType === 'amount') {
+				// Amount-based split: Use custom amounts if provided
+				let totalAssignedAmount = 0;
+				amountsOwed.forEach((member) => {
+					const userAmount = amountSplits.find(
+						(split) =>
+							split.user_id.toString() ===
+							member.user_id.toString()
+					);
+					if (userAmount) {
+						if (
+							userAmount.amount < 0 ||
+							userAmount.amount > amount
+						) {
+							throw new Error(
+								'Amount split must be between 0 and total amount'
+							);
+						}
+						member.amountOwed = userAmount.amount;
+						totalAmountOwed += member.amountOwed;
+					}
+				});
+			}
+			groupData.members = groupData.members.map((member) => {
+				const owed = amountsOwed.find(
+					(owedMember) =>
+						owedMember.user_id.toString() ===
+						member.user_id.toString()
+				);
+				if (owed) {
+					member.splitAmount = owed.amountOwed;
+				}
+				return member;
+			});
+
+			await groupData.save();
 
 			if (budget_id) {
 				editBudgetAmount(amount);
@@ -66,6 +165,7 @@ const groupExpenseController = {
 				title,
 				date,
 				amount,
+				splitType,
 				description,
 				paid_by,
 				category_id,
@@ -91,6 +191,7 @@ const groupExpenseController = {
 				title,
 				date,
 				amount,
+				splitType,
 				description,
 				paid_by,
 				category_id,
@@ -109,6 +210,7 @@ const groupExpenseController = {
 						title,
 						date,
 						amount,
+						splitType,
 						description,
 						paid_by,
 						category_id,
