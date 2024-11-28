@@ -4,7 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
-import Member from './components/pages/Members/Member';
+import Group from './components/pages/Members/Group';
+import GroupDetails from './components/pages/Members/GroupDetails';
+// import Member from './components/pages/Members/Member';
 import Goals from './components/pages/Goals/Goals';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import BillSplit from './components/pages/BillSplit/BillSplit';
@@ -42,9 +44,14 @@ function App() {
               element={<BillSplit />}
             />
             <Route
-              path="/members"
-              element={<Member />}
+              path="/group"
+              element={<Group />}
             />
+            <Route
+              path="/group/:groupId"
+              element={<GroupDetails />}
+            />
+
             <Route
               path="/goals"
               element={<Goals />}

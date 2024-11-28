@@ -37,19 +37,19 @@ const Budget = () => {
 
   useEffect(() => {
     const fetchBudget = async () => {
+      if (!user) {
+        return; // No user, no budget to fetch
+      }
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/api/budget?_id=${user}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3000/api/budget`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch budgets');
+        }
         const budgetData = await response.json();
-        console.log('budgetData', budgetData);
         setData(
           Array.isArray(budgetData) ? budgetData : budgetData.budgets || []
         );
@@ -70,8 +70,8 @@ const Budget = () => {
         amount: Number(amount),
         remainingAmount: Number(amount),
         description: description,
-        user_id: user, // User ID from auth store
-        createdAt: new Date(),
+        // user_id: user, // User ID from auth store
+        // createdAt: new Date(),
       };
 
       console.log('newBudget', newBudget);
@@ -148,7 +148,7 @@ const Budget = () => {
                   description={budget.description}
                   createdDate={budget.createdAt}
                   totalAmount={budget.amount}
-                  remainingAmount={budget.remainingAmount}
+                  remainingAmount={budget.remainingAmount ?? budget.amount}
                   onClick={() => handleBudgetCard(budget._id)}
                 />
               ))}

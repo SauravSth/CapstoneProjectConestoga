@@ -95,7 +95,7 @@ const BudgetExpense = () => {
       try {
         setLoading(true);
         const expenseResponse = await fetch(
-          `http://localhost:3000/api/expense?_id=${user}`,
+          `http://localhost:3000/api/expense`,
           {
             method: 'GET',
             headers: {
@@ -132,7 +132,7 @@ const BudgetExpense = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category?_id=${user}`,
+          `http://localhost:3000/api/category`,
           {
             method: 'GET',
             headers: {

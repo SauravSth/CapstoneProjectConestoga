@@ -5,6 +5,8 @@ import Header from '../../../layouts/Header';
 import PersonCard from '../../ui/PersonCard';
 import { FaPlus } from 'react-icons/fa';
 import CustomModal from '../../modal/CustomModal';
+import Group from './Group'; // Import the Group component
+
 const Member = () => {
   const navigate = useNavigate();
   const [member, setMember] = useState([
@@ -73,6 +75,14 @@ const Member = () => {
               Filter by Date
             </button>
           </div>
+
+          {/* Group Component - When clicked, navigates to the Members page */}
+          <div className="mt-6">
+            <Group groupName="Marketing Team" />
+            <Group groupName="Development Team" />
+            <Group groupName="Sales Team" />
+          </div>
+
           <button
             onClick={() => setShowInviteForm(true)}
             className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"

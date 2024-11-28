@@ -18,12 +18,14 @@ const AllExpenses = () => {
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isGroupExpense, setIsGroupExpense] = useState(false);
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'amount', headerName: 'Amount' },
+    { field: 'type', headerName: 'Type' }, // Add a column to indicate type (personal/group)
   ];
 
   const handleNewExpense = () => {
@@ -42,7 +44,8 @@ const AllExpenses = () => {
         amount: Number(amount),
         category_id: category,
         user_id: user,
-        group_id: null,
+        group_id: isGroupExpense ? 'group_id_placeholder' : null, // Adjust group_id based on type
+        type: isGroupExpense ? 'Group' : 'Personal', // Include type in the model
       };
 
       const response = await fetch('http://localhost:3000/api/expense', {
@@ -54,6 +57,8 @@ const AllExpenses = () => {
       });
 
       const data = await response.json();
+      console.log(newExpense);
+      console.log('adrta', data);
 
       if (response.ok) {
         setData((prevData) => [...prevData, data.newExpense]);
@@ -72,6 +77,7 @@ const AllExpenses = () => {
     setExpenseName('');
     setCategory('');
     setAmount('');
+    setIsGroupExpense(false); // Reset the toggle switch
   };
 
   const closeModal = () => {
@@ -82,7 +88,6 @@ const AllExpenses = () => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    // Filter the expenses based on the search term
     const filtered = data.filter(
       (expense) =>
         expense.title.toLowerCase().includes(value.toLowerCase()) ||
@@ -93,10 +98,10 @@ const AllExpenses = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const expenseResponse = await fetch(
-          `http://localhost:3000/api/expense?_id=${user}`,
+          'http://localhost:3000/api/expense',
           {
             method: 'GET',
             headers: {
@@ -104,19 +109,21 @@ const AllExpenses = () => {
             },
           }
         );
-        const expenseData = await expenseResponse.json();
-        console.log('Expense Data', expenseData);
 
-        // Map over the expenses to flatten the structure
+        if (!expenseResponse.ok) {
+          throw new Error(`HTTP error! Status: ${expenseResponse.status}`);
+        }
+
+        const expenseData = await expenseResponse.json();
         const formattedData = expenseData.expenses.map((expense) => ({
           ...expense,
-          category: expense.category_id?.name || 'Unknown Category', // Access category name
-          date: new Date(expense.date).toLocaleDateString(), // Format date
-          user: expense.user_id?.username || 'Unknown User', // Optional: Include username if needed
+          category: expense.category_id?.name || 'Unknown Category',
+          date: new Date(expense.date).toLocaleDateString('en-US'),
+          type: expense.group_id ? 'Group' : 'Personal', // Determine type dynamically
         }));
 
         setData(formattedData);
-        setFilteredData(formattedData); // Initialize filtered data with all data
+        setFilteredData(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -124,14 +131,16 @@ const AllExpenses = () => {
       }
     };
 
-    fetchData();
+    if (user) {
+      fetchData();
+    }
   }, [user]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category?_id=${user}`,
+          `http://localhost:3000/api/category`,
           {
             method: 'GET',
             headers: {
@@ -192,7 +201,7 @@ const AllExpenses = () => {
           ) : (
             <CustomTable
               columns={columns}
-              data={filteredData} // Use filteredData instead of data
+              data={filteredData}
             />
           )}
         </main>
@@ -239,20 +248,29 @@ const AllExpenses = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 mr-4">Group Expense</label>
+              <input
+                type="checkbox"
+                checked={isGroupExpense}
+                onChange={() => setIsGroupExpense(!isGroupExpense)}
+                className="w-5 h-5"
+              />
+            </div>
             <div className="flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                className="px-4 py-2 mr-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none"
                 onClick={handleFormSubmit}
               >
-                Confirm
+                Submit
               </button>
             </div>
           </form>

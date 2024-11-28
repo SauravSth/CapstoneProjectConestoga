@@ -23,15 +23,14 @@ const Goals = () => {
     const fetchGoals = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/api/goals?user_id=${user}`,
-          {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
-        const data = await response.json();
-        setGoals(Array.isArray(data) ? data : []);
+        console.log(user);
+        const response = await fetch(`http://localhost:3000/api/goal`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const goalsData = await response.json();
+        setGoals(Array.isArray(goalsData) ? goalsData : goalsData.goals || []);
+        console.log('Goals data', goals);
       } catch (error) {
         console.error('Error fetching goals:', error);
       } finally {
@@ -55,13 +54,13 @@ const Goals = () => {
     try {
       const newGoal = {
         title: goalTitle,
-        targetAmount: Number(targetAmount),
-        description,
+        amount: Number(targetAmount),
+        description: description,
         user_id: user,
-        createdAt: new Date(),
+        // createdAt: new Date(),
       };
 
-      const response = await fetch('http://localhost:3000/api/goals', {
+      const response = await fetch('http://localhost:3000/api/goal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newGoal),
@@ -120,8 +119,8 @@ const Goals = () => {
                   name={goal.title}
                   description={goal.description}
                   createdDate={goal.createdAt}
-                  totalAmount={goal.targetAmount}
-                  remainingAmount={goal.remainingAmount || goal.targetAmount}
+                  totalAmount={goal.amount}
+                  remainingAmount={goal.remainingAmount ?? 0}
                   onClick={() => console.log(`Clicked on goal: ${goal.title}`)}
                 />
               ))}
