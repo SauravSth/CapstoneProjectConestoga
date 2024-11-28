@@ -30,9 +30,11 @@ const groupController = {
 	postGroup: async (req, res) => {
 		try {
 			const { name, members } = req.body;
+			const { uid } = req.user;
 			let newGroup = await Group.create({
 				name,
 				members,
+				user_id: uid,
 			});
 
 			res.status(200).json({

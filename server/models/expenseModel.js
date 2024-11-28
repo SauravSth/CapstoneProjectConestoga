@@ -20,17 +20,9 @@ const expenseSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',
 	},
-	paid_by: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User',
-	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',
-	},
-	group_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'Group',
 	},
 	budget_id: {
 		type: mongoose.Types.ObjectId,
