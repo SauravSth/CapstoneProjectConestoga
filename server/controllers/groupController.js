@@ -110,12 +110,12 @@ const groupController = {
 	},
 	acceptedInvite: async (req, res) => {
 		try {
-			const { email, groupName } = req.params;
+			const { email, groupId } = req.params;
 
 			const userData = await User.findOne({ email });
 
 			const updateGroupData = await Group.findOneAndUpdate(
-				{ name: groupName },
+				{ _id: groupId },
 				{ $push: { members: userData._id, invited: true } },
 				{ new: true }
 			);

@@ -33,7 +33,7 @@ router.post(
 	groupController.inviteToGroup
 );
 router.post(
-	'/group/acceptedInvite/:email/:groupName',
+	'/group/acceptedInvite/:email/:groupId',
 	tokenDecoder,
 	groupController.acceptedInvite
 );
@@ -124,6 +124,7 @@ router.delete(
 
 // Admin Routes
 router.get('/user', tokenDecoder, userController.getUser);
+router.get('/userDetail', tokenDecoder, userController.getUserDetails);
 router.get('/userDetail/:id', tokenDecoder, userController.getOneUser);
 router.patch('/user/:id', tokenDecoder, userController.updateUser);
 router.delete('/user', tokenDecoder, userController.deleteUser);
