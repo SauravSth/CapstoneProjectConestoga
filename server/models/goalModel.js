@@ -14,6 +14,7 @@ const goalSchema = mongoose.Schema({
 	},
 	savedAmount: {
 		type: Number,
+		default: 0,
 	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
