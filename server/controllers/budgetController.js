@@ -36,6 +36,7 @@ const budgetController = {
 				title,
 				description,
 				amount,
+				remainingAmount: amount,
 				user_id: uid,
 				group_id,
 			});

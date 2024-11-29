@@ -6,10 +6,6 @@ const categorySchema = mongoose.Schema({
 		required: [true, 'Please enter the category name'],
 		unique: true,
 	},
-	user_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User',
-	},
 	isActive: {
 		type: Boolean,
 		default: true,
