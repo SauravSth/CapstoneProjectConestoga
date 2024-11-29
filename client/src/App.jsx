@@ -73,6 +73,10 @@ function App() {
               element={<Signup />}
             />
             <Route
+              path="/registerFromInvite/:groupID"
+              element={<Signup />}
+            />
+            <Route
               path="/logout"
               element={<Signup />}
             />

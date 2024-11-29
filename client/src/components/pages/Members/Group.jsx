@@ -5,18 +5,19 @@ import Header from '../../../layouts/Header';
 import GroupCard from './GroupCard';
 import { FaPlus } from 'react-icons/fa';
 import CustomModal from '../../modal/CustomModal';
-import Member from './Member';
+// import Member from './Member';
 
 const Group = () => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
+  const [groupID, setGroupID] = useState('');
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [showAddGroupForm, setShowAddGroupForm] = useState(false); // State for showing the add group form
   const [selectedGroup, setSelectedGroup] = useState(null); // Store the selected group
   const [emailInput, setEmailInput] = useState('');
+  const [memberEmails, setMemberEmails] = useState([]);
   const [newGroup, setNewGroup] = useState({
     name: '',
-    description: '',
     members: [], // Array to hold email IDs
   });
   const [searchQuery, setSearchQuery] = useState(''); // Added state for search query
@@ -38,12 +39,25 @@ const Group = () => {
   }, []);
 
   // Handle adding an email to the members list
-  const handleAddEmail = () => {
+  const handleAddEmail = async () => {
     if (emailInput && validateEmail(emailInput)) {
       setNewGroup((prev) => ({
         ...prev,
         members: [...prev.members, emailInput],
       }));
+
+      await fetch('http://localhost:3000/api/group/inviteToGroup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: emailInput,
+          group_id: groupID,
+        }),
+      });
+
       setEmailInput('');
     } else {
       alert('Please enter a valid email address');
@@ -70,7 +84,7 @@ const Group = () => {
     });
 
     if (response.ok) {
-      const addedGroup = await response.json();
+      // const addedGroup = await response.json();
 
       // Refetch groups to ensure the UI updates correctly
       const fetchGroups = async () => {
@@ -83,8 +97,7 @@ const Group = () => {
         setGroups(Array.isArray(data) ? data : data.groups || []);
       };
 
-      fetchGroups(); // Refetch groups to update UI
-
+      fetchGroups();
       setShowInviteForm(false); // Close modal
     } else {
       alert('Error creating group');
@@ -99,16 +112,63 @@ const Group = () => {
     }));
   };
 
-  // Handle opening the invite modal when clicking a group card
-  const handleCardClick = (group) => {
+  useEffect(() => {
+    if (groupID) {
+      console.log('Group ID updated:', groupID);
+      // Proceed with API calls or other actions that depend on groupID
+    }
+  }, [groupID]); // This effect runs whenever groupID is updated
+
+  const handleCardClick = async (group) => {
     setSelectedGroup(group); // Set the selected group
-    setShowInviteForm(true); // Show the modal
+    setShowInviteForm(true);
+
+    setGroupID(group._id); // This will trigger the useEffect when groupID is updated
+    console.log('Group ID being set:', group._id); // Log for verification
+
+    // Extract user_ids from the members array of the selected group
+    const memberIds = group.members.map((member) => member.user_id);
+    console.log('Member IDs:', memberIds);
+
+    // Fetch details of each user_id if needed
+    const fetchMemberDetails = async () => {
+      try {
+        const memberDetails = await Promise.all(
+          memberIds.map(async (userId) => {
+            const response = await fetch(
+              `http://localhost:3000/api/userDetail/${userId}`,
+              {
+                method: 'GET',
+                credentials: 'include',
+              }
+            );
+            if (!response.ok) {
+              throw new Error(`Failed to fetch details for user ID: ${userId}`);
+            }
+            const userData = await response.json();
+            return userData;
+          })
+        );
+
+        console.log('Member Details:', memberDetails);
+
+        // Extract emails from the fetched member details
+        const emails = memberDetails.map(
+          (memberDetail) => memberDetail.user.email
+        );
+        setMemberEmails(emails); // Update the state with member emails
+      } catch (error) {
+        console.error('Error fetching member details:', error);
+      }
+    };
+
+    fetchMemberDetails(); // Call the function to fetch member details
   };
 
   // Reset form fields when modal is closed
   useEffect(() => {
     if (!showInviteForm && !showAddGroupForm) {
-      setNewGroup({ name: '', description: '', members: [] });
+      setNewGroup({ name: '', members: [] });
       setEmailInput('');
     }
   }, [showInviteForm, showAddGroupForm]);
@@ -184,14 +244,6 @@ const Group = () => {
                   }
                   className="w-full p-2 border rounded"
                 />
-                <textarea
-                  placeholder="Group Description"
-                  value={newGroup.description}
-                  onChange={(e) =>
-                    setNewGroup({ ...newGroup, description: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                ></textarea>
 
                 {/* Email Input for Members */}
                 <div>
@@ -271,17 +323,38 @@ const Group = () => {
                   className="w-full p-2 border rounded"
                 />
 
-                {/* Email Input for Members */}
+                {/* Render Email Inputs for Each Member */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Add Members (Emails)
+                    Members' Emails
+                  </label>
+                  <div className="mt-2 space-y-2">
+                    {memberEmails.map((email, index) => (
+                      <input
+                        key={index}
+                        type="email"
+                        value={email}
+                        onChange={(e) =>
+                          handleEmailChange(e.target.value, index)
+                        }
+                        placeholder="Member Email"
+                        className="w-full p-2 border rounded"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Add New Email Input */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Add New Member Email
                   </label>
                   <div className="flex items-center space-x-2 mt-2">
                     <input
                       type="email"
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="Enter email address"
+                      placeholder="Enter new email address"
                       className="flex-grow p-2 border rounded"
                     />
                     <button
@@ -294,7 +367,7 @@ const Group = () => {
                   </div>
                 </div>
 
-                {/* Render Added Emails */}
+                {/* Render New Added Emails */}
                 {newGroup.members.length > 0 && (
                   <div className="mt-4 space-y-2">
                     {newGroup.members.map((email, index) => (

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
-  const { _id, name, description, members } = group;
+  const { _id, name, description, memberEmails = [] } = group; // Updated to use memberEmails
 
   return (
     <div
@@ -26,7 +26,25 @@ const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
       <p className="text-gray-600 mb-4">
         {description || 'No description provided.'}
       </p>
-      <p className="text-sm text-gray-500">Members: {members.length || 0}</p>
+
+      {/* Members List */}
+      <div className="text-sm text-gray-500 mb-4">
+        <span className="font-semibold">Members:</span>
+        {memberEmails.length > 0 ? (
+          <ul className="mt-2 list-disc pl-5">
+            {memberEmails.map((email, index) => (
+              <li
+                key={index}
+                className="truncate"
+              >
+                {email}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No members found.</p>
+        )}
+      </div>
 
       {/* Action Buttons */}
       <div className="mt-6 flex justify-end space-x-2">
