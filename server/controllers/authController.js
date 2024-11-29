@@ -109,7 +109,7 @@ const authController = {
 
 			res.status(200).json({
 				success: true,
-				message: 'User created successfully.',
+				message: 'User created successfully and added to group.',
 				data: { user: newUser, group: updateGroupData },
 			});
 		} catch (e) {
