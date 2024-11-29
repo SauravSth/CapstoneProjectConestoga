@@ -21,6 +21,16 @@ const groupExpenseSchema = mongoose.Schema({
 		enum: ['evenly', 'percent', 'amount'],
 		default: 'evenly',
 	},
+	splitDetails: [
+		{
+			user_id: {
+				type: mongoose.Types.ObjectId,
+				ref: 'User',
+			},
+			amount: { type: Number },
+			percent: { type: Number },
+		},
+	],
 	category_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Category',

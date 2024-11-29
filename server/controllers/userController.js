@@ -17,6 +17,17 @@ const userController = {
 			console.log(e);
 		}
 	},
+	getUserDetails: async (req, res) => {
+		try {
+			const { uid } = req.user;
+
+			const user = await User.findOne({ _id: uid });
+
+			res.status(200).json({ user });
+		} catch (e) {
+			console.log(e);
+		}
+	},
 	getOneUser: async (req, res) => {
 		try {
 			const uid = req.params.id;

@@ -1,7 +1,9 @@
 import GroupExpense from '../models/groupExpenseModel.js';
 import Group from '../models/groupModel.js';
-import Budget from '../models/budgetModel.js';
+import SplitPerMember from '../models/splitPerMemberModel.js';
+
 import errorHandler from '../helpers/errorHandler.js';
+import calculateSplits from '../helpers/calculateSplits.js';
 
 // const editBudgetAmount = async (amount) => {
 // 	let budgetAmount = await Budget.findOne({ budget_id }).select('amount');
@@ -49,125 +51,26 @@ const groupExpenseController = {
 				date,
 				amount,
 				splitType,
+				splitDetails,
 				description,
 				paid_by,
 				category_id,
 				group_id,
-				percentSplits,
-				amountSplits,
 			} = req.body;
 
 			const { uid } = req.user;
 
 			paid_by = !paid_by ? uid : paid_by;
 
-			const groupData = await Group.findById(group_id);
+			const group = await Group.findById(group_id);
+			if (!group)
+				return res.status(404).json({ message: 'Group not found' });
 
-			if (!groupData)
+			const members = group.members;
+			if (members.length === 0)
 				return res
-					.status(404)
-					.json({ success: false, message: 'Group not found' });
-
-			const members = groupData.members;
-
-			let amountsOwed = [];
-			let totalAmountOwed = 0;
-
-			if (splitType === 'evenly') {
-				const numMembers = members.length;
-				const amountPerMember = amount / numMembers;
-
-				amountsOwed = members
-					.map((member) => {
-						if (member.user_id.toString() !== paid_by.toString()) {
-							return {
-								user_id: member.user_id,
-								amountOwed: amountPerMember,
-							};
-						}
-						return null;
-					})
-					.filter((owed) => owed !== null);
-
-				totalAmountOwed = amountPerMember * (numMembers - 1);
-			} else if (splitType === 'percent') {
-				let totalPercent = 0;
-				amountsOwed = members.map((member) => {
-					const userPercent = percentSplits.find(
-						(split) =>
-							split.user_id.toString() ===
-							member.user_id.toString()
-					);
-					if (userPercent) {
-						if (
-							userPercent.percent < 0 ||
-							userPercent.percent > 100
-						) {
-							throw new Error(
-								'Percent split must be between 0 and 100'
-							);
-						}
-						const amountOwed = (userPercent.percent / 100) * amount;
-						totalAmountOwed += amountOwed;
-						totalPercent += userPercent.percent;
-
-						return {
-							user_id: member.user_id,
-							amountOwed: amountOwed,
-						};
-					}
-					return null;
-				});
-
-				if (totalPercent !== 100) {
-					throw new Error('Total percentage split must sum to 100');
-				}
-			} else if (splitType === 'amount') {
-				let totalAssignedAmount = 0;
-				amountsOwed = members.map((member) => {
-					const userAmount = amountSplits.find(
-						(split) =>
-							split.user_id.toString() ===
-							member.user_id.toString()
-					);
-					if (userAmount) {
-						if (
-							userAmount.amount < 0 ||
-							userAmount.amount > amount
-						) {
-							throw new Error(
-								'Amount split must be between 0 and total amount'
-							);
-						}
-						totalAssignedAmount += userAmount.amount;
-						return {
-							user_id: member.user_id,
-							amountOwed: userAmount.amount,
-						};
-					}
-					return null;
-				});
-
-				if (totalAssignedAmount !== amount) {
-					throw new Error(
-						'The total of custom amounts owed must equal the total amount'
-					);
-				}
-			}
-
-			groupData.members = groupData.members.map((member) => {
-				const owed = amountsOwed.find(
-					(owedMember) =>
-						owedMember.user_id.toString() ===
-						member.user_id.toString()
-				);
-				if (owed) {
-					member.splitAmount = owed.amountOwed;
-				}
-				return member;
-			});
-
-			await groupData.save();
+					.status(400)
+					.json({ message: 'Group has no members' });
 
 			// if (budget_id) {
 			// 	editBudgetAmount(amount);
@@ -178,12 +81,29 @@ const groupExpenseController = {
 				date,
 				amount,
 				splitType,
+				splitDetails,
 				description,
 				paid_by,
 				category_id,
 				user_id: uid,
 				group_id,
 			});
+			const splits = calculateSplits(
+				splitType,
+				amount,
+				members,
+				splitDetails
+			);
+
+			const splitEntries = splits.map((split) => ({
+				expense_id: newExpense._id,
+				group_id: group_id,
+				member_id: split.member_id,
+				amount:
+					split.amount -
+					(String(paid_by) === String(split.member_id) ? amount : 0),
+			}));
+			await SplitPerMember.insertMany(splitEntries);
 
 			res.status(200).json({
 				success: true,
@@ -207,123 +127,28 @@ const groupExpenseController = {
 				paid_by,
 				category_id,
 				group_id,
-				percentSplits,
-				amountSplits,
+				splitDetails,
 			} = req.body;
 
-			const groupData = await Group.findById(group_id);
+			const existingExpense = await GroupExpense.findById(_id);
+			if (!existingExpense) {
+				return res
+					.status(404)
+					.json({ success: false, message: 'Expense not found' });
+			}
 
-			if (!groupData)
+			const group = await Group.findById(
+				group_id || existingExpense.group_id
+			);
+			if (!group) {
 				return res
 					.status(404)
 					.json({ success: false, message: 'Group not found' });
-
-			const members = groupData.members;
-
-			let amountsOwed = [];
-			let totalAmountOwed = 0;
-
-			if (splitType === 'evenly') {
-				const numMembers = members.length;
-				const amountPerMember = amount / numMembers;
-
-				amountsOwed = members
-					.map((member) => {
-						if (member.user_id.toString() !== paid_by.toString()) {
-							return {
-								user_id: member.user_id,
-								amountOwed: amountPerMember,
-							};
-						}
-						return null;
-					})
-					.filter((owed) => owed !== null);
-
-				totalAmountOwed = amountPerMember * (numMembers - 1);
-			} else if (splitType === 'percent') {
-				let totalPercent = 0;
-				amountsOwed = members.map((member) => {
-					const userPercent = percentSplits.find(
-						(split) =>
-							split.user_id.toString() ===
-							member.user_id.toString()
-					);
-					if (userPercent) {
-						if (
-							userPercent.percent < 0 ||
-							userPercent.percent > 100
-						) {
-							throw new Error(
-								'Percent split must be between 0 and 100'
-							);
-						}
-						const amountOwed = (userPercent.percent / 100) * amount;
-						totalAmountOwed += amountOwed;
-						totalPercent += userPercent.percent;
-
-						return {
-							user_id: member.user_id,
-							amountOwed: amountOwed,
-						};
-					}
-					return null;
-				});
-
-				if (totalPercent !== 100) {
-					throw new Error('Total percentage split must sum to 100');
-				}
-			} else if (splitType === 'amount') {
-				let totalAssignedAmount = 0;
-				amountsOwed = members.map((member) => {
-					const userAmount = amountSplits.find(
-						(split) =>
-							split.user_id.toString() ===
-							member.user_id.toString()
-					);
-					if (userAmount) {
-						if (
-							userAmount.amount < 0 ||
-							userAmount.amount > amount
-						) {
-							throw new Error(
-								'Amount split must be between 0 and total amount'
-							);
-						}
-						totalAssignedAmount += userAmount.amount;
-						return {
-							user_id: member.user_id,
-							amountOwed: userAmount.amount,
-						};
-					}
-					return null;
-				});
-
-				if (totalAssignedAmount !== amount) {
-					throw new Error(
-						'The total of custom amounts owed must equal the total amount'
-					);
-				}
 			}
 
-			groupData.members = groupData.members.map((member) => {
-				const owed = amountsOwed.find(
-					(owedMember) =>
-						owedMember.user_id.toString() ===
-						member.user_id.toString()
-				);
-				if (owed) {
-					member.splitAmount = owed.amountOwed;
-				}
-				return member;
-			});
+			const members = group.members;
 
-			await groupData.save();
-
-			// if (budget_id) {
-			// 	editBudgetAmount(amount);
-			// }
-
-			const updatedData = await GroupExpense.findOneAndUpdate(
+			const updatedExpense = await GroupExpense.findOneAndUpdate(
 				{ _id },
 				{
 					$set: {
@@ -340,14 +165,36 @@ const groupExpenseController = {
 				{ new: true }
 			);
 
+			if (amount || splitType || splitDetails || paid_by) {
+				await SplitPerMember.deleteMany({ expense_id: _id });
+
+				const splits = calculateSplits(
+					splitType || existingExpense.splitType,
+					amount || existingExpense.amount,
+					members,
+					splitDetails || existingExpense.splitDetails
+				);
+
+				const splitEntries = splits.map((split) => ({
+					expense_id: _id,
+					group_id: group_id || existingExpense.group_id,
+					member_id: split.member_id,
+					amount:
+						split.amount -
+						(paid_by.equals(split.member_id) ? amount : 0),
+				}));
+
+				await SplitPerMember.insertMany(splitEntries);
+			}
+
 			res.status(200).json({
 				success: true,
-				message: 'GroupExpense Updated',
-				updatedData,
+				message: 'GroupExpense and splits updated successfully',
+				updatedExpense,
 			});
 		} catch (e) {
 			const errors = errorHandler.handleExpenseErrors(e);
-			res.status(400).json(errors);
+			res.status(400).json({ success: false, errors });
 		}
 	},
 
