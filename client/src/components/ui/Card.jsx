@@ -45,7 +45,8 @@ const Card = ({
             className="h-3 rounded-full transition-all duration-500"
             style={{
               width: `${remainingPercentage}%`,
-              background: `linear-gradient(90deg, #80C028 ${remainingPercentage}%, #e0e0e0 ${remainingPercentage}%)`,
+              // background: `linear-gradient(90deg, #80C028 ${remainingPercentage}%, #e0e0e0 ${100}%)`,
+              background: `#80C028 ${remainingPercentage}%`,
             }}
           ></div>
         </div>
