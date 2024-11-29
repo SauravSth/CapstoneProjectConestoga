@@ -1,40 +1,38 @@
 import Expense from '../models/expenseModel.js';
 import Budget from '../models/budgetModel.js';
+import Goal from '../models/goalModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
 const editBudgetAmount = async (amount, budget_id) => {
-	let budgetAmount = await Budget.findOne({ _id: budget_id }).select(
-		'amount'
+	let budget = await Budget.findOne({ _id: budget_id }).select(
+		'amount remainingAmount'
 	);
-	let remainingBudget = budgetAmount - amount;
+	let remainingBudget = (budget.remainingAmount || budget.amount) - amount;
 	if (remainingBudget >= 0) {
-		await Budget.save({ remainingAmount: remainingBudget });
-		res.status(200).json({
-			success: true,
-			message: 'Added successfully to your budget',
-		});
+		budget.remainingAmount = remainingBudget;
+		await budget.save();
+		return { success: true, remainingAmount: remainingBudget };
 	} else {
-		res.status(400).json({
-			success: false,
-			message: 'Budget limit has been exceeded',
-		});
+		return { success: false, message: 'Insufficient budget' };
 	}
 };
 
 const editGoalAmount = async (amount, goal_id) => {
-	let goalAmount = await Goal.findOne({ _id: goal_id }).select('amount');
-	let totalSaved = goalAmount + amount;
-	if (totalSaved <= goalAmount) {
-		await Budget.save({ savedAmount: totalSaved });
-		res.status(200).json({
+	let goal = await Goal.findOne({ _id: goal_id }).select(
+		'goalAmount savedAmount'
+	);
+	let totalSaved = goal + amount;
+	if (totalSaved <= goal) {
+		await goal.save({ savedAmount: totalSaved });
+		return {
 			success: true,
 			message: 'Added successfully to your Goal',
-		});
+		};
 	} else {
-		res.status(400).json({
+		return {
 			success: false,
 			message: 'You have saved up to your set limit',
-		});
+		};
 	}
 };
 
@@ -85,8 +83,7 @@ const expenseController = {
 
 			if (budget_id) {
 				editBudgetAmount(amount, budget_id);
-			}
-			if (goal_id) {
+			} else if (goal_id) {
 				editGoalAmount(amount, goal_id);
 			}
 
@@ -126,8 +123,7 @@ const expenseController = {
 
 			if (budget_id) {
 				editBudgetAmount(amount, budget_id);
-			}
-			if (goal_id) {
+			} else if (goal_id) {
 				editGoalAmount(amount, goal_id);
 			}
 
