@@ -20,6 +20,8 @@ const BudgetExpense = () => {
   const [budgets, setBudgets] = useState({});
   const { budgetId } = useParams(); // To track the budget for each category
 
+  console.log('budet', budgetId);
+
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
@@ -43,8 +45,6 @@ const BudgetExpense = () => {
         amount: Number(amount),
         category_id: category,
         budget_id: budgetId,
-        user_id: user,
-        group_id: null,
       };
 
       console.log('HERE is the epxense data', newExpense);
