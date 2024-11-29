@@ -19,7 +19,7 @@ const userController = {
 	},
 	getOneUser: async (req, res) => {
 		try {
-			const uid = req.user.uid;
+			const uid = req.params.id;
 
 			const user = await User.findOne({ _id: uid });
 

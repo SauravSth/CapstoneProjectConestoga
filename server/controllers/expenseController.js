@@ -41,7 +41,7 @@ const expenseController = {
 		try {
 			const { uid } = req.user;
 			const expenses = await Expense.find({ user_id: uid }).populate(
-				'category_id user_id paid_by budget_id group_id'
+				'category_id user_id budget_id'
 			);
 
 			res.status(200).json({ expenses });
@@ -54,7 +54,7 @@ const expenseController = {
 			const id = req.params._id;
 
 			const expense = await Expense.findOne({ _id: id }).populate(
-				'category_id user_id paid_by budget_id group_id'
+				'category_id user_id budget_id'
 			);
 
 			res.status(200).json({ expense });
@@ -69,9 +69,7 @@ const expenseController = {
 				date,
 				amount,
 				description,
-				paid_by,
 				category_id,
-				group_id,
 				budget_id,
 				goal_id,
 			} = req.body;
@@ -89,10 +87,8 @@ const expenseController = {
 				date,
 				amount,
 				description,
-				paid_by,
 				category_id,
 				user_id: uid,
-				group_id,
 				budget_id,
 				goal_id,
 			});
@@ -115,9 +111,7 @@ const expenseController = {
 				date,
 				amount,
 				description,
-				paid_by,
 				category_id,
-				group_id,
 				budget_id,
 				goal_id,
 			} = req.body;
@@ -137,9 +131,7 @@ const expenseController = {
 						date,
 						amount,
 						description,
-						paid_by,
 						category_id,
-						group_id,
 						budget_id,
 						goal_id,
 					},
