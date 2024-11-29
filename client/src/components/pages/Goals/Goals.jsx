@@ -60,7 +60,6 @@ const Goals = () => {
         title: goalTitle,
         amount: Number(targetAmount),
         description: description,
-        user_id: user,
       };
 
       const response = await fetch('http://localhost:3000/api/goal', {
@@ -181,7 +180,78 @@ const Goals = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
         >
-          {/* Form to create a new goal */}
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label
+                htmlFor="goalTitle"
+                className="block text-gray-700"
+              >
+                Goal Title
+              </label>
+              <input
+                id="goalTitle"
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={goalTitle}
+                onChange={(e) => setGoalTitle(e.target.value)}
+                placeholder="Enter your goal title"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="targetAmount"
+                className="block text-gray-700"
+              >
+                Target Amount
+              </label>
+              <input
+                id="targetAmount"
+                type="number"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
+                placeholder="Enter the target amount"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="description"
+                className="block text-gray-700"
+              >
+                Description
+              </label>
+              <textarea
+                id="description"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter a brief description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                onClick={handleFormSubmit}
+              >
+                Create Goal
+              </button>
+            </div>
+          </form>
         </CustomModal>
 
         {/* Update Saved Amount Modal */}
