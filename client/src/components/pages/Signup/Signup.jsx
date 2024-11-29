@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../../assets/img/Logo.png';
 
 const Signup = () => {
+  const { groupID } = useParams();
+  console.log('PARAM', groupID);
+
   const [formData, setFormData] = useState({
     username: '',
     fname: '',
@@ -68,28 +71,43 @@ const Signup = () => {
       // Determine if it's the invite registration or regular signup
       const isInvite = location.pathname.startsWith('/registerFromInvite');
 
-      if (isInvite) {
-        const groupData = await fetch(api);
-      }
       const apiUrl = isInvite
-        ? `http://localhost:3000/api//group/acceptedInvite/:email/:groupID`
+        ? `http://localhost:3000/api/registerFromInvite/${groupID}`
         : `http://localhost:3000/api/signup`;
 
       try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            firstName: sanitizeInput(formData.fname.trim()),
-            lastName: sanitizeInput(formData.lname.trim()),
-            email: formData.email,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword,
-          }),
-        });
+        let response = '';
+        if (isInvite) {
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              firstName: sanitizeInput(formData.fname.trim()),
+              lastName: sanitizeInput(formData.lname.trim()),
+              email: formData.email,
+              password: formData.password,
+              confirmPassword: formData.confirmPassword,
+            }),
+          });
+        } else {
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              firstName: sanitizeInput(formData.fname.trim()),
+              lastName: sanitizeInput(formData.lname.trim()),
+              email: formData.email,
+              password: formData.password,
+              confirmPassword: formData.confirmPassword,
+            }),
+          });
+        }
 
         const data = await response.json();
 
@@ -169,8 +187,89 @@ const Signup = () => {
             <p className="text-red-500 text-sm">{errors.fname}</p>
           )}
         </div>
+        {/* Last Name */}
+        <div className="mb-4">
+          <label
+            htmlFor="lname"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Last Name
+          </label>
+          <input
+            type="text"
+            name="lname"
+            placeholder="Enter Last Name"
+            value={formData.lname}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
+          />
+          {errors.lname && (
+            <p className="text-red-500 text-sm">{errors.lname}</p>
+          )}
+        </div>
 
-        {/* Other fields: Last Name, Email, Password, Confirm Password */}
+        {/* Email */}
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email}</p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password}</p>
+          )}
+        </div>
+
+        {/* Confirm Password */}
+        <div className="mb-4">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Repeat Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+          )}
+        </div>
 
         <div>
           <button

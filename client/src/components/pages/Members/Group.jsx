@@ -38,14 +38,17 @@ const Group = () => {
     fetchGroups();
   }, []);
 
-  // Handle adding an email to the members list
   const handleAddEmail = async () => {
     if (emailInput && validateEmail(emailInput)) {
+      // Append the new email to the existing list of members
       setNewGroup((prev) => ({
         ...prev,
-        members: [...prev.members, emailInput],
+        members: [...prev.members, emailInput], // Add the email to the existing list
       }));
 
+      console.log('Upoadte', newGroup);
+
+      // Make the API call to invite the new member to the group
       await fetch('http://localhost:3000/api/group/inviteToGroup', {
         method: 'POST',
         headers: {
@@ -58,6 +61,7 @@ const Group = () => {
         }),
       });
 
+      // Clear the input field after adding the email
       setEmailInput('');
     } else {
       alert('Please enter a valid email address');
@@ -71,7 +75,7 @@ const Group = () => {
   };
 
   // Handle creating group (inviting members)
-  const handleInviteSubmit = async (e) => {
+  const handleAddNewGroup = async (e) => {
     e.preventDefault();
 
     const response = await fetch('http://localhost:3000/api/group', {
@@ -104,6 +108,44 @@ const Group = () => {
     }
   };
 
+  const handleInviteSubmit = async (e) => {
+    e.preventDefault();
+
+    // Ensure the group has the current list of members (emails)
+    const updatedGroup = {
+      ...newGroup,
+      members: [...newGroup.members, ...memberEmails], // Add any new member emails
+    };
+
+    // Make the API call to create the new group with the updated members list
+    const response = await fetch('http://localhost:3000/api/group', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(updatedGroup), // Send the updated group with emails
+    });
+
+    if (response.ok) {
+      // Refetch groups to ensure the UI updates correctly
+      const fetchGroups = async () => {
+        const response = await fetch('http://localhost:3000/api/group', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+        setGroups(Array.isArray(data) ? data : data.groups || []);
+      };
+
+      fetchGroups(); // Call to update the groups list in the UI
+      setShowInviteForm(false); // Close the modal after creating the group
+    } else {
+      alert('Error creating group');
+    }
+  };
+
   // Handle removing an email from the members list
   const handleRemoveEmail = (email) => {
     setNewGroup((prev) => ({
@@ -111,6 +153,8 @@ const Group = () => {
       members: prev.members.filter((e) => e !== email),
     }));
   };
+
+  // Initialize groupID state
 
   useEffect(() => {
     if (groupID) {
@@ -233,7 +277,7 @@ const Group = () => {
             isOpen={showAddGroupForm}
             onClose={() => setShowAddGroupForm(false)}
           >
-            <form onSubmit={handleInviteSubmit}>
+            <form onSubmit={handleAddNewGroup}>
               <div className="space-y-2">
                 <input
                   type="text"
