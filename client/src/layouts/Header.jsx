@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
 import useViewModeStore from '../store/useViewModeStore';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FaBars } from 'react-icons/fa';
 
-const Header = ({ title }) => {
+const Header = ({ title, onToggleNavbar }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-
   const { viewMode, toggleViewMode } = useViewModeStore();
 
   // Check authentication status and redirect if not authenticated
@@ -30,12 +30,24 @@ const Header = ({ title }) => {
   };
 
   return (
-    <header className="p-6 bg-white shadow-md flex justify-between items-center">
-      <h1 className="text-2xl font-bold">{title}</h1>
-      <div className="flex items-center space-x-6">
-        {/* Toggle Switch */}
+    <header className="p-4 bg-white shadow-md flex items-center justify-between">
+      {/* Hamburger Menu (Visible on Mobile) */}
+      <button
+        onClick={onToggleNavbar}
+        className="text-gray-700 text-2xl md:hidden focus:outline-none"
+        aria-label="Toggle Menu"
+      >
+        <FaBars />
+      </button>
+
+      {/* Title Section */}
+      <h1 className="text-xl md:text-2xl font-bold text-gray-800">{title}</h1>
+
+      {/* Right Section: View Mode Toggle and Authentication Links */}
+      <div className="flex items-center space-x-4">
+        {/* Toggle Switch for View Mode */}
         <div className="flex items-center space-x-2">
-          <span>{viewMode} View</span>
+          <span className="text-sm">{viewMode} View</span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -57,24 +69,25 @@ const Header = ({ title }) => {
           </label>
         </div>
 
+        {/* Authentication Links */}
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">
-            <span>Hello {user?.firstName}</span>
+            <span className="hidden md:inline text-sm">Hello, {user?.firstName}</span>
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1 text-red-500 hover:text-red-700"
             >
               <FiLogOut />
-              <span>Goodbye</span>
+              <span className="hidden md:inline">Logout</span>
             </button>
           </div>
         ) : (
           <Link
             to="/login"
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-1 text-blue-500 hover:text-blue-700"
           >
             <FiLogIn />
-            <span>Login</span>
+            <span className="hidden md:inline">Login</span>
           </Link>
         )}
       </div>

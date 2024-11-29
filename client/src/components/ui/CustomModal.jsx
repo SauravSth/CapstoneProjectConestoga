@@ -5,8 +5,8 @@ const CustomModal = ({ title, isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-96">
-        <h2 className="text-2xl mb-4">{title}</h2>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto relative">
+        <h2 className="text-xl font-semibold mb-4">{title}</h2>
         {children}
         <button
           onClick={onClose}
