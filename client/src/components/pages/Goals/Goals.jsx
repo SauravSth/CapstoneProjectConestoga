@@ -58,7 +58,7 @@ const Goals = () => {
     try {
       const newGoal = {
         title: goalTitle,
-        amount: Number(targetAmount),
+        goalAmount: Number(targetAmount),
         description: description,
       };
 
@@ -87,7 +87,7 @@ const Goals = () => {
   // Handle view details to open the update modal
   const handleViewDetails = (goal) => {
     setSelectedGoal(goal);
-    setSavedAmount(goal.remainingAmount ?? 0); // Pre-fill the saved amount
+    setSavedAmount(goal.savedAmount ?? 0); // Pre-fill the saved amount
     setIsDetailsModalOpen(true);
   };
 
@@ -98,7 +98,7 @@ const Goals = () => {
     try {
       const updatedGoal = {
         ...selectedGoal,
-        remainingAmount: Number(savedAmount),
+        savedAmount: Number(savedAmount),
       };
 
       const response = await fetch(
@@ -117,7 +117,7 @@ const Goals = () => {
         setGoals((prevGoals) =>
           prevGoals.map((goal) =>
             goal._id === selectedGoal._id
-              ? { ...goal, remainingAmount: updatedGoal.remainingAmount }
+              ? { ...goal, savedAmount: updatedGoal.savedAmount }
               : goal
           )
         );
@@ -166,8 +166,8 @@ const Goals = () => {
                   name={goal.title}
                   description={goal.description}
                   createdDate={goal.createdAt}
-                  totalAmount={goal.amount}
-                  remainingAmount={goal.remainingAmount ?? 0}
+                  goalAmount={goal.goalAmount}
+                  savedAmount={goal.savedAmount ?? 0}
                   onClick={() => handleViewDetails(goal)}
                 />
               ))}
@@ -204,10 +204,10 @@ const Goals = () => {
                 htmlFor="targetAmount"
                 className="block text-gray-700"
               >
-                Target Amount
+                Goal Amount
               </label>
               <input
-                id="targetAmount"
+                id="goalAmount"
                 type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 value={targetAmount}

@@ -4,15 +4,23 @@ const Card = ({
   name,
   description,
   createdDate,
-  totalAmount,
-  remainingAmount,
+  totalAmount, // Keep original name for budget
+  remainingAmount, // Keep original name for budget
+  goalAmount, // New name for goal
+  savedAmount, // New name for goal
   onClick,
   type,
 }) => {
-  // Calculate the percentage of the remaining amount
-  const remainingPercentage = ((remainingAmount / totalAmount) * 100).toFixed(
-    2
-  );
+  // Determine the values based on the type
+  const displayedTotalAmount = type === 'goal' ? goalAmount : totalAmount;
+  const displayedRemainingAmount =
+    type === 'goal' ? savedAmount : remainingAmount;
+
+  // Calculate the percentage of the saved/remaining amount
+  const percentage = (
+    (displayedRemainingAmount / displayedTotalAmount) *
+    100
+  ).toFixed(2);
 
   return (
     <div
@@ -31,11 +39,11 @@ const Card = ({
       <p className="mt-2 text-gray-600">{description}</p>
       <div className="flex items-center mt-4 space-x-4">
         <p className="font-bold text-lg text-gray-800">
-          {type === 'budget' ? 'Total' : 'Target'}: ${totalAmount}
+          {type === 'goal' ? 'Target' : 'Total'}: ${displayedTotalAmount}
         </p>
         <p className="text-sm text-gray-600">
-          {type === 'budget' ? 'Remaining' : 'Saved'}: ${remainingAmount}
-        </p>{' '}
+          {type === 'goal' ? 'Saved' : 'Remaining'}: ${displayedRemainingAmount}
+        </p>
       </div>
 
       {/* Progress Bar */}
@@ -44,14 +52,13 @@ const Card = ({
           <div
             className="h-3 rounded-full transition-all duration-500"
             style={{
-              width: `${remainingPercentage}%`,
-              // background: `linear-gradient(90deg, #80C028 ${remainingPercentage}%, #e0e0e0 ${100}%)`,
-              background: `#80C028 ${remainingPercentage}%`,
+              width: `${percentage}%`,
+              background: `#80C028`,
             }}
           ></div>
         </div>
         <p className="text-xs text-gray-600 mt-1">
-          {remainingPercentage}% {type === 'budget' ? 'Remaining' : 'Saved'}
+          {percentage}% {type === 'goal' ? 'Saved' : 'Remaining'}
         </p>
       </div>
 

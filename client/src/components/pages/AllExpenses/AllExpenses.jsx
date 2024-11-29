@@ -53,6 +53,7 @@ const AllExpenses = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newExpense),
+        credentials: 'include',
       });
 
       const data = await response.json();
