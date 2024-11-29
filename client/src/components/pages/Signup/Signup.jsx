@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../../../assets/img/Logo.png';
 
 const Signup = () => {
@@ -17,6 +17,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation(); // Access current URL
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,60 +25,29 @@ const Signup = () => {
   };
 
   const sanitizeInput = (value) => {
-    return value.replace(/[^a-zA-Z\s]/g, ''); // Remove any characters that are not letters or spaces
+    return value.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letter characters
   };
 
   const validateForm = () => {
     let formErrors = {};
-
-    // Sanitize first and last name fields
     const sanitizedFname = sanitizeInput(formData.fname);
-    console.log(sanitizedFname);
     const sanitizedLname = sanitizeInput(formData.lname);
-    console.log(sanitizedLname);
-    // Username validation
-    if (!formData.username) {
-      formErrors.username = 'Username is required';
-    }
 
-    // First name validation
-    if (!sanitizedFname) {
-      formErrors.fname = 'First name is required';
-    } else if (/\d/.test(formData.fname)) {
-      formErrors.fname = 'First name cannot contain numbers';
-    }
-
-    // Last name validation
-    if (!sanitizedLname) {
-      formErrors.lname = 'Last name is required';
-    } else if (/\d/.test(formData.lname)) {
-      formErrors.lname = 'Last name cannot contain numbers';
-    }
-
-    // Email validation
-    if (!formData.email) {
-      formErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      formErrors.email = 'Email is not valid';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      formErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
+    // Validate form fields...
+    if (!formData.username) formErrors.username = 'Username is required';
+    if (!sanitizedFname) formErrors.fname = 'First name is required';
+    if (!sanitizedLname) formErrors.lname = 'Last name is required';
+    if (!formData.email) formErrors.email = 'Email is required';
+    if (!validateEmail(formData.email)) formErrors.email = 'Invalid email';
+    if (!formData.password) formErrors.password = 'Password is required';
+    if (formData.password.length < 6)
       formErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Confirm password validation
-    if (!formData.confirmPassword) {
+    if (!formData.confirmPassword)
       formErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword)
       formErrors.confirmPassword = 'Passwords do not match';
-    }
 
     setErrors(formErrors);
-
-    // If no errors, return true
     return Object.keys(formErrors).length === 0;
   };
 
@@ -92,12 +62,21 @@ const Signup = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      // If form is valid, submit data
       setLoading(true);
       setSuccessMessage('');
 
+      // Determine if it's the invite registration or regular signup
+      const isInvite = location.pathname.startsWith('/registerFromInvite');
+
+      if (isInvite) {
+        const groupData = await fetch(api);
+      }
+      const apiUrl = isInvite
+        ? `http://localhost:3000/api//group/acceptedInvite/:email/:groupID`
+        : `http://localhost:3000/api/signup`;
+
       try {
-        const response = await fetch(`http://localhost:3000/api/signup`, {
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -148,6 +127,7 @@ const Signup = () => {
           className="mx-24 mb-10"
         />
 
+        {/* Form fields */}
         {/* Username */}
         <div className="mb-4">
           <label
@@ -190,91 +170,8 @@ const Signup = () => {
           )}
         </div>
 
-        {/* Last Name */}
-        <div className="mb-4">
-          <label
-            htmlFor="lname"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Last Name
-          </label>
-          <input
-            type="text"
-            name="lname"
-            placeholder="Enter Last Name"
-            value={formData.lname}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
-          />
-          {errors.lname && (
-            <p className="text-red-500 text-sm">{errors.lname}</p>
-          )}
-        </div>
+        {/* Other fields: Last Name, Email, Password, Confirm Password */}
 
-        {/* Email */}
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
-          )}
-        </div>
-
-        {/* Password */}
-        <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="mb-4">
-          <label
-            htmlFor="confirmPassword"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Repeat Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-greenPercent"
-          />
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-          )}
-        </div>
-
-        {/* Submit Button */}
         <div>
           <button
             type="submit"
@@ -285,7 +182,7 @@ const Signup = () => {
           </button>
         </div>
 
-        {/* Success Message */}
+        {/* Success/Error Messages */}
         {successMessage && (
           <p className="text-green-500 text-sm mt-4">{successMessage}</p>
         )}
