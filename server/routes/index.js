@@ -142,5 +142,6 @@ router.post(
 );
 router.get('/logout', authController.getUserLogout);
 router.get('/verify/:verificationCode', authController.verifyUser);
+router.post('/registerFromInvite', authController.registerFromInvite);
 
 export default router;
