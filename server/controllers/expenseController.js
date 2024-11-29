@@ -2,8 +2,10 @@ import Expense from '../models/expenseModel.js';
 import Budget from '../models/budgetModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
-const editBudgetAmount = async (amount) => {
-	let budgetAmount = await Budget.findOne({ budget_id }).select('amount');
+const editBudgetAmount = async (amount, budget_id) => {
+	let budgetAmount = await Budget.findOne({ _id: budget_id }).select(
+		'amount'
+	);
 	let remainingBudget = budgetAmount - amount;
 	if (remainingBudget >= 0) {
 		await Budget.save({ remainingAmount: remainingBudget });
@@ -19,8 +21,8 @@ const editBudgetAmount = async (amount) => {
 	}
 };
 
-const editGoalAmount = async (amount) => {
-	let goalAmount = await Goal.findOne({ goal_id }).select('amount');
+const editGoalAmount = async (amount, goal_id) => {
+	let goalAmount = await Goal.findOne({ _id: goal_id }).select('amount');
 	let totalSaved = goalAmount + amount;
 	if (totalSaved <= goalAmount) {
 		await Budget.save({ savedAmount: totalSaved });
@@ -40,7 +42,13 @@ const expenseController = {
 	getExpense: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const expenses = await Expense.find({ user_id: uid }).populate(
+			const { budget_id } = req.query;
+
+			const filter = { user_id: uid };
+			if (budget_id) {
+				filter.budget_id = budget_id;
+			}
+			const expenses = await Expense.find(filter).populate(
 				'category_id user_id budget_id'
 			);
 
@@ -76,10 +84,10 @@ const expenseController = {
 			const { uid } = req.user;
 
 			if (budget_id) {
-				editBudgetAmount(amount);
+				editBudgetAmount(amount, budget_id);
 			}
 			if (goal_id) {
-				editGoalAmount(amount);
+				editGoalAmount(amount, goal_id);
 			}
 
 			let newExpense = await Expense.create({
@@ -117,10 +125,10 @@ const expenseController = {
 			} = req.body;
 
 			if (budget_id) {
-				editBudgetAmount(amount);
+				editBudgetAmount(amount, budget_id);
 			}
 			if (goal_id) {
-				editGoalAmount(amount);
+				editGoalAmount(amount, goal_id);
 			}
 
 			const updatedData = await Expense.findOneAndUpdate(
