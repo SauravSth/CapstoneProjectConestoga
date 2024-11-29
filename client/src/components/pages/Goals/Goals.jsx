@@ -10,6 +10,9 @@ const Goals = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Modal for updating goal
+  const [selectedGoal, setSelectedGoal] = useState(null); // Track the selected goal
+  const [savedAmount, setSavedAmount] = useState('');
 
   // Form state for creating a new goal
   const [goalTitle, setGoalTitle] = useState('');
@@ -32,7 +35,6 @@ const Goals = () => {
         });
         const goalsData = await response.json();
         setGoals(Array.isArray(goalsData) ? goalsData : goalsData.goals || []);
-        console.log('Goals data', goals);
       } catch (error) {
         console.error('Error fetching goals:', error);
       } finally {
@@ -42,10 +44,6 @@ const Goals = () => {
 
     fetchGoals();
   }, []);
-
-  const handleViewDetails = () => {
-    console.log('ASDASD');
-  };
 
   const handleNewGoal = () => setIsModalOpen(true);
 
@@ -63,7 +61,6 @@ const Goals = () => {
         amount: Number(targetAmount),
         description: description,
         user_id: user,
-        // createdAt: new Date(),
       };
 
       const response = await fetch('http://localhost:3000/api/goal', {
@@ -88,14 +85,58 @@ const Goals = () => {
     }
   };
 
+  // Handle view details to open the update modal
+  const handleViewDetails = (goal) => {
+    setSelectedGoal(goal);
+    setSavedAmount(goal.remainingAmount ?? 0); // Pre-fill the saved amount
+    setIsDetailsModalOpen(true);
+  };
+
+  // Handle updating the saved amount
+  const handleUpdateSavedAmount = async () => {
+    if (!selectedGoal) return;
+
+    try {
+      const updatedGoal = {
+        ...selectedGoal,
+        remainingAmount: Number(savedAmount),
+      };
+
+      const response = await fetch(
+        `http://localhost:3000/api/goal/${selectedGoal._id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(updatedGoal),
+        }
+      );
+
+      if (response.ok) {
+        setGoals((prevGoals) =>
+          prevGoals.map((goal) =>
+            goal._id === selectedGoal._id
+              ? { ...goal, remainingAmount: updatedGoal.remainingAmount }
+              : goal
+          )
+        );
+        setIsDetailsModalOpen(false);
+      } else {
+        console.error('Error updating goal');
+      }
+    } catch (error) {
+      console.error('Error updating saved amount:', error);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-grow">
         <Header title="Goals" />
 
@@ -103,7 +144,6 @@ const Goals = () => {
           <div className="text-5xl font-bold">Goals</div>
           <div className="text-gray-500">Set Goals for your future</div>
 
-          {/* New Goal Button */}
           <div className="flex items-center justify-between mt-4 max-w-full">
             <button
               className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
@@ -117,7 +157,6 @@ const Goals = () => {
             </button>
           </div>
 
-          {/* Goals List */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
@@ -130,64 +169,52 @@ const Goals = () => {
                   createdDate={goal.createdAt}
                   totalAmount={goal.amount}
                   remainingAmount={goal.remainingAmount ?? 0}
-                  onClick={() => handleViewDetails()}
+                  onClick={() => handleViewDetails(goal)}
                 />
               ))}
             </div>
           )}
         </main>
 
-        {/* Custom Modal */}
         <CustomModal
           title="Create New Goal"
           isOpen={isModalOpen}
           onClose={closeModal}
         >
-          <form>
-            <div className="mb-4">
-              <label className="block text-gray-700">Goal Title</label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                value={goalTitle}
-                onChange={(e) => setGoalTitle(e.target.value)}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Target Amount</label>
-              <input
-                type="number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                value={targetAmount}
-                onChange={(e) => setTargetAmount(e.target.value)}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Description</label>
-              <textarea
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                rows="3"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
-                onClick={closeModal}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
-                onClick={handleFormSubmit}
-              >
-                Confirm
-              </button>
-            </div>
-          </form>
+          {/* Form to create a new goal */}
+        </CustomModal>
+
+        {/* Update Saved Amount Modal */}
+        <CustomModal
+          title="Update Saved Amount"
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+        >
+          <div className="mb-4">
+            <label className="block text-gray-700">Saved Amount</label>
+            <input
+              type="number"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              value={savedAmount}
+              onChange={(e) => setSavedAmount(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+              onClick={() => setIsDetailsModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+              onClick={handleUpdateSavedAmount}
+            >
+              Update
+            </button>
+          </div>
         </CustomModal>
       </div>
     </div>

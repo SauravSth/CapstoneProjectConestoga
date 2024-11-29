@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
-import CustomTable from '../../table/CustomTable';
+import BudgetTable from '../../table/BudgetTable.jsx';
 import CustomModal from '../../modal/CustomModal';
 
 import { useParams } from 'react-router-dom';
@@ -20,13 +20,23 @@ const BudgetExpense = () => {
   const [budgets, setBudgets] = useState({});
   const { budgetId } = useParams(); // To track the budget for each category
 
+  const [error, setError] = useState('');
+
   console.log('budet', budgetId);
 
   const columns = [
-    { field: 'title', headerName: 'Expense Title' },
-    { field: 'category', headerName: 'Category' },
-    { field: 'date', headerName: 'Date' },
+    { field: 'title', headerName: 'Title' },
     { field: 'amount', headerName: 'Amount' },
+    {
+      field: 'date',
+      headerName: 'Date',
+      render: (row) => new Date(row.date).toLocaleDateString(),
+    },
+    {
+      field: 'category_id.name',
+      headerName: 'Category',
+      render: (row) => row.category_id?.name || 'N/A',
+    },
   ];
 
   const handleNewExpense = () => {
@@ -95,8 +105,8 @@ const BudgetExpense = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const expenseResponse = await fetch(
-          `http://localhost:3000/api/expense`,
+        const response = await fetch(
+          `http://localhost:3000/api/expense?budget_id=${budgetId}`,
           {
             method: 'GET',
             headers: {
@@ -105,30 +115,22 @@ const BudgetExpense = () => {
             credentials: 'include',
           }
         );
-        const expenseData = await expenseResponse.json();
-        console.log('Expense Data', expenseData);
 
-        const filteredData = expenseData.expenses.filter(
-          (expense) => expense.category_id === budgetId
-        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch expenses');
+        }
 
-        const formattedData = filteredData.map((expense) => ({
-          ...expense,
-          category: expense.category_id?.name || 'Unknown Category',
-          date: new Date(expense.date).toLocaleDateString(),
-          user: expense.user_id?.username || 'Unknown User',
-        }));
-
-        setData(formattedData);
+        const expenseData = await response.json();
+        setData(expenseData.expenses);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user, budgetId]);
+  }, [budgetId]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -155,10 +157,9 @@ const BudgetExpense = () => {
 
   const calculateTotalExpenseForCategory = (categoryId) => {
     return data
-      .filter((expense) => expense.category_id === categoryId)
+      .filter((expense) => expense.category_id._id === categoryId)
       .reduce((total, expense) => total + expense.amount, 0);
   };
-
   return (
     <div className="flex h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow-lg">
@@ -173,7 +174,6 @@ const BudgetExpense = () => {
           <div className="text-gray-500">
             Keep track of your spending and budgets
           </div>
-
           <div className="flex items-center justify-between mt-4 max-w-full">
             <div className="flex items-center space-x-4 max-w-lg">
               <input
@@ -197,10 +197,11 @@ const BudgetExpense = () => {
             </button>
           </div>
 
+          {error && <div className="text-red-500">{error}</div>}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
+            <BudgetTable
               columns={columns}
               data={data}
             />
@@ -252,7 +253,12 @@ const BudgetExpense = () => {
             <button
               type="submit"
               onClick={handleFormSubmit}
-              className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg"
+              disabled={!expenseName || !category || !amount}
+              className={`w-full px-4 py-2 text-white rounded-lg ${
+                expenseName && category && amount
+                  ? 'bg-blue-500'
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
               Add Expense
             </button>
