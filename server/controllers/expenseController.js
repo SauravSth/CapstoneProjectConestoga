@@ -23,7 +23,7 @@ const editGoalAmount = async (amount) => {
 	let goalAmount = await Goal.findOne({ goal_id }).select('amount');
 	let totalSaved = goalAmount + amount;
 	if (totalSaved <= goalAmount) {
-		await Budget.save({ amount: totalSaved });
+		await Budget.save({ savedAmount: totalSaved });
 		res.status(200).json({
 			success: true,
 			message: 'Added successfully to your Goal',
