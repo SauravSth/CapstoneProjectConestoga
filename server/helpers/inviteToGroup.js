@@ -2,7 +2,7 @@ import transporter from './mailHelper.js';
 
 const sendGroupInvite = async (
 	email,
-	groupName,
+	groupDetails,
 	senderData,
 	isExistingUser
 ) => {
@@ -11,12 +11,13 @@ const sendGroupInvite = async (
 
 		let hrefLink = isExistingUser
 			? 'http://localhost:3000/api/acceptedInvite'
-			: `http://localhost:3000/api/registerFromInvite/${email}/${groupName}`;
+			: // : `http://localhost:3000/api/registerFromInvite/${email}/${groupName}`;
+			  `http://localhost:5173/registerFromInvite/${groupDetails._id}`;
 
 		let inviteMessage = isExistingUser
-			? `<h1>You have been invited to a ${groupName} by ${firstName} ${lastName}</h1>
+			? `<h1>You have been invited to a ${groupDetails.name} by ${firstName} ${lastName}</h1>
 			Press <a href="${hrefLink}" style="color: red">Here</a> join the group.`
-			: `You have been invited to join ${groupName} by ${firstName} ${lastName}.<br>Looks like you are not registered. Register<a href="${hrefLink}" style="color: red">Here</a>.`;
+			: `You have been invited to join ${groupDetails.name} by ${firstName} ${lastName}.<br>Looks like you are not registered. Register<a href="${hrefLink}" style="color: red">Here</a>.`;
 
 		let mailInfo = {
 			from: {

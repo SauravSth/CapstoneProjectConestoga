@@ -90,15 +90,20 @@ const groupController = {
 		try {
 			const { email, group_id } = req.body;
 
-			const groupName = await Group.findOne({ _id: group_id }).select(
-				'name'
+			const groupDetails = await Group.findOne({ _id: group_id }).select(
+				'_id name'
 			);
 			const senderData = await User.findOne({ _id: req.user.uid });
 			const isExistingUser = (await User.findOne({ email }))
 				? true
 				: false;
 
-			await sendGroupInvite(email, groupName, senderData, isExistingUser);
+			await sendGroupInvite(
+				email,
+				groupDetails,
+				senderData,
+				isExistingUser
+			);
 		} catch (e) {
 			console.log(e);
 		}
@@ -111,7 +116,7 @@ const groupController = {
 
 			const updateGroupData = await Group.findOneAndUpdate(
 				{ name: groupName },
-				{ $push: { members: userData._id } },
+				{ $push: { members: userData._id, invited: true } },
 				{ new: true }
 			);
 

@@ -10,6 +10,7 @@ const groupSchema = mongoose.Schema({
 		{
 			user_id: mongoose.Types.ObjectId,
 			splitAmount: Number,
+			invited: { type: Boolean, default: false },
 		},
 	],
 	user_id: {

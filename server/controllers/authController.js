@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 // Model Imports
 import User from '../models/userModel.js';
+import Group from '../models/groupModel.js';
 
 // Controller Imports
 import errorHandler from '../helpers/errorHandler.js';
@@ -88,7 +89,8 @@ const authController = {
 	},
 	registerFromInvite: async (req, res) => {
 		try {
-			const { username, firstName, lastName, email, password } = req.body;
+			const { username, firstName, lastName, email, password, group_id } =
+				req.body;
 			let newUser = await User.create({
 				username,
 				firstName,
@@ -98,10 +100,17 @@ const authController = {
 				isVerified: true,
 				isActive: true,
 			});
+
+			const updateGroupData = await Group.findOneAndUpdate(
+				{ _id: group_id },
+				{ $push: { members: userData._id, invited: true } },
+				{ new: true }
+			);
+
 			res.status(200).json({
 				success: true,
 				message: 'User created successfully.',
-				newUser,
+				data: { user: newUser, group: updateGroupData },
 			});
 		} catch (e) {
 			const errors = errorHandler.handleAuthErrors(e);
