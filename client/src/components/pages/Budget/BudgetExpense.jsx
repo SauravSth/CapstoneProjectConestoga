@@ -134,7 +134,7 @@ const BudgetExpense = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category`,
+          'http://localhost:3000/api/category',
           {
             method: 'GET',
             headers: {

@@ -43,7 +43,6 @@ const AllExpenses = () => {
         date: new Date().toISOString().slice(0, 10),
         amount: Number(amount),
         category_id: category,
-        user_id: user,
         group_id: isGroupExpense ? 'group_id_placeholder' : null, // Adjust group_id based on type
         type: isGroupExpense ? 'Group' : 'Personal', // Include type in the model
       };
@@ -129,10 +128,8 @@ const AllExpenses = () => {
       }
     };
 
-    if (user) {
-      fetchData();
-    }
-  }, [user]);
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {

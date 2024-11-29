@@ -48,7 +48,7 @@ function App() {
               element={<Group />}
             />
             <Route
-              path="/group/:groupId"
+              path="/group/:id"
               element={<GroupDetails />}
             />
 
