@@ -1,7 +1,7 @@
 import React from 'react';
 
 const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
-  const { _id, name, description, membersCount } = group;
+  const { _id, name, description, members } = group;
 
   return (
     <div
@@ -26,7 +26,7 @@ const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
       <p className="text-gray-600 mb-4">
         {description || 'No description provided.'}
       </p>
-      <p className="text-sm text-gray-500">Members: {membersCount || 0}</p>
+      <p className="text-sm text-gray-500">Members: {members.length || 0}</p>
 
       {/* Action Buttons */}
       <div className="mt-6 flex justify-end space-x-2">

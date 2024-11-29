@@ -45,6 +45,7 @@ const Budget = () => {
         const response = await fetch(`http://localhost:3000/api/budget`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
         });
         if (!response.ok) {
           throw new Error('Failed to fetch budgets');
@@ -70,8 +71,6 @@ const Budget = () => {
         amount: Number(amount),
         remainingAmount: Number(amount),
         description: description,
-        // user_id: user, // User ID from auth store
-        // createdAt: new Date(),
       };
 
       console.log('newBudget', newBudget);
@@ -81,6 +80,7 @@ const Budget = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(newBudget),
       });
 

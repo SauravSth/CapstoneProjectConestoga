@@ -23,10 +23,12 @@ const Goals = () => {
     const fetchGoals = async () => {
       try {
         setLoading(true);
-        console.log(user);
         const response = await fetch(`http://localhost:3000/api/goal`, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
         });
         const goalsData = await response.json();
         setGoals(Array.isArray(goalsData) ? goalsData : goalsData.goals || []);
@@ -39,7 +41,7 @@ const Goals = () => {
     };
 
     fetchGoals();
-  }, [user]);
+  }, []);
 
   const handleNewGoal = () => setIsModalOpen(true);
 
