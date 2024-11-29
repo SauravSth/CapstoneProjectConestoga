@@ -8,9 +8,12 @@ const goalSchema = mongoose.Schema({
 	description: {
 		type: String,
 	},
-	amount: {
+	goalAmount: {
 		type: Number,
-		required: [true, 'Please set an amount'],
+		required: [true, 'Please set a goal amount'],
+	},
+	savedAmount: {
+		type: Number,
 	},
 	user_id: {
 		type: mongoose.Types.ObjectId,

@@ -89,8 +89,8 @@ const authController = {
 	},
 	registerFromInvite: async (req, res) => {
 		try {
-			const { username, firstName, lastName, email, password, group_id } =
-				req.body;
+			const { username, firstName, lastName, email, password } = req.body;
+			const { group_id } = req.params;
 			let newUser = await User.create({
 				username,
 				firstName,
@@ -103,7 +103,7 @@ const authController = {
 
 			const updateGroupData = await Group.findOneAndUpdate(
 				{ _id: group_id },
-				{ $push: { members: userData._id, invited: true } },
+				{ $push: { members: { user_id: newUser._id }, invited: true } },
 				{ new: true }
 			);
 
