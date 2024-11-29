@@ -28,11 +28,11 @@ const goalController = {
 	},
 	postGoal: async (req, res) => {
 		try {
-			const { title, description, amount, group_id } = req.body;
+			const { title, description, goalAmount, group_id } = req.body;
 			const { uid } = req.user;
 			let newGoal = await Goal.create({
 				title,
-				amount,
+				goalAmount,
 				description,
 				user_id: uid,
 				group_id,
