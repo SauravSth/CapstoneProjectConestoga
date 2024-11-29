@@ -33,7 +33,7 @@ router.post(
 	groupController.inviteToGroup
 );
 router.post(
-	'/group/acceptedInvite/:email/:groupName',
+	'/group/acceptedInvite/:email/:groupId',
 	tokenDecoder,
 	groupController.acceptedInvite
 );
