@@ -40,7 +40,13 @@ const expenseController = {
 	getExpense: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const expenses = await Expense.find({ user_id: uid }).populate(
+			const { budget_id } = req.query;
+
+			const filter = { user_id: uid };
+			if (budget_id) {
+				filter.budget_id = budget_id;
+			}
+			const expenses = await Expense.find(filter).populate(
 				'category_id user_id budget_id'
 			);
 
