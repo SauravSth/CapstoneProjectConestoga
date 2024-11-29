@@ -8,6 +8,7 @@ const groupSchema = mongoose.Schema({
 	},
 	members: [
 		{
+			email: String,
 			user_id: mongoose.Types.ObjectId,
 			invited: { type: Boolean, default: false },
 		},
