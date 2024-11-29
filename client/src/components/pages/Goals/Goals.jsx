@@ -43,6 +43,10 @@ const Goals = () => {
     fetchGoals();
   }, []);
 
+  const handleViewDetails = () => {
+    console.log('ASDASD');
+  };
+
   const handleNewGoal = () => setIsModalOpen(true);
 
   const closeModal = () => {
@@ -126,7 +130,7 @@ const Goals = () => {
                   createdDate={goal.createdAt}
                   totalAmount={goal.amount}
                   remainingAmount={goal.remainingAmount ?? 0}
-                  onClick={() => console.log(`Clicked on goal: ${goal.title}`)}
+                  onClick={() => handleViewDetails()}
                 />
               ))}
             </div>
