@@ -37,9 +37,9 @@ const Navbar = () => {
 
       {/* Sidebar for Desktop and Mobile */}
       <div
-        className={`flex flex-col h-screen w-64 bg-green-900 fixed md:static md:translate-x-0 ${
+        className={`flex flex-col h-screen bg-green-900 fixed md:static md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 z-50`}
+        } transition-transform duration-300 z-50 w-64`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-center py-4 border-b border-gray-700">
@@ -47,7 +47,7 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Links */}
-        <ul className="mt-4 space-y-4 px-4">
+        <ul className="mt-4 space-y-4 px-4 overflow-y-auto">
           <li>
             <Link
               to="/"
