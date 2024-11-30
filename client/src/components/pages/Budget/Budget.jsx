@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
+import Footer from '../../../layouts/Footer';
 import CustomModal from '../../modal/CustomModal';
 import BudgetCard from './BudgetCard';
 
@@ -155,6 +156,7 @@ const Budget = () => {
             </div>
           )}
         </main>
+        
 
         <CustomModal
           title="Create New Budget"
@@ -208,6 +210,7 @@ const Budget = () => {
           </form>
         </CustomModal>
       </div>
+      <footer/>
     </div>
   );
 };
