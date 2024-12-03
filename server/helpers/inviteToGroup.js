@@ -10,14 +10,19 @@ const sendGroupInvite = async (
 		let { firstName, lastName } = senderData;
 
 		let hrefLink = isExistingUser
-			? 'http://localhost:3000/api/acceptedInvite'
-			: // : `http://localhost:3000/api/registerFromInvite/${email}/${groupName}`;
-			  `http://localhost:5173/registerFromInvite/${groupDetails._id}`;
+			? `http://localhost:3000/api/group/acceptedInvite/${email}/${groupDetails._id}`
+			: `http://localhost:5173/registerFromInvite/${groupDetails._id}`;
 
 		let inviteMessage = isExistingUser
 			? `<h1>You have been invited to a ${groupDetails.name} by ${firstName} ${lastName}</h1>
-			Press <a href="${hrefLink}" style="color: red">Here</a> join the group.`
-			: `You have been invited to join ${groupDetails.name} by ${firstName} ${lastName}.<br>Looks like you are not registered. Register<a href="${hrefLink}" style="color: red">Here</a>.`;
+       <form action="${hrefLink}" method="POST" style="display:inline;">
+           <button type="submit" style="color: red; background:none; border:none; cursor:pointer;">Here</button>
+       </form> to join the group.`
+			: `You have been invited to join ${groupDetails.name} by ${firstName} ${lastName}.<br>
+       Looks like you are not registered. Register 
+       <form action="${hrefLink}" method="POST" style="display:inline;">
+           <button type="submit" style="color: red; background:none; border:none; cursor:pointer;">Here</button>
+       </form>.`;
 
 		let mailInfo = {
 			from: {

@@ -111,6 +111,10 @@ const groupController = {
 				senderData,
 				isExistingUser
 			);
+			res.status(200).json({
+				success: true,
+				message: 'Invite Email Sent',
+			});
 		} catch (e) {
 			console.log(e);
 		}
