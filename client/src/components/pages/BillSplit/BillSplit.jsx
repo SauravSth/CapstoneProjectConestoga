@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useBillSplitStore from '../../../store/useBillSpiltStore';
 import Header from '../../../layouts/Header';
 import Navbar from '../../../layouts/Navbar';
@@ -11,7 +11,7 @@ const BillSplit = () => {
     email: 'piyush@mdhr.com',
     amountOwned: 0,
   };
-
+  const [groups, setGroups] = useState([]);
   const [bills, setBills] = useState([
     {
       id: 1,
@@ -71,11 +71,32 @@ const BillSplit = () => {
     setNumberOfPeople,
   } = useBillSplitStore();
 
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const groupResponse = await fetch(`http://localhost:3000/api/group`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        const groupData = await groupResponse.json();
+        setGroups(groupData.groups);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchGroups();
+  }, []);
+
   const [totalWithTip, setTotalWithTip] = useState(0);
   const [splitAmount, setSplitAmount] = useState(0);
 
   const handleNewBudget = () => {
     setIsModalOpen(true);
+    fetchGroups();
   };
 
   const handleBillChange = (e) => {
@@ -94,6 +115,36 @@ const BillSplit = () => {
       ...prevState,
       members: updatedMembers,
     }));
+  };
+
+  const handleGroupChange = async (e) => {
+    const groupId = e.target.value;
+
+    // Update the newBill state with the selected group ID
+    setNewBill((prev) => ({
+      ...prev,
+      group: groupId, // Store the selected group ID
+      members: [], // Clear the previous members
+    }));
+
+    if (groupId) {
+      try {
+        // Fetch the group details including members based on the selected group ID
+        const response = await fetch(
+          `http://localhost:3000/api/group/${groupId}`
+        );
+        const data = await response.json();
+
+        // Assuming the response contains an array of members
+        setNewBill((prev) => ({
+          ...prev,
+          members: data.members, // Set the members of the selected group
+        }));
+      } catch (error) {
+        console.error('Error fetching group details:', error);
+        alert('Failed to fetch group details');
+      }
+    }
   };
 
   const handleAddMember = () => {
@@ -222,6 +273,40 @@ const BillSplit = () => {
       >
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
+            {/* Group Selection Dropdown */}
+            <div>
+              <h3 className="font-semibold">Select Group</h3>
+              <select
+                name="group"
+                value={newBill.group}
+                onChange={handleGroupChange}
+                className="w-full p-2 border rounded"
+                required
+              >
+                <option value="">Select a Group</option>
+                {/* {Array.isArray(groupData.groups) &&
+                  groupData.groups.map((group) => (
+                    <option
+                      key={group._id}
+                      value={group._id}
+                    >
+                      {group.name}
+                    </option>
+                  ))} */}
+
+                {Array.isArray(groups) &&
+                  groups.map((group) => (
+                    <option
+                      key={group._id}
+                      value={group._id}
+                    >
+                      {group.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {/* Bill Title and Description */}
             <input
               type="text"
               name="title"
@@ -239,6 +324,8 @@ const BillSplit = () => {
               className="w-full p-2 border rounded"
               required
             />
+
+            {/* Total Amount */}
             <input
               type="number"
               name="amount"
@@ -264,52 +351,87 @@ const BillSplit = () => {
               </select>
             </div>
 
-            {/* Members Section */}
-            <div>
-              <h3 className="font-semibold">Members</h3>
-              {newBill.members.map((member, index) => (
-                <div
-                  key={index}
-                  className="space-y-2"
-                >
-                  <input
-                    type="text"
-                    name="name"
-                    value={member.name}
-                    onChange={(e) => handleMemberChange(index, e)}
-                    placeholder="Member Name"
-                    className="w-full p-2 border rounded"
-                    readOnly={member.name === currentUser.name} // Make current user readonly
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    value={member.email}
-                    onChange={(e) => handleMemberChange(index, e)}
-                    placeholder="Member Email"
-                    className="w-full p-2 border rounded"
-                    readOnly={member.email === currentUser.email} // Make current user readonly
-                  />
-                  {newBill.splitMethod !== 'equal' && ( // Conditionally render amountOwed
-                    <input
-                      type="number"
-                      name="amountOwed"
-                      value={member.amountOwed}
-                      onChange={(e) => handleMemberChange(index, e)}
-                      placeholder="Amount Owed"
-                      className="w-full p-2 border rounded"
-                    />
-                  )}
+            {/* Members and Split Amount Display */}
+            {newBill.group && (
+              <div className="flex space-x-8">
+                <div className="flex-1">
+                  <h3 className="font-semibold">Members</h3>
+                  {newBill.members.map((member, index) => (
+                    <div
+                      key={index}
+                      className="space-y-2 mb-4"
+                    >
+                      <input
+                        type="text"
+                        name="name"
+                        value={member.name}
+                        onChange={(e) => handleMemberChange(index, e)}
+                        placeholder="Member Name"
+                        className="w-full p-2 border rounded"
+                        readOnly={member.name === currentUser.name} // Make current user readonly
+                      />
+                      <input
+                        type="email"
+                        name="email"
+                        value={member.email}
+                        onChange={(e) => handleMemberChange(index, e)}
+                        placeholder="Member Email"
+                        className="w-full p-2 border rounded"
+                        readOnly={member.email === currentUser.email} // Make current user readonly
+                      />
+                      {newBill.splitMethod !== 'equal' && (
+                        <input
+                          type="number"
+                          name="amountOwed"
+                          value={member.amountOwed}
+                          onChange={(e) => handleMemberChange(index, e)}
+                          placeholder={
+                            newBill.splitMethod === 'percentage'
+                              ? 'Percentage Owed'
+                              : 'Amount Owed'
+                          }
+                          className="w-full p-2 border rounded"
+                        />
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleAddMember}
+                    className="text-blue-500"
+                  >
+                    + Add Member
+                  </button>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddMember}
-                className="text-blue-500"
-              >
-                + Add Member
-              </button>
-            </div>
+
+                {/* Split Method Display */}
+                <div className="flex-1">
+                  <h3 className="font-semibold">Split Information</h3>
+                  <div className="space-y-2">
+                    {newBill.splitMethod === 'equal' ? (
+                      <p>
+                        Each member owes an equal share of $
+                        {newBill.amount / newBill.members.length}
+                      </p>
+                    ) : newBill.splitMethod === 'percentage' ? (
+                      newBill.members.map((member, index) => (
+                        <p key={index}>
+                          {member.name} owes {member.amountOwed}% of the total
+                          bill
+                        </p>
+                      ))
+                    ) : (
+                      newBill.members.map((member, index) => (
+                        <p key={index}>
+                          {member.name} owes ${member.amountOwed} of the total
+                          bill
+                        </p>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end space-x-4">
               <button

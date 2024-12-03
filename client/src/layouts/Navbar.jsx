@@ -131,7 +131,7 @@ const Navbar = () => {
             </Link>
           </li>
 
-          <li
+          {/* <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
               activePage === 'Categories'
                 ? 'bg-green-700'
@@ -146,7 +146,7 @@ const Navbar = () => {
               <FaBoxArchive size={20} />
               <span>Categories</span>
             </Link>
-          </li>
+          </li> */}
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
