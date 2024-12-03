@@ -98,6 +98,7 @@ const Goals = () => {
     try {
       const updatedGoal = {
         ...selectedGoal,
+        _id: selectedGoal._id,
         savedAmount: Number(savedAmount),
       };
 

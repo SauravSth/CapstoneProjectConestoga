@@ -118,7 +118,7 @@ const Group = () => {
     };
 
     // Make the API call to create the new group with the updated members list
-    const response = await fetch('http://localhost:3000/api/group', {
+    const response = await fetch(`http://localhost:3000/api/group/${groupID}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
