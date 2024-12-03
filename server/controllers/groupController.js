@@ -31,9 +31,16 @@ const groupController = {
 		try {
 			const { name, members } = req.body;
 			const { uid } = req.user;
+
+			const memberEmails = members.map((email) => ({
+				email,
+				user_id: null,
+				invited: false,
+			}));
+
 			let newGroup = await Group.create({
 				name,
-				members,
+				members: memberEmails,
 				user_id: uid,
 			});
 
@@ -115,8 +122,13 @@ const groupController = {
 			const userData = await User.findOne({ email });
 
 			const updateGroupData = await Group.findOneAndUpdate(
-				{ _id: groupId },
-				{ $push: { members: userData._id, invited: true } },
+				{ _id: groupId, 'members.email': userData.email },
+				{
+					$set: {
+						'members.$.user_id': userData._id,
+						'members.$.invited': true,
+					},
+				},
 				{ new: true }
 			);
 

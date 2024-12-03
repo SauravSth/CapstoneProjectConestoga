@@ -1,4 +1,5 @@
 import Goal from '../models/goalModel.js';
+import errorHandler from '../helpers/errorHandler.js';
 
 const goalController = {
 	getGoal: async (req, res) => {
