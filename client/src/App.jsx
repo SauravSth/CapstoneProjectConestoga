@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
-import Member from './components/pages/Members/Member';
-import Group from './components/pages/SavingGroup/SavingGroup';
+import Group from './components/pages/Members/Group';
+import GroupDetails from './components/pages/Members/GroupDetails';
+// import Member from './components/pages/Members/Member';
+import Goals from './components/pages/Goals/Goals';
 import AllExpenses from './components/pages/AllExpenses/AllExpenses';
 import BillSplit from './components/pages/BillSplit/BillSplit';
 import Categories from './components/pages/Categories/Categories';
@@ -42,12 +44,17 @@ function App() {
               element={<BillSplit />}
             />
             <Route
-              path="/members"
-              element={<Member />}
+              path="/group"
+              element={<Group />}
             />
             <Route
-              path="/groups"
-              element={<Group />}
+              path="/group/:id"
+              element={<GroupDetails />}
+            />
+
+            <Route
+              path="/goals"
+              element={<Goals />}
             />
             <Route
               path="/categories"
@@ -63,6 +70,10 @@ function App() {
             />
             <Route
               path="/signup"
+              element={<Signup />}
+            />
+            <Route
+              path="/registerFromInvite/:groupID"
               element={<Signup />}
             />
             <Route

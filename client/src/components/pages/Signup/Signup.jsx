@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../../assets/img/Logo.png';
 
 const Signup = () => {
+  const { groupID } = useParams();
+  console.log('PARAM', groupID);
+
   const [formData, setFormData] = useState({
     username: '',
     fname: '',
@@ -17,6 +20,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation(); // Access current URL
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,60 +28,29 @@ const Signup = () => {
   };
 
   const sanitizeInput = (value) => {
-    return value.replace(/[^a-zA-Z\s]/g, ''); // Remove any characters that are not letters or spaces
+    return value.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letter characters
   };
 
   const validateForm = () => {
     let formErrors = {};
-
-    // Sanitize first and last name fields
     const sanitizedFname = sanitizeInput(formData.fname);
-    console.log(sanitizedFname);
     const sanitizedLname = sanitizeInput(formData.lname);
-    console.log(sanitizedLname);
-    // Username validation
-    if (!formData.username) {
-      formErrors.username = 'Username is required';
-    }
 
-    // First name validation
-    if (!sanitizedFname) {
-      formErrors.fname = 'First name is required';
-    } else if (/\d/.test(formData.fname)) {
-      formErrors.fname = 'First name cannot contain numbers';
-    }
-
-    // Last name validation
-    if (!sanitizedLname) {
-      formErrors.lname = 'Last name is required';
-    } else if (/\d/.test(formData.lname)) {
-      formErrors.lname = 'Last name cannot contain numbers';
-    }
-
-    // Email validation
-    if (!formData.email) {
-      formErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      formErrors.email = 'Email is not valid';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      formErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
+    // Validate form fields...
+    if (!formData.username) formErrors.username = 'Username is required';
+    if (!sanitizedFname) formErrors.fname = 'First name is required';
+    if (!sanitizedLname) formErrors.lname = 'Last name is required';
+    if (!formData.email) formErrors.email = 'Email is required';
+    if (!validateEmail(formData.email)) formErrors.email = 'Invalid email';
+    if (!formData.password) formErrors.password = 'Password is required';
+    if (formData.password.length < 6)
       formErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Confirm password validation
-    if (!formData.confirmPassword) {
+    if (!formData.confirmPassword)
       formErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword)
       formErrors.confirmPassword = 'Passwords do not match';
-    }
 
     setErrors(formErrors);
-
-    // If no errors, return true
     return Object.keys(formErrors).length === 0;
   };
 
@@ -92,25 +65,49 @@ const Signup = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      // If form is valid, submit data
       setLoading(true);
       setSuccessMessage('');
 
+      // Determine if it's the invite registration or regular signup
+      const isInvite = location.pathname.startsWith('/registerFromInvite');
+
+      const apiUrl = isInvite
+        ? `http://localhost:3000/api/registerFromInvite/${groupID}`
+        : `http://localhost:3000/api/signup`;
+
       try {
-        const response = await fetch(`http://localhost:3000/api/signup`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            firstName: sanitizeInput(formData.fname.trim()),
-            lastName: sanitizeInput(formData.lname.trim()),
-            email: formData.email,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword,
-          }),
-        });
+        let response = '';
+        if (isInvite) {
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              firstName: sanitizeInput(formData.fname.trim()),
+              lastName: sanitizeInput(formData.lname.trim()),
+              email: formData.email,
+              password: formData.password,
+              confirmPassword: formData.confirmPassword,
+            }),
+          });
+        } else {
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              firstName: sanitizeInput(formData.fname.trim()),
+              lastName: sanitizeInput(formData.lname.trim()),
+              email: formData.email,
+              password: formData.password,
+              confirmPassword: formData.confirmPassword,
+            }),
+          });
+        }
 
         const data = await response.json();
 
@@ -148,6 +145,7 @@ const Signup = () => {
           className="mx-24 mb-10"
         />
 
+        {/* Form fields */}
         {/* Username */}
         <div className="mb-4">
           <label
@@ -189,7 +187,6 @@ const Signup = () => {
             <p className="text-red-500 text-sm">{errors.fname}</p>
           )}
         </div>
-
         {/* Last Name */}
         <div className="mb-4">
           <label
@@ -274,7 +271,6 @@ const Signup = () => {
           )}
         </div>
 
-        {/* Submit Button */}
         <div>
           <button
             type="submit"
@@ -285,7 +281,7 @@ const Signup = () => {
           </button>
         </div>
 
-        {/* Success Message */}
+        {/* Success/Error Messages */}
         {successMessage && (
           <p className="text-green-500 text-sm mt-4">{successMessage}</p>
         )}

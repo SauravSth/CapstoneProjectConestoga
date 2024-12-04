@@ -1,13 +1,13 @@
 import React from 'react';
 import Card from '../../ui/Card';
 
-const BudgetCard = (props) => {
+const GoalCard = (props) => {
   return (
     <Card
       {...props}
-      type="budget"
+      type="goal"
     />
   );
 };
 
-export default BudgetCard;
+export default GoalCard;

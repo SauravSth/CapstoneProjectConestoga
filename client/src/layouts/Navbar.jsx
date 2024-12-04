@@ -4,13 +4,13 @@ import useNavbarStore from '../store/useNavbarStore';
 import useViewModeStore from '../store/useViewModeStore';
 import Logo from '../assets/img/Logo.png';
 import { IoPeopleSharp } from 'react-icons/io5';
-import { MdGroups } from 'react-icons/md';
 import {
   TbLayoutDashboard,
   TbReceiptDollar,
   TbSettings,
   TbLogout,
   TbReceiptTax,
+  TbTargetArrow,
 } from 'react-icons/tb';
 import { FaBoxArchive, FaChartSimple } from 'react-icons/fa6';
 
@@ -99,18 +99,18 @@ const Navbar = () => {
               </li>
               <li
                 className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-                  activePage === 'Members'
+                  activePage === 'Groups'
                     ? 'bg-green-700'
                     : 'hover:bg-green-700'
                 }`}
               >
                 <Link
-                  to="/members"
-                  onClick={() => setActivePage('Members')}
+                  to="/group"
+                  onClick={() => setActivePage('Groups')}
                   className="flex items-center space-x-4"
                 >
                   <IoPeopleSharp size={20} />
-                  <span>Members</span>
+                  <span>Groups</span>
                 </Link>
               </li>
             </>
@@ -118,20 +118,20 @@ const Navbar = () => {
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
-              activePage === 'Groups' ? 'bg-green-700' : 'hover:bg-green-700'
+              activePage === 'Goals' ? 'bg-green-700' : 'hover:bg-green-700'
             }`}
           >
             <Link
-              to="/groups"
-              onClick={() => setActivePage('Groups')}
+              to="/goals"
+              onClick={() => setActivePage('Goals')}
               className="flex items-center space-x-4"
             >
-              <MdGroups size={20} />
-              <span>Saving Groups</span>
+              <TbTargetArrow size={20} />
+              <span>Goals</span>
             </Link>
           </li>
 
-          <li
+          {/* <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
               activePage === 'Categories'
                 ? 'bg-green-700'
@@ -146,7 +146,7 @@ const Navbar = () => {
               <FaBoxArchive size={20} />
               <span>Categories</span>
             </Link>
-          </li>
+          </li> */}
 
           <li
             className={`flex items-center space-x-4 p-4 text-lg tracking-wide my-6 rounded-lg cursor-pointer ${
