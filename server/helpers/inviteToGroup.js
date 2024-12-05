@@ -13,7 +13,7 @@ const sendGroupInvite = async (
 		let { firstName, lastName } = senderData;
 
 		let hrefLink = isExistingUser
-			? `http://localhost:3000/api/group/acceptedInvite/${email}/${groupDetails._id}`
+			? `http://localhost:5173/group/acceptedInvite/${email}/${groupDetails._id}`
 			: `http://localhost:5173/registerFromInvite/${groupDetails._id}`;
 
 		let inviteMessage = isExistingUser
