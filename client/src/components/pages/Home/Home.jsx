@@ -16,7 +16,7 @@ const chartData = [
 
 const Home = () => {
   return (
-    <div className="flex h-full bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg">
         <Navbar />

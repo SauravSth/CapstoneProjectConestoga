@@ -19,23 +19,30 @@ const Group = () => {
   const [newGroup, setNewGroup] = useState({
     name: '',
     description: '',
-    members: [], // Array to hold email IDs
   });
   const [searchQuery, setSearchQuery] = useState(''); // Added state for search query
 
-  // Fetch groups from the backend
-  useEffect(() => {
-    const fetchGroups = async () => {
+  const fetchGroups = async () => {
+    try {
       const response = await fetch('http://localhost:3000/api/group', {
         method: 'GET',
         credentials: 'include',
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch groups');
+      }
+
       const data = await response.json();
-      console.log('groupData', data);
-
       setGroups(Array.isArray(data) ? data : data.groups || []);
-    };
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+      alert('Error fetching groups');
+    }
+  };
 
+  // Fetch groups from the backend
+  useEffect(() => {
     fetchGroups();
   }, []);
 
@@ -76,36 +83,67 @@ const Group = () => {
   };
 
   // Handle creating group (inviting members)
-  const handleAddNewGroup = async (e) => {
-    e.preventDefault();
+  // const handleAddNewGroup = async (e) => {
+  //   e.preventDefault();
 
-    const response = await fetch('http://localhost:3000/api/group', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(newGroup),
-    });
+  //   const response = await fetch('http://localhost:3000/api/group', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     credentials: 'include',
+  //     body: JSON.stringify(newGroup),
+  //   });
 
-    if (response.ok) {
-      // const addedGroup = await response.json();
+  //   if (response.ok) {
+  //     // const addedGroup = await response.json();
 
-      // Refetch groups to ensure the UI updates correctly
-      const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
+  //     // Refetch groups to ensure the UI updates correctly
+  //     const fetchGroups = async () => {
+  //       const response = await fetch('http://localhost:3000/api/group', {
+  //         method: 'GET',
+  //         credentials: 'include',
+  //       });
 
-        const data = await response.json();
-        setGroups(Array.isArray(data) ? data : data.groups || []);
-      };
+  //       const data = await response.json();
+  //       setGroups(Array.isArray(data) ? data : data.groups || []);
+  //     };
 
-      fetchGroups();
-      setShowInviteForm(false); // Close modal
-    } else {
-      alert('Error creating group');
+  //     fetchGroups();
+  //     setShowInviteForm(false); // Close modal
+  //   } else {
+  //     alert('Error creating group');
+  //   }
+  // };
+
+  const handleAddNewGroup = async () => {
+    if (!newGroup.name) {
+      alert('Please enter the name');
+      return;
+    }
+    console.log('New Group', newGroup);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/group', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(newGroup),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error creating group');
+      }
+
+      alert('Group created successfully!');
+
+      await fetchGroups(); // Refetch the updated groups
+      setShowInviteForm(false); // Close the modal
+    } catch (error) {
+      console.error('Error creating group:', error);
+      alert(error.message); // Show the error message
     }
   };
 
@@ -113,10 +151,10 @@ const Group = () => {
     e.preventDefault();
 
     // Ensure the group has the current list of members (emails)
-    const updatedGroup = {
-      ...newGroup,
-      members: [...newGroup.members, ...memberEmails], // Add any new member emails
-    };
+    // const updatedGroup = {
+    //   ...newGroup,
+    //   members: [...newGroup.members, ...memberEmails], // Add any new member emails
+    // };
 
     // Make the API call to create the new group with the updated members list
     const response = await fetch(`http://localhost:3000/api/group/${groupID}`, {
@@ -130,17 +168,17 @@ const Group = () => {
 
     if (response.ok) {
       // Refetch groups to ensure the UI updates correctly
-      const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
+      // const fetchGroups = async () => {
+      //   const response = await fetch('http://localhost:3000/api/group', {
+      //     method: 'GET',
+      //     credentials: 'include',
+      //   });
 
-        const data = await response.json();
-        setGroups(Array.isArray(data) ? data : data.groups || []);
-      };
+      //   const data = await response.json();
+      //   setGroups(Array.isArray(data) ? data : data.groups || []);
+      // };
 
-      fetchGroups(); // Call to update the groups list in the UI
+      await fetchGroups(); // Call to update the groups list in the UI
       setShowInviteForm(false); // Close the modal after creating the group
     } else {
       alert('Error creating group');
@@ -213,7 +251,7 @@ const Group = () => {
   // Reset form fields when modal is closed
   useEffect(() => {
     if (!showInviteForm && !showAddGroupForm) {
-      setNewGroup({ name: '', members: [] });
+      setNewGroup({ name: '', description: '' });
       setEmailInput('');
     }
   }, [showInviteForm, showAddGroupForm]);
@@ -277,7 +315,7 @@ const Group = () => {
             isOpen={showAddGroupForm}
             onClose={() => setShowAddGroupForm(false)}
           >
-            <form onSubmit={handleAddNewGroup}>
+            <form onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2">
                 <input
                   type="text"
@@ -323,7 +361,7 @@ const Group = () => {
                 </div>
 
                 {/* Render Added Emails */}
-                {newGroup.members.length > 0 && (
+                {/* {newGroup.members.length > 0 && (
                   <div className="mt-4 space-y-2">
                     {newGroup.members.map((email, index) => (
                       <div
@@ -341,7 +379,7 @@ const Group = () => {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
               <div className="flex justify-end space-x-4 mt-4">
                 <button
@@ -354,6 +392,7 @@ const Group = () => {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded"
+                  onClick={handleAddNewGroup}
                 >
                   Create Group
                 </button>
@@ -422,7 +461,7 @@ const Group = () => {
                 </div>
 
                 {/* Render New Added Emails */}
-                {newGroup.members.length > 0 && (
+                {/* {newGroup.members.length > 0 && (
                   <div className="mt-4 space-y-2">
                     {newGroup.members.map((email, index) => (
                       <div
@@ -440,7 +479,7 @@ const Group = () => {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
               <div className="flex justify-end space-x-4 mt-4">
                 <button
