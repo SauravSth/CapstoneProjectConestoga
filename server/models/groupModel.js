@@ -7,6 +7,9 @@ const groupSchema = mongoose.Schema({
 		required: [true, 'Please provide a group name'],
 		unique: true,
 	},
+	description: {
+		type: String,
+	},
 	members: [
 		{
 			email: {
