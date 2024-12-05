@@ -112,7 +112,6 @@ const errorHandler = {
 		let errors = {
 			name: '',
 		};
-		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Group already exists';
 			return { success: false, errors };

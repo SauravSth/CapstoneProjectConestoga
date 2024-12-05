@@ -106,7 +106,11 @@ const authController = {
 
 			const updateGroupData = await Group.findOneAndUpdate(
 				{ _id: group_id },
-				{ $push: { members: { user_id: newUser._id }, invited: true } },
+				{
+					$push: {
+						members: { email, user_id: newUser._id, invited: true },
+					},
+				},
 				{ new: true }
 			);
 
