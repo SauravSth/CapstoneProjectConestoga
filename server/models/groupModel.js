@@ -5,7 +5,6 @@ const groupSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: [true, 'Please provide a group name'],
-		unique: true,
 	},
 	description: {
 		type: String,
@@ -15,10 +14,9 @@ const groupSchema = mongoose.Schema({
 			email: {
 				type: String,
 				lowercase: true,
-				unique: true,
 				validate: [validator.isEmail, 'Please enter a valid email'],
 			},
-			user_id: mongoose.Types.ObjectId,
+			user_id: { type: mongoose.Types.ObjectId, ref: 'User' },
 			invited: { type: Boolean, default: false },
 		},
 	],
