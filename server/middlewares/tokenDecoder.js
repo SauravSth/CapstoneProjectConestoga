@@ -16,6 +16,7 @@ const tokenDecoder = (req, res, next) => {
 					req.user = {
 						uid: decodedToken.id,
 						userType: decodedToken.userType,
+						email: decodedToken.email,
 					};
 					next();
 				}

@@ -29,18 +29,18 @@ const groupController = {
 	},
 	postGroup: async (req, res) => {
 		try {
-			const { name, members } = req.body;
-			const { uid } = req.user;
-
-			const memberEmails = members.map((email) => ({
-				email,
-				user_id: null,
-				invited: false,
-			}));
-
+			const { name, description } = req.body;
+			const { uid, email } = req.user;
 			let newGroup = await Group.create({
 				name,
-				members: memberEmails,
+				description,
+				members: [
+					{
+						email,
+						user_id: uid,
+						isInvited: true,
+					},
+				],
 				user_id: uid,
 			});
 
@@ -56,11 +56,12 @@ const groupController = {
 	},
 	updateGroup: async (req, res) => {
 		try {
-			const { _id, name, members } = req.body;
+			const { _id } = req.params;
+			const { name, description, members } = req.body;
 
 			const updatedData = await Group.findOneAndUpdate(
 				{ _id },
-				{ $set: { name, members } },
+				{ $set: { name, description, members } },
 				{ new: true }
 			);
 

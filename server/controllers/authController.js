@@ -13,8 +13,8 @@ import verificationCodeGenerator from '../helpers/verificationCodeGenerator.js';
 
 const MAX_AGE = 3 * 24 * 60 * 60;
 
-const createToken = (id, userType) => {
-	return jwt.sign({ id, userType }, process.env.ACCESS_TOKEN_SECRET, {
+const createToken = (id, userType, email) => {
+	return jwt.sign({ id, userType, email }, process.env.ACCESS_TOKEN_SECRET, {
 		expiresIn: MAX_AGE,
 	});
 };
@@ -25,8 +25,11 @@ const authController = {
 			const { email, password } = req.body;
 
 			const userData = await User.login(email, password);
-
-			const token = createToken(userData._id, userData.userType);
+			const token = createToken(
+				userData._id,
+				userData.userType,
+				userData.email
+			);
 			res.cookie('jwt', token, {
 				httpOnly: true,
 				maxAge: MAX_AGE * 1000,
