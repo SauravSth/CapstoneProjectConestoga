@@ -127,7 +127,7 @@ const groupController = {
 			const userData = await User.findOne({ email });
 
 			const updateGroupData = await Group.findOneAndUpdate(
-				{ _id: groupId, 'members.email': userData.email },
+				{ _id: groupId, 'members.email': email },
 				{
 					$set: {
 						'members.$.user_id': userData._id,
