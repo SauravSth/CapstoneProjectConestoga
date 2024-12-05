@@ -18,6 +18,7 @@ const Group = () => {
   const [memberEmails, setMemberEmails] = useState([]);
   const [newGroup, setNewGroup] = useState({
     name: '',
+    description: '',
     members: [], // Array to hold email IDs
   });
   const [searchQuery, setSearchQuery] = useState(''); // Added state for search query
@@ -248,6 +249,16 @@ const Group = () => {
             <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
               Filter by Date
             </button>
+            {/* Add Group Button */}
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleAddGroup}
+                className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                <FaPlus className="mr-2" />
+                Add Group
+              </button>
+            </div>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
@@ -258,17 +269,6 @@ const Group = () => {
                 onClick={() => handleCardClick(group)} // Open the modal on click
               />
             ))}
-          </div>
-
-          {/* Add Group Button */}
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={handleAddGroup}
-              className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              <FaPlus className="mr-2" />
-              Add Group
-            </button>
           </div>
 
           {/* Add New Group Form Modal */}
@@ -288,6 +288,16 @@ const Group = () => {
                   }
                   className="w-full p-2 border rounded"
                 />
+
+                <textarea
+                  type="text"
+                  placeholder="Enter Group Description"
+                  value={newGroup.description}
+                  onChange={(e) =>
+                    setNewGroup({ ...newGroup, description: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                ></textarea>
 
                 {/* Email Input for Members */}
                 <div>

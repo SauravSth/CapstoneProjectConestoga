@@ -19,7 +19,7 @@ const Navbar = () => {
   const { viewMode } = useViewModeStore(); // Access viewMode from useViewModeStore
 
   return (
-    <div className="flex flex-col h-screen w-64 bg-green-900 text-white py-10">
+    <div className="flex flex-col h-full w-64 bg-green-900 text-white py-10">
       {/* Logo Section */}
       <div className="flex items-center justify-center py-4 border-b border-gray-700">
         <img
