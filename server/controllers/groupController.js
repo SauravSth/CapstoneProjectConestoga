@@ -106,12 +106,22 @@ const groupController = {
 				? true
 				: false;
 
+			const newMember = {
+				email: email,
+			};
+
+			await Group.findOneAndUpdate(
+				{ _id: group_id },
+				{ $addToSet: { members: newMember } },
+				{ new: true }
+			);
 			await sendGroupInvite(
 				email,
 				groupDetails,
 				senderData,
 				isExistingUser
 			);
+
 			res.status(200).json({
 				success: true,
 				message: 'Invite Email Sent',
