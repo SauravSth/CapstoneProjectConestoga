@@ -9,7 +9,7 @@ const groupController = {
 	getGroup: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const groups = await Group.find({ user_id: uid });
+			const groups = await Group.find({ 'members.user_id': uid });
 
 			res.status(200).json({ groups });
 		} catch (e) {
