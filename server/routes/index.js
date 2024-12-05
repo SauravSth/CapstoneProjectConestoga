@@ -34,7 +34,6 @@ router.post(
 );
 router.post(
 	'/group/acceptedInvite/:email/:groupId',
-	tokenDecoder,
 	groupController.acceptedInvite
 );
 

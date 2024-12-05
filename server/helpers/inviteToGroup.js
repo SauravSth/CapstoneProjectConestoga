@@ -18,7 +18,7 @@ const sendGroupInvite = async (
 
 		let inviteMessage = isExistingUser
 			? `<h1>You have been invited to a ${groupDetails.name} by ${firstName} ${lastName}</h1>
-		   Click Here to join the group.`
+		   Click <a href="${hrefLink}">Here</a> to join the group.`
 			: `You have been invited to join ${groupDetails.name} by ${firstName} ${lastName}.<br>
 		   Looks like you are not registered. Register <a href="${hrefLink}">Here!</a>`;
 
