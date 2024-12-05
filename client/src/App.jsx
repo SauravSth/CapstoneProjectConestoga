@@ -5,6 +5,7 @@ import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
 import Group from './components/pages/Members/Group';
+import AcceptInvite from './components/pages/Members/AcceptedInvite';
 import GroupDetails from './components/pages/Members/GroupDetails';
 // import Member from './components/pages/Members/Member';
 import Goals from './components/pages/Goals/Goals';
@@ -46,6 +47,10 @@ function App() {
             <Route
               path="/group"
               element={<Group />}
+            />
+            <Route
+              path="/group/acceptedInvite/:email/:groupId"
+              element={<AcceptInvite />}
             />
             <Route
               path="/group/:id"

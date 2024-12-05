@@ -45,9 +45,22 @@ const Group = () => {
         ...prev,
         members: [...prev.members, emailInput], // Add the email to the existing list
       }));
-      console.log('Upoadte', newGroup);
+      console.log('Updated', newGroup);
 
       // Make the API call to invite the new member to the group
+      await fetch('http://localhost:3000/api/group/inviteToGroup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: emailInput,
+          group_id: groupID,
+        }),
+      });
+
+      // Make the API call to post the new member to the group
       await fetch('http://localhost:3000/api/group/inviteToGroup', {
         method: 'POST',
         headers: {
