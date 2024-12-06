@@ -1,6 +1,5 @@
 import Expense from '../models/expenseModel.js';
 import Budget from '../models/budgetModel.js';
-import Goal from '../models/goalModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 
 const editBudgetAmount = async (amount, budget_id) => {
@@ -14,25 +13,6 @@ const editBudgetAmount = async (amount, budget_id) => {
 		return { success: true, remainingAmount: remainingBudget };
 	} else {
 		return { success: false, message: 'Insufficient budget' };
-	}
-};
-
-const editGoalAmount = async (amount, goal_id) => {
-	let goal = await Goal.findOne({ _id: goal_id }).select(
-		'goalAmount savedAmount'
-	);
-	let totalSaved = goal + amount;
-	if (totalSaved <= goal) {
-		await goal.save({ savedAmount: totalSaved });
-		return {
-			success: true,
-			message: 'Added successfully to your Goal',
-		};
-	} else {
-		return {
-			success: false,
-			message: 'You have saved up to your set limit',
-		};
 	}
 };
 
@@ -70,21 +50,12 @@ const expenseController = {
 	},
 	postExpense: async (req, res) => {
 		try {
-			let {
-				title,
-				date,
-				amount,
-				description,
-				category_id,
-				budget_id,
-				goal_id,
-			} = req.body;
+			let { title, date, amount, description, category_id, budget_id } =
+				req.body;
 			const { uid } = req.user;
 
 			if (budget_id) {
 				editBudgetAmount(amount, budget_id);
-			} else if (goal_id) {
-				editGoalAmount(amount, goal_id);
 			}
 
 			let newExpense = await Expense.create({
@@ -95,7 +66,6 @@ const expenseController = {
 				category_id,
 				user_id: uid,
 				budget_id,
-				goal_id,
 			});
 
 			res.status(200).json({
@@ -118,13 +88,10 @@ const expenseController = {
 				description,
 				category_id,
 				budget_id,
-				goal_id,
 			} = req.body;
 
 			if (budget_id) {
 				editBudgetAmount(amount, budget_id);
-			} else if (goal_id) {
-				editGoalAmount(amount, goal_id);
 			}
 
 			const updatedData = await Expense.findOneAndUpdate(
@@ -137,7 +104,6 @@ const expenseController = {
 						description,
 						category_id,
 						budget_id,
-						goal_id,
 					},
 				},
 				{ new: true }

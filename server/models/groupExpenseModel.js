@@ -47,10 +47,6 @@ const groupExpenseSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'Group',
 	},
-	budget_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'Budget',
-	},
 	createdAt: {
 		type: Date,
 		default: Date.now(),
