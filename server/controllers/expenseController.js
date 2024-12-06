@@ -80,15 +80,10 @@ const expenseController = {
 	},
 	updateExpense: async (req, res) => {
 		try {
-			let {
-				_id,
-				title,
-				date,
-				amount,
-				description,
-				category_id,
-				budget_id,
-			} = req.body;
+			let { title, date, amount, description, category_id, budget_id } =
+				req.body;
+
+			const { _id } = req.params;
 
 			if (budget_id) {
 				editBudgetAmount(amount, budget_id);

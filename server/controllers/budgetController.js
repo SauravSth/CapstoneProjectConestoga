@@ -53,11 +53,11 @@ const budgetController = {
 	},
 	updateBudget: async (req, res) => {
 		try {
-			const { _id, title, description, amount, group_id } = req.body;
-
+			const { title, description, amount } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Budget.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, description, amount, group_id } },
+				{ $set: { title, description, amount } },
 				{ new: true }
 			);
 

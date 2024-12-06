@@ -41,8 +41,8 @@ const userController = {
 	},
 	updateUser: async (req, res) => {
 		try {
-			const { _id, username, firstName, lastName, email, password } =
-				req.body;
+			const { username, firstName, lastName, email, password } = req.body;
+			const { _id } = req.params;
 
 			const updatedData = await User.findOneAndUpdate(
 				{ _id },

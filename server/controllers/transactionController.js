@@ -1,6 +1,6 @@
 import Transaction from '../models/transactionModel.js';
 import errorHandler from '../helpers/errorHandler.js';
-import Expense from '../models/expenseModel.js';
+import GroupExpense from '../models/groupExpenseModel.js';
 
 const transactionController = {
 	getTransaction: async (req, res) => {
@@ -10,7 +10,7 @@ const transactionController = {
 				[
 					{ path: 'payer' },
 					{ path: 'receiver' },
-					{ path: 'expense_id', select: 'amount' },
+					{ path: 'groupExpense_id', select: 'amount' },
 				]
 			);
 
@@ -27,7 +27,7 @@ const transactionController = {
 				[
 					{ path: 'payer' },
 					{ path: 'receiver' },
-					{ path: 'expense_id', select: 'amount' },
+					{ path: 'groupExpense_id', select: 'amount' },
 				]
 			);
 
@@ -43,20 +43,20 @@ const transactionController = {
 				payer,
 				receiver,
 				paidAmount,
-				expense_id,
+				groupExpense_id,
 				date,
 
 				group_id,
 			} = req.body;
 			const { uid } = req.user;
-			let totalAmount = await Expense.findOne({
-				_id: expense_id,
+			let totalAmount = await GroupExpense.findOne({
+				_id: groupExpense_id,
 				group_id: group_id,
 			}).select('amount');
 			let newTotal = totalAmount - paidAmount;
 
 			if (newTotal > 0) {
-				await Expense.save({ amount: newTotal });
+				await GroupExpense.save({ amount: newTotal });
 			} else {
 				console.log('Paid Fully');
 			}
@@ -66,7 +66,7 @@ const transactionController = {
 				payer,
 				receiver,
 				paidAmount,
-				expense_id,
+				groupExpense_id,
 				date,
 				user_id: uid,
 			});
@@ -84,14 +84,14 @@ const transactionController = {
 	updateTransaction: async (req, res) => {
 		try {
 			const {
-				_id,
 				title,
 				payer,
 				receiver,
 				paidAmount,
-				expense_id,
+				groupExpense_id,
 				date,
 			} = req.body;
+			const { _id } = req.params;
 
 			const updatedData = await Transaction.findOneAndUpdate(
 				{ _id },
@@ -101,7 +101,7 @@ const transactionController = {
 						payer,
 						receiver,
 						paidAmount,
-						expense_id,
+						groupExpense_id,
 						date,
 					},
 				},

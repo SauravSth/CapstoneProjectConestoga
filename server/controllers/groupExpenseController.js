@@ -101,7 +101,6 @@ const groupExpenseController = {
 	updateExpense: async (req, res) => {
 		try {
 			let {
-				_id,
 				title,
 				date,
 				amount,
@@ -112,6 +111,7 @@ const groupExpenseController = {
 				group_id,
 				splitDetails,
 			} = req.body;
+			const { _id } = req.params;
 
 			const existingExpense = await GroupExpense.findById(_id);
 			if (!existingExpense) {

@@ -17,7 +17,6 @@ import goalController from '../controllers/goalController.js';
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
 import tokenDecoder from '../middlewares/tokenDecoder.js';
-import authentication from '../middlewares/authentication.js';
 
 const router = express.Router();
 
@@ -25,7 +24,7 @@ const router = express.Router();
 router.get('/group', tokenDecoder, groupController.getGroup);
 router.get('/group/:_id', tokenDecoder, groupController.getOneGroup);
 router.post('/group', tokenDecoder, groupController.postGroup);
-router.patch('/group/:id', tokenDecoder, groupController.updateGroup);
+router.patch('/group/:_id', tokenDecoder, groupController.updateGroup);
 router.delete('/group', tokenDecoder, groupController.deleteGroup);
 router.post(
 	'/group/inviteToGroup',
@@ -41,42 +40,42 @@ router.post(
 router.get('/budget', tokenDecoder, budgetController.getBudget);
 router.get('/budget/:_id', tokenDecoder, budgetController.getOneBudget);
 router.post('/budget', tokenDecoder, budgetController.postBudget);
-router.patch('/budget/:id', tokenDecoder, budgetController.updateBudget);
+router.patch('/budget/:_id', tokenDecoder, budgetController.updateBudget);
 router.delete('/budget', tokenDecoder, budgetController.deleteBudget);
 
 // Goal Routes
 router.get('/goal', tokenDecoder, goalController.getGoal);
 router.get('/goal/:_id', tokenDecoder, goalController.getOneGoal);
 router.post('/goal', tokenDecoder, goalController.postGoal);
-router.patch('/goal/:id', tokenDecoder, goalController.updateGoal);
+router.patch('/goal/:_id', tokenDecoder, goalController.updateGoal);
 router.delete('/goal', tokenDecoder, goalController.deleteGoal);
 
 // Category Routes
 router.get('/category', tokenDecoder, categoryController.getCategory);
 router.get('/category/:_id', tokenDecoder, categoryController.getOneCategory);
 router.post('/category', tokenDecoder, categoryController.postCategory);
-router.patch('/category/:id', tokenDecoder, categoryController.updateCategory);
+router.patch('/category/:_id', tokenDecoder, categoryController.updateCategory);
 router.delete('/category', tokenDecoder, categoryController.deleteCategory);
 
 // Item Routes
 router.get('/item', tokenDecoder, itemController.getItem);
 router.get('/item/:_id', tokenDecoder, itemController.getOneItem);
 router.post('/item', tokenDecoder, itemController.postItem);
-router.patch('/item/:id', tokenDecoder, itemController.updateItem);
+router.patch('/item/:_id', tokenDecoder, itemController.updateItem);
 router.delete('/item', tokenDecoder, itemController.deleteItem);
 
 // Store Routes
 router.get('/store', tokenDecoder, storeController.getStore);
 router.get('/store/:_id', tokenDecoder, storeController.getOneStore);
 router.post('/store', tokenDecoder, storeController.postStore);
-router.patch('/store/:id', tokenDecoder, storeController.updateStore);
+router.patch('/store/:_id', tokenDecoder, storeController.updateStore);
 router.delete('/store', tokenDecoder, storeController.deleteStore);
 
 // Expense Routes
 router.get('/expense', tokenDecoder, expenseController.getExpense);
 router.get('/expense/:_id', tokenDecoder, expenseController.getOneExpense);
 router.post('/expense', tokenDecoder, expenseController.postExpense);
-router.patch('/expense/:id', tokenDecoder, expenseController.updateExpense);
+router.patch('/expense/:_id', tokenDecoder, expenseController.updateExpense);
 router.delete('/expense', tokenDecoder, expenseController.deleteExpense);
 
 // GroupExpense Routes
@@ -88,7 +87,7 @@ router.get(
 );
 router.post('/groupExpense', tokenDecoder, groupExpenseController.postExpense);
 router.patch(
-	'/groupExpense/:id',
+	'/groupExpense/:_id',
 	tokenDecoder,
 	groupExpenseController.updateExpense
 );
@@ -111,7 +110,7 @@ router.post(
 	transactionController.postTransaction
 );
 router.patch(
-	'/transaction/:id',
+	'/transaction/:_id',
 	tokenDecoder,
 	transactionController.updateTransaction
 );
@@ -124,8 +123,8 @@ router.delete(
 // Admin Routes
 router.get('/user', tokenDecoder, userController.getUser);
 router.get('/userDetail', tokenDecoder, userController.getUserDetails);
-router.get('/userDetail/:id', tokenDecoder, userController.getOneUser);
-router.patch('/user/:id', tokenDecoder, userController.updateUser);
+router.get('/userDetail/:_id', tokenDecoder, userController.getOneUser);
+router.patch('/user/:_id', tokenDecoder, userController.updateUser);
 router.delete('/user', tokenDecoder, userController.deleteUser);
 
 // TEST ROUTES
