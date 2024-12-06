@@ -43,7 +43,8 @@ const categoryController = {
 	},
 	updateCategory: async (req, res) => {
 		try {
-			const { _id, name } = req.body;
+			const { name } = req.body;
+			const { _id } = req.params;
 
 			const updatedData = await Category.findOneAndUpdate(
 				{ _id },

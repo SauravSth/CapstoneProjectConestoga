@@ -17,9 +17,9 @@ const transactionSchema = mongoose.Schema({
 		type: Number,
 		required: [true, 'Paid Amount is required'],
 	},
-	expense_id: {
+	groupExpense_id: {
 		type: mongoose.Types.ObjectId,
-		ref: 'Expense',
+		ref: 'GroupExpense',
 	},
 	date: {
 		type: Date,

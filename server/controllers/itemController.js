@@ -52,8 +52,8 @@ const itemController = {
 	},
 	updateItem: async (req, res) => {
 		try {
-			const { _id, name, quantity, price, category_id } = req.body;
-
+			const { name, quantity, price, category_id } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Item.findOneAndUpdate(
 				{ _id },
 				{ $set: { name, quantity, price, category_id } },

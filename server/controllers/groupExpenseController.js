@@ -5,19 +5,6 @@ import SplitPerMember from '../models/splitPerMemberModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 import calculateSplits from '../helpers/calculateSplits.js';
 
-// const editBudgetAmount = async (amount) => {
-// 	let budgetAmount = await Budget.findOne({ budget_id }).select('amount');
-// 	let remainingBudget = budgetAmount - amount;
-// 	if (remainingBudget >= 0) {
-// 		await Budget.save({ remainingAmount: remainingBudget });
-// 	} else {
-// 		res.status(400).json({
-// 			success: false,
-// 			message: 'Budget limit has been exceeded',
-// 		});
-// 	}
-// };
-
 const groupExpenseController = {
 	getExpense: async (req, res) => {
 		try {
@@ -72,10 +59,6 @@ const groupExpenseController = {
 					.status(400)
 					.json({ message: 'Group has no members' });
 
-			// if (budget_id) {
-			// 	editBudgetAmount(amount);
-			// }
-
 			let newExpense = await GroupExpense.create({
 				title,
 				date,
@@ -118,7 +101,6 @@ const groupExpenseController = {
 	updateExpense: async (req, res) => {
 		try {
 			let {
-				_id,
 				title,
 				date,
 				amount,
@@ -129,6 +111,7 @@ const groupExpenseController = {
 				group_id,
 				splitDetails,
 			} = req.body;
+			const { _id } = req.params;
 
 			const existingExpense = await GroupExpense.findById(_id);
 			if (!existingExpense) {
