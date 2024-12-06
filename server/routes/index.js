@@ -17,6 +17,7 @@ import goalController from '../controllers/goalController.js';
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
 import authentication from '../middlewares/authentication.js';
+import authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
 
@@ -51,15 +52,36 @@ router.patch('/goal/:_id', authentication, goalController.updateGoal);
 router.delete('/goal', authentication, goalController.deleteGoal);
 
 // Category Routes
-router.get('/category', authentication, categoryController.getCategory);
-router.get('/category/:_id', authentication, categoryController.getOneCategory);
-router.post('/category', authentication, categoryController.postCategory);
+router.get(
+	'/category',
+	authentication,
+	authorization,
+	categoryController.getCategory
+);
+router.get(
+	'/category/:_id',
+	authentication,
+	authorization,
+	categoryController.getOneCategory
+);
+router.post(
+	'/category',
+	authentication,
+	authorization,
+	categoryController.postCategory
+);
 router.patch(
 	'/category/:_id',
 	authentication,
+	authorization,
 	categoryController.updateCategory
 );
-router.delete('/category', authentication, categoryController.deleteCategory);
+router.delete(
+	'/category',
+	authentication,
+	authorization,
+	categoryController.deleteCategory
+);
 
 // Item Routes
 router.get('/item', authentication, itemController.getItem);
@@ -133,16 +155,31 @@ router.delete(
 );
 
 // Admin Routes
-router.get('/user', authentication, userController.getUser);
-router.get('/userDetail', authentication, userController.getUserDetails);
-router.get('/userDetail/:_id', authentication, userController.getOneUser);
-router.patch('/user/:_id', authentication, userController.updateUser);
-router.delete('/user', authentication, userController.deleteUser);
+router.get('/user', authentication, authorization, userController.getUser);
+router.get(
+	'/userDetail',
+	authentication,
+	authorization,
+	userController.getUserDetails
+);
+router.patch(
+	'/user/:_id',
+	authentication,
+	authorization,
+	userController.updateUser
+);
+router.delete(
+	'/user',
+	authentication,
+	authorization,
+	userController.deleteUser
+);
 
 // TEST ROUTES
 router.get('/test', authentication, userController.testRoute);
 
 // Auth Routes
+router.get('/userDetail/:_id', authentication, userController.getOneUser);
 router.post('/login', authController.postUserLogin);
 router.post(
 	'/signup',

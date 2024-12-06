@@ -1,4 +1,6 @@
 import Category from '../models/categoryModel.js';
+import GroupExpense from '../models/groupExpenseModel.js';
+import Expense from '../models/expenseModel.js';
 
 // Error handler import
 import errorHandler from '../helpers/errorHandler.js';
@@ -65,6 +67,20 @@ const categoryController = {
 	deleteCategory: async (req, res) => {
 		try {
 			const { _id } = req.body;
+
+			const isCategoryBeingUsed = await Expense.findOne({
+				category_id: _id,
+			});
+			const isCategoryBeingUsedInGroup = await GroupExpense.findOne({
+				category_id: _id,
+			});
+
+			if (isCategoryBeingUsed || isCategoryBeingUsedInGroup) {
+				return res.status(400).json({
+					success: false,
+					message: 'Category is being used. Cannot delete.',
+				});
+			}
 
 			const deletedData = await Category.findOneAndUpdate(
 				{ _id },
