@@ -27,7 +27,7 @@ const groupExpenseSchema = mongoose.Schema({
 				type: mongoose.Types.ObjectId,
 				ref: 'User',
 			},
-			amount: { type: Number },
+			amountOwed: { type: Number },
 			percent: { type: Number },
 		},
 	],
