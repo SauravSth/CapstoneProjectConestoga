@@ -10,13 +10,13 @@ const BillSplit = () => {
       title: '',
       date: '',
       amount: '',
-      category: '',
+      category_id: '',
       description: '',
       splitType: 'evenly',
-      splitDetails: [],
-      category: '',
-      paidBy: '',
-      groupId: '',
+      splitDetails: [{ user_id: '' }],
+      category_id: '',
+      paid_by: '',
+      group_id: '',
     },
   ]);
 
@@ -26,10 +26,10 @@ const BillSplit = () => {
     amount: '',
     description: '',
     splitType: 'evenly',
-    splitDetails: [],
-    category: '',
-    paidBy: '',
-    groupId: '',
+    splitDetails: [{ user_id: '' }],
+    category_id: '',
+    paid_by: '',
+    group_id: '',
     remainingPercentage: 0,
     remainingAmount: 0,
   });
@@ -37,11 +37,8 @@ const BillSplit = () => {
   const [groups, setGroups] = useState([]);
   const [groupID, setGroupID] = useState();
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState('');
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Add generated logic or hooks here, e.g., fetch functions, effect hooks, etc.
 
   // groups fetch
   useEffect(() => {
@@ -55,9 +52,7 @@ const BillSplit = () => {
           credentials: 'include',
         });
         const groupData = await groupResponse.json();
-        console.log('Group', groupData);
         setGroups(groupData.groups);
-        console.log(groups);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -135,10 +130,10 @@ const BillSplit = () => {
         amount: '',
         description: '',
         splitType: 'evenly',
-        splitDetails: [],
-        category: '',
-        paidBy: '',
-        groupId: groupID,
+        splitDetails: [{ user_id: '' }],
+        category_id: '',
+        paid_by: '',
+        group_id: groupID,
         remainingPercentage: 0,
         remainingAmount: 0,
       });
@@ -148,8 +143,9 @@ const BillSplit = () => {
   // Function to initialize percentages evenly
   const initializeEvenSplit = () => {
     const evenPercentage = 100 / members.length;
-    const initialSplitDetails = members.map(() => ({
-      percentage: evenPercentage.toFixed(0), // Distribute evenly
+    const initialSplitDetails = members.map((member) => ({
+      user_id: member.user._id,
+      percent: evenPercentage.toFixed(0), // Distribute evenly
     }));
 
     setNewBill((prevBill) => ({
@@ -157,13 +153,18 @@ const BillSplit = () => {
       splitDetails: initialSplitDetails,
       remainingPercentage: 0, // Initially, all percentages are assigned
     }));
+
+    console.log('initializeNewBill newBill', newBill);
   };
 
   const handleSplitType = (index, e) => {
     const { name, value } = e.target;
+    // console.log('Target', e.target);
+    // setNewBill((prevBill) => {...prevBill, splitDetails});
     const updatedSplitDetails = [...newBill.splitDetails];
+    console.log('User', updatedSplitDetails);
 
-    if (name === 'percentage') {
+    if (name === 'percent') {
       const newPercentage = parseFloat(value);
 
       if (isNaN(newPercentage) || newPercentage < 0) {
@@ -175,10 +176,13 @@ const BillSplit = () => {
         updatedSplitDetails[index] = {}; // Initialize if undefined
       }
 
-      updatedSplitDetails[index].percentage = newPercentage;
+      updatedSplitDetails[index].user_id = members[index].user._id;
+      updatedSplitDetails[index].percent = newPercentage;
+
+      console.log('AfterChange', updatedSplitDetails);
 
       const totalAssignedPercentage = updatedSplitDetails.reduce(
-        (acc, detail) => acc + (parseFloat(detail.percentage) || 0),
+        (acc, detail) => acc + (parseFloat(detail.percent) || 0),
         0
       );
 
@@ -189,6 +193,8 @@ const BillSplit = () => {
         splitDetails: updatedSplitDetails,
         remainingPercentage,
       }));
+
+      console.log('New Data', newBill);
     }
 
     if (name === 'amountOwed') {
@@ -231,7 +237,7 @@ const BillSplit = () => {
     const { value } = e.target;
     setNewBill((prevBill) => ({
       ...prevBill,
-      groupId: value,
+      group_id: value,
     }));
     setGroupID(() => value);
   };
@@ -258,9 +264,12 @@ const BillSplit = () => {
 
     if (name === 'splitType' && value === 'percent') {
       const evenPercentage = 100 / members.length;
-      const updatedSplitDetails = members.map(() => ({
-        percentage: evenPercentage.toFixed(2),
+      const updatedSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        percent: evenPercentage.toFixed(2),
       }));
+
+      console.log('Update', updatedSplitDetails);
 
       setNewBill((prevBill) => ({
         ...prevBill,
@@ -285,7 +294,7 @@ const BillSplit = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (newBill.splitType === 'percent' && newBill.remainingPercentage > 0) {
       alert('Please assign all percentages before submitting.');
@@ -297,20 +306,41 @@ const BillSplit = () => {
     }
     console.log('NEWBILL', newBill);
 
-    setBills((prevBills) => [...prevBills, newBill]);
-    setIsModalOpen(false);
-    setNewBill({
-      title: '',
-      date: '',
-      amount: '',
-      description: '',
-      splitType: 'evenly',
-      splitDetails: [],
-      category: '',
-      paidBy: '',
-      groupId: '',
-      remainingPercentage: 0,
-    });
+    try {
+      const response = await fetch('http://localhost:3000/api/groupExpense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      console.log('NEW GROUP EXPENSE', data);
+
+      if (response.ok) {
+        setBills((prevBills) => [...prevBills, newBill]);
+        setIsModalOpen(false);
+        setNewBill({
+          title: '',
+          date: '',
+          amount: '',
+          description: '',
+          splitType: 'evenly',
+          splitDetails: [{ user_id: '' }],
+          category_id: '',
+          paid_by: '',
+          group_id: '',
+          remainingPercentage: 0,
+        });
+      } else {
+        alert('Error submitting group expense');
+        console.error('Error:', data);
+      }
+    } catch (error) {
+      console.error('Error submitting new group expense:', error);
+    }
   };
 
   return (
@@ -372,8 +402,8 @@ const BillSplit = () => {
             <div className="mb-4">
               <label className="block text-gray-700">Category</label>
               <select
-                value={newBill.category}
-                name="category"
+                value={newBill.category_id}
+                name="category_id"
                 onChange={handleCategoryChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
@@ -414,8 +444,8 @@ const BillSplit = () => {
             <div>
               <h3 className="font-semibold">Select Group</h3>
               <select
-                name="groupId"
-                value={newBill.groupId}
+                name="group_id"
+                value={newBill.group_id}
                 onChange={handleGroupChange}
                 className="w-full p-2 border rounded"
                 required
@@ -437,8 +467,8 @@ const BillSplit = () => {
             <div>
               <h3 className="font-semibold">Paid By</h3>
               <select
-                name="paidBy"
-                value={newBill.paidBy}
+                name="paid_by"
+                value={newBill.paid_by}
                 onChange={handlePaidByChange}
                 className="w-full p-2 border rounded"
                 required
@@ -475,6 +505,7 @@ const BillSplit = () => {
               {newBill.splitType === 'amountOwed' && (
                 <div className="mt-4">
                   <h3 className="font-semibold">
+                    {console.log('Remaining Amount:', newBill.remainingAmount)}
                     Remaining Amount: ${newBill.remainingAmount.toFixed(2)}
                   </h3>
                   {newBill.remainingAmount > 0 && (
@@ -494,7 +525,7 @@ const BillSplit = () => {
                 <select
                   name="splitType"
                   value={newBill.splitType}
-                  onChange={handleBillChange}
+                  onChange={(e) => handleBillChange(e, members)}
                   className="w-full p-2 border rounded mt-1"
                   required
                 >
@@ -541,9 +572,9 @@ const BillSplit = () => {
                     <div className="flex-1">
                       <input
                         type="number"
-                        name="percentage"
+                        name="percent"
                         placeholder="Percentage"
-                        value={newBill.splitDetails[index]?.percentage || 0}
+                        value={newBill.splitDetails[index]?.percent || 0}
                         onChange={(e) => handleSplitType(index, e)}
                         className="w-full p-2 border rounded"
                       />
