@@ -21,7 +21,7 @@ const calculateSplits = (splitType, amount, members, splitDetails) => {
 			});
 			break;
 
-		case 'amount':
+		case 'amountOwed':
 			if (!splitDetails || splitDetails.length !== members.length) {
 				throw new Error(
 					'Invalid split details for amount-based split.'

@@ -30,7 +30,7 @@ const userController = {
 	},
 	getOneUser: async (req, res) => {
 		try {
-			const uid = req.params.id;
+			const uid = req.params._id;
 
 			const user = await User.findOne({ _id: uid });
 

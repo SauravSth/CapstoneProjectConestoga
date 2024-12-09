@@ -18,7 +18,7 @@ const groupExpenseSchema = mongoose.Schema({
 	},
 	splitType: {
 		type: String,
-		enum: ['evenly', 'percent', 'amount'],
+		enum: ['evenly', 'percent', 'amountOwed'],
 		default: 'evenly',
 	},
 	splitDetails: [
