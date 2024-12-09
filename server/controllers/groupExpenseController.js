@@ -85,7 +85,6 @@ const groupExpenseController = {
 					split.amount -
 					(String(paid_by) === String(split.member_id) ? amount : 0),
 			}));
-			console.log('here', splitEntries);
 			await SplitPerMember.insertMany(splitEntries);
 
 			res.status(200).json({
