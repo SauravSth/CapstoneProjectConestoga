@@ -71,7 +71,7 @@ const groupExpenseController = {
 				user_id: uid,
 				group_id,
 			});
-			const splits = calculateSplits(
+			const splits = await calculateSplits(
 				splitType,
 				amount,
 				members,

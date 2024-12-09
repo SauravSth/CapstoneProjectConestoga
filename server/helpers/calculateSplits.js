@@ -1,4 +1,4 @@
-const calculateSplits = (splitType, amount, members, splitDetails) => {
+const calculateSplits = async (splitType, amount, members, splitDetails) => {
 	const splits = [];
 
 	switch (splitType) {
