@@ -71,21 +71,21 @@ const groupExpenseController = {
 				user_id: uid,
 				group_id,
 			});
-			const splits = calculateSplits(
+			const splits = await calculateSplits(
 				splitType,
 				amount,
 				members,
 				splitDetails
 			);
-
 			const splitEntries = splits.map((split) => ({
-				expense_id: newExpense._id,
+				groupExpense_id: newExpense._id,
 				group_id: group_id,
-				member_id: split.member_id,
-				amount:
+				user_id: split.member_id,
+				splitPerMember:
 					split.amount -
 					(String(paid_by) === String(split.member_id) ? amount : 0),
 			}));
+			console.log('here', splitEntries);
 			await SplitPerMember.insertMany(splitEntries);
 
 			res.status(200).json({
