@@ -39,7 +39,10 @@ const CustomModal = ({ title, isOpen, onClose, children }) => {
             &times;
           </button>
         </div>
-        <div className="mb-4">{children}</div>
+        <div className="modal-content max-h-96 overflow-y-auto mb-4">
+          {/* Content that can scroll */}
+          {children}
+        </div>
       </div>
     </div>
   );
