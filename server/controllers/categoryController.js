@@ -29,8 +29,11 @@ const categoryController = {
 	postCategory: async (req, res) => {
 		try {
 			const { name } = req.body;
+			const file = req.file;
+
 			let newCategory = await Category.create({
 				name,
+				imagePath: file.path,
 			});
 
 			res.status(200).json({

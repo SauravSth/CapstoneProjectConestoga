@@ -19,6 +19,8 @@ import sanitize from '../middlewares/sanitize.js';
 import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 
+import fileUploadHelper from '../helpers/fileUploadHelper.js';
+
 const router = express.Router();
 
 // Group Routes
@@ -55,31 +57,32 @@ router.delete('/goal', authentication, goalController.deleteGoal);
 router.get(
 	'/category',
 	authentication,
-	authorization,
+	// authorization,
 	categoryController.getCategory
 );
 router.get(
 	'/category/:_id',
 	authentication,
-	authorization,
+	// authorization,
 	categoryController.getOneCategory
 );
 router.post(
 	'/category',
 	authentication,
-	authorization,
+	// authorization,
+	fileUploadHelper.single('image'),
 	categoryController.postCategory
 );
 router.patch(
 	'/category/:_id',
 	authentication,
-	authorization,
+	// authorization,
 	categoryController.updateCategory
 );
 router.delete(
 	'/category',
 	authentication,
-	authorization,
+	// authorization,
 	categoryController.deleteCategory
 );
 
