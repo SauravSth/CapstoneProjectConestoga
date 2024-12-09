@@ -57,7 +57,7 @@ const AllExpenses = () => {
       });
 
       const data = await response.json();
-      console.log(newExpense);
+      console.log('asd', newExpense);
       console.log('adrta', data);
 
       if (response.ok) {

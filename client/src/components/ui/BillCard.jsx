@@ -5,72 +5,108 @@ import getInitials from '../../helpers/getInitials';
 const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
 
 const BillCard = ({
-  name = 'T&T shopping',
-  category = 'Groceries',
-  date = 'August 28, 2022',
-  totalAmount = 1000,
-  remainingAmount = 0,
-  members = [],
+  bill = {
+    title: 'Grocery Shopping',
+    category: 'Groceries',
+    date: '2024-12-18',
+    amount: 502,
+    remainingAmount: 0,
+    splitType: 'percent',
+    description: 'Monthly grocery expenses for December',
+    paidBy: 'John Doe',
+    groupId: '6751d8e902dff53a25a21a77',
+    splitDetails: [
+      { userId: '1', userName: 'John Doe', percentage: 50, amountOwed: 251 },
+      { userId: '2', userName: 'Jane Smith', percentage: 30, amountOwed: 150 },
+      { userId: '3', userName: 'Alice Brown', percentage: 20, amountOwed: 101 },
+    ],
+  },
   onEdit,
   onDelete,
 }) => {
-  const totalContribution = members.reduce(
-    (sum, member) => sum + member.amountOwed,
+  const {
+    title,
+    category,
+    date,
+    amount,
+    remainingAmount,
+    splitDetails,
+    splitType,
+    paidBy,
+    description,
+  } = bill;
+
+  const totalContribution = splitDetails.reduce(
+    (sum, detail) => sum + (detail.amountOwed || 0),
     0
   );
 
   return (
     <div className="flex flex-col bg-white shadow-md rounded-lg p-6 w-full border-l-4 border-lime-500 hover:shadow-lg transition-shadow duration-200 ease-in-out">
-      {/* Header with store name and category */}
+      {/* Header with title and category */}
       <div className="flex items-center space-x-3">
         <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
           <span
             role="img"
             aria-label="icon"
           >
-            💖
+            🧾
           </span>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
-          <p className="text-sm text-gray-500">{category}</p>
+          <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+          <p className="text-sm text-gray-500">{category || 'No Category'}</p>
         </div>
       </div>
 
-      {/* Split date */}
-      <p className="text-sm text-gray-500 mt-2">Bill Split on {date}</p>
+      {/* Bill description and date */}
+      <p className="text-sm text-gray-500 mt-2">{description}</p>
+      <p className="text-sm text-gray-500 mt-2">
+        Bill Split on {new Date(date).toLocaleDateString()}
+      </p>
+
+      {/* Split Type */}
+      <p className="text-sm text-gray-500 mt-2">Split Type: {splitType}</p>
+
+      {/* Paid By */}
+      <p className="text-sm text-gray-500 mt-2">Paid By: {paidBy}</p>
 
       {/* User Initials Avatars */}
       <div className="flex items-center space-x-2 mt-4">
-        {members.map((member, index) => (
+        {splitDetails.map((detail, index) => (
           <div
             key={index}
             className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 text-gray-800 font-semibold text-base border-2 border-white shadow-sm"
           >
-            {getInitials(member.name)}
+            {getInitials(detail.userName || 'NA')}
           </div>
         ))}
       </div>
 
       {/* Total and Remaining amount */}
       <div className="mt-4">
-        <p className="text-2xl font-bold text-green-500">
-          Total: ${totalAmount}
-        </p>
+        <p className="text-2xl font-bold text-green-500">Total: ${amount}</p>
         <p className="text-lg text-yellow-500">Remaining: ${remainingAmount}</p>
       </div>
 
       {/* Contribution Progress Bar */}
       <div className="mt-4">
         <div className="w-full h-4 rounded-full bg-gray-200 flex overflow-hidden">
-          {members.map((member, index) => {
-            const percentage = (member.amountOwed / totalContribution) * 100;
+          {splitDetails.map((detail, index) => {
+            const percentage =
+              splitType === 'percent'
+                ? detail.percentage || 0
+                : ((detail.amountOwed || 0) / totalContribution) * 100;
             const color = colors[index % colors.length];
 
             return (
               <div
-                key={member.name}
-                title={`${member.name}: $${member.amountOwed}`}
+                key={detail.userId}
+                title={`${detail.userName || 'User'}: ${
+                  splitType === 'percent'
+                    ? `${percentage}%`
+                    : `$${detail.amountOwed}`
+                }`}
                 className="h-full"
                 style={{
                   width: `${percentage}%`,
@@ -84,7 +120,7 @@ const BillCard = ({
 
       {/* Member Contribution Details */}
       <div className="mt-2 flex flex-col space-y-1 text-sm text-gray-700">
-        {members.map((member, index) => (
+        {splitDetails.map((detail, index) => (
           <div
             key={index}
             className="flex items-center justify-between"
@@ -94,9 +130,13 @@ const BillCard = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: colors[index % colors.length] }}
               ></span>
-              <span>{member.name}</span>
+              <span>{detail.userName || 'User'}</span>
             </span>
-            <span>${member.amountOwed}</span>
+            <span>
+              {splitType === 'percent'
+                ? `${detail.percentage || 0}%`
+                : `$${detail.amountOwed || 0}`}
+            </span>
           </div>
         ))}
       </div>
