@@ -1,6 +1,7 @@
 import Transaction from '../models/transactionModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 import GroupExpense from '../models/groupExpenseModel.js';
+import SplitPerMember from '../models/splitPerMemberModel.js';
 
 const transactionController = {
 	getTransaction: async (req, res) => {
@@ -38,7 +39,7 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			let {
+			const {
 				title,
 				payer,
 				receiver,
@@ -47,20 +48,64 @@ const transactionController = {
 				date,
 				group_id,
 			} = req.body;
-			const { uid } = req.user;
-			let totalAmount = await GroupExpense.findOne({
-				_id: groupExpense_id,
-				group_id: group_id,
-			}).select('amount');
-			let newTotal = totalAmount - paidAmount;
 
-			if (newTotal > 0) {
-				await GroupExpense.save({ amount: newTotal });
-			} else {
-				console.log('Paid Fully');
+			const { uid } = req.user;
+
+			const groupExpense = await GroupExpense.findById(groupExpense_id);
+			if (
+				!groupExpense ||
+				String(groupExpense.group_id) !== String(group_id)
+			) {
+				return res.status(404).json({
+					success: false,
+					message: 'Group expense not found.',
+				});
 			}
 
-			let newTransaction = await Transaction.create({
+			const splitPerMemberData = await SplitPerMember.find({
+				groupExpense_id,
+			});
+
+			if (!splitPerMemberData.length) {
+				return res.status(400).json({
+					success: false,
+					message: 'No split data found for this group expense.',
+				});
+			}
+
+			let remainingAmount = paidAmount;
+
+			const payerSplit = splitPerMemberData.find(
+				(split) => String(split.user_id) === String(payer)
+			);
+			if (payerSplit) {
+				payerSplit.splitPerMember += paidAmount;
+				await payerSplit.save();
+			} else {
+				return res.status(404).json({
+					success: false,
+					message: 'Payer not found in split data.',
+				});
+			}
+
+			const recipientSplits = splitPerMemberData.filter(
+				(split) => String(split.user_id) !== String(payer)
+			);
+
+			for (const recipientSplit of recipientSplits) {
+				if (remainingAmount <= 0) break;
+
+				const amountToSettle = Math.min(
+					remainingAmount,
+					Math.abs(recipientSplit.splitPerMember)
+				);
+				recipientSplit.splitPerMember -= amountToSettle;
+				remainingAmount -= amountToSettle;
+
+				await recipientSplit.save();
+			}
+
+			const newTransaction = await Transaction.create({
 				title,
 				payer,
 				receiver,
@@ -70,16 +115,24 @@ const transactionController = {
 				user_id: uid,
 			});
 
+			const isSettled = splitPerMemberData.every(
+				(split) => split.splitPerMember === 0
+			);
+
 			res.status(200).json({
 				success: true,
-				message: 'Transaction added successfully.',
+				message: isSettled
+					? 'Balance settled. Transaction added successfully.'
+					: 'Transaction added successfully.',
 				newTransaction,
 			});
 		} catch (e) {
+			console.error(e);
 			const errors = errorHandler.handleTransactionErrors(e);
 			res.status(400).json(errors);
 		}
 	},
+
 	updateTransaction: async (req, res) => {
 		try {
 			const {
