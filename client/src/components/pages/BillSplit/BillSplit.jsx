@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../../layouts/Header';
 import Navbar from '../../../layouts/Navbar';
 import BillCard from '../../ui/BillCard';
+import { FaHandHoldingUsd } from 'react-icons/fa';
 import CustomModal from '../../modal/CustomModal';
 
 const BillSplit = () => {
@@ -41,7 +42,28 @@ const BillSplit = () => {
   const [categories, setCategories] = useState([]);
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [transaction, setTransaction] = useState([
+    {
+      paidAmount: 0,
+      groupExpense_id: '',
+      remarks: '',
+    },
+  ]);
+  const [activeBill, setActiveBill] = useState([]);
 
+  const handleSettleUp = (bill) => {
+    setIsTransactionModalOpen(true);
+    setActiveBill(() => bill);
+  };
+
+  const handleEdit = (bill) => {
+    console.log(`Edit ${bill._id}`);
+  };
+
+  const handleDelete = (bill) => {
+    console.log(`Delete ${bill._id}`);
+  };
   // groups fetch
   useEffect(() => {
     const fetchGroupExpenses = async () => {
@@ -294,6 +316,10 @@ const BillSplit = () => {
     }));
   };
 
+  const handleTransfer = () => {
+    console.log('SUBMITTED');
+  };
+
   const handleCategoryChange = (e) => {
     const { name, value } = e.target;
     setNewBill((prevBill) => ({
@@ -409,7 +435,12 @@ const BillSplit = () => {
             <div>Loading...</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              <BillCard bills={billSplits} />
+              <BillCard
+                bills={billSplits}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onSettleUp={handleSettleUp}
+              />
             </div>
           )}
         </main>
@@ -668,6 +699,105 @@ const BillSplit = () => {
               } // Disable Save if there is remaining percentage
             >
               Save
+            </button>
+          </div>
+        </form>
+      </CustomModal>
+
+      <CustomModal
+        title="Settle Up"
+        isOpen={isTransactionModalOpen}
+        onClose={() => setIsTransactionModalOpen(false)}
+      >
+        <form
+          onSubmit={handleTransfer}
+          className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg space-y-6"
+        >
+          <div className="space-y-4">
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-center text-gray-800">
+              {activeBill.title}
+            </h2>
+
+            {/* Date */}
+            <p className="text-center text-gray-600">
+              <span className="font-semibold">Due Date:</span>{' '}
+              {new Date(activeBill.date).toLocaleDateString('en-US')}
+            </p>
+
+            {/* Your Share */}
+            <p className="text-center text-lg font-medium text-gray-700">
+              Your Share:{' '}
+              <span className="text-green-600 text-xl font-semibold">
+                ${activeBill.amount}
+              </span>
+            </p>
+
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <label className="block text-gray-700 text-lg font-medium mb-2">
+                Payment Progress
+              </label>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-green-500 h-4 rounded-full"
+                  style={{
+                    width: `${(10 / activeBill.amount) * 100}%`,
+                  }}
+                ></div>
+              </div>
+              <p className="text-right text-sm text-gray-500 mt-1">
+                Paid: ${10} / ${activeBill.amount}
+              </p>
+            </div>
+          </div>
+
+          {/* Input Section */}
+          <div>
+            <label className="block text-gray-700 text-lg font-medium mb-2">
+              Pay Amount:
+            </label>
+            <input
+              type="number"
+              name="paidAmount"
+              placeholder={`Enter amount (max: $${activeBill.amount - 10})`}
+              value={20}
+              onChange={(e) => handlePayAmount(e.target.value)}
+              className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+            />
+          </div>
+
+          {/* Notes Section */}
+          <div>
+            <label className="block text-gray-700 text-lg font-medium mb-2">
+              Add a Note (Optional):
+            </label>
+            <textarea
+              name="paymentNote"
+              rows="3"
+              placeholder="Write a note about this payment..."
+              className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
+            ></textarea>
+          </div>
+
+          {/* Action Button */}
+          <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
+            <button
+              type="submit"
+              className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+              aria-label="Settle Up"
+            >
+              <FaHandHoldingUsd className="mr-2 text-xl" />
+              <span className="text-lg font-medium">Settle Up</span>
+            </button>
+
+            {/* Cancel Option */}
+            <button
+              type="button"
+              // onClick={handleCancel}
+              className="text-gray-600 hover:text-gray-800 text-sm"
+            >
+              Cancel Payment
             </button>
           </div>
         </form>

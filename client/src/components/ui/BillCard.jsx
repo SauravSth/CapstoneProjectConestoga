@@ -1,11 +1,12 @@
 import { React, useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { FaMoneyBillTransfer } from 'react-icons/fa6';
+import CustomModal from '../modal/CustomModal';
 import getInitials from '../../helpers/getInitials';
 
 const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
 
-const BillCard = ({ bills, onSettleUp, onEdit, onDelete }) => {
+const BillCard = ({ bills, onEdit, onDelete, onSettleUp }) => {
   console.log('Bill Card', bills);
 
   return (
@@ -46,7 +47,7 @@ const BillCard = ({ bills, onSettleUp, onEdit, onDelete }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent triggering the `onClick`
-                    onEdit(bill._id);
+                    onEdit(bill);
                   }}
                   className="flex items-center space-x-1 bg-lime-300 text-gray-800 hover:text-gray-900 hover:bg-green-600 focus:outline-none"
                   aria-label="Edit"
@@ -56,7 +57,7 @@ const BillCard = ({ bills, onSettleUp, onEdit, onDelete }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent triggering the `onClick`
-                    onDelete(bill._id);
+                    onDelete(bill);
                   }}
                   className="flex items-center space-x-1 bg-red-400 text-gray-800 hover:text-gray-200 hover:bg-red-600 focus:outline-none"
                   aria-label="Delete"
@@ -206,7 +207,10 @@ const BillCard = ({ bills, onSettleUp, onEdit, onDelete }) => {
             {/* Action Buttons */}
             <div className="flex items-center space-x-4 pt-4 border-t border-gray-200 mt-4">
               <button
-                onClick={() => onSettleUp(bill._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSettleUp(bill);
+                }}
                 className="flex items-center space-x-1 bg-green-600 text-base text-white hover:text-gray-100 focus:outline-none"
                 aria-label="Settle Up"
               >
