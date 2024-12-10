@@ -34,6 +34,8 @@ const BillSplit = () => {
     remainingAmount: 0,
   });
 
+  const [billSplits, setBillSplits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [groupID, setGroupID] = useState();
   const [categories, setCategories] = useState([]);
@@ -42,6 +44,26 @@ const BillSplit = () => {
 
   // groups fetch
   useEffect(() => {
+    const fetchGroupExpenses = async () => {
+      try {
+        const groupExpensesResponse = await fetch(
+          'http://localhost:3000/api/groupExpense',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
+        const groupExpenseData = await groupExpensesResponse.json();
+        setBillSplits(() => groupExpenseData.groupExpenses);
+        setLoading(() => false);
+      } catch (error) {
+        console.error('Error fetching bill splits:', error);
+      }
+    };
+
     const fetchGroups = async () => {
       try {
         const groupResponse = await fetch(`http://localhost:3000/api/group`, {
@@ -76,6 +98,8 @@ const BillSplit = () => {
         console.error('Error fetching categories:', error);
       }
     };
+
+    fetchGroupExpenses();
 
     fetchCategories();
 
@@ -113,7 +137,6 @@ const BillSplit = () => {
               return await userResponse.json();
             }
           );
-          console.log('members', members);
 
           const detailedMembers = await Promise.all(memberDetailsPromises);
           setMembers(detailedMembers);
@@ -184,14 +207,11 @@ const BillSplit = () => {
         remainingAmount: 0, // Initially, all percentages are assigned
       }));
     }
-
-    console.log('initializeNewBill newBill', newBill);
   };
 
   const handleSplitType = (index, e) => {
     const { name, value } = e.target;
     const updatedSplitDetails = [...newBill.splitDetails];
-    console.log('User', updatedSplitDetails);
 
     if (name === 'percent') {
       const newPercentage = parseFloat(value);
@@ -208,8 +228,6 @@ const BillSplit = () => {
       updatedSplitDetails[index].user_id = members[index].user._id;
       updatedSplitDetails[index].percent = newPercentage;
 
-      console.log('AfterChange', updatedSplitDetails);
-
       const totalAssignedPercentage = updatedSplitDetails.reduce(
         (acc, detail) => acc + (parseFloat(detail.percent) || 0),
         0
@@ -222,8 +240,6 @@ const BillSplit = () => {
         splitDetails: updatedSplitDetails,
         remainingPercentage,
       }));
-
-      console.log('New Data', newBill);
     }
 
     if (name === 'amountOwed') {
@@ -241,8 +257,6 @@ const BillSplit = () => {
       updatedSplitDetails[index].user_id = members[index].user._id;
       updatedSplitDetails[index].amountOwed = newAmount;
 
-      console.log('AfterChange', updatedSplitDetails);
-
       const totalAssignedAmount = updatedSplitDetails.reduce(
         (acc, detail) => acc + (parseFloat(detail.amountOwed) || 0),
         0
@@ -256,8 +270,6 @@ const BillSplit = () => {
         remainingAmount,
       }));
     }
-
-    console.log('New Data', newBill);
   };
 
   // Use Effect to Initialize Even Distribution on Split Type Selection
@@ -288,7 +300,6 @@ const BillSplit = () => {
       ...prevBill,
       [name]: value, // Dynamically update the selected value
     }));
-    console.log(newBill);
   };
 
   const handleBillChange = (e) => {
@@ -301,8 +312,6 @@ const BillSplit = () => {
         percent: evenPercentage.toFixed(2),
       }));
 
-      console.log('Update percent', updatedSplitDetails);
-
       setNewBill((prevBill) => ({
         ...prevBill,
         splitType: value,
@@ -314,8 +323,6 @@ const BillSplit = () => {
         user_id: member.user._id,
         amountOwed: evenAmount.toFixed(2),
       }));
-
-      console.log('Update amount', updatedSplitDetails);
 
       setNewBill((prevBill) => ({
         ...prevBill,
@@ -340,7 +347,6 @@ const BillSplit = () => {
       alert('Please assign all amounts before submitting.');
       return;
     }
-    console.log('NEWBILL', newBill);
 
     try {
       const response = await fetch('http://localhost:3000/api/groupExpense', {
@@ -399,14 +405,13 @@ const BillSplit = () => {
               Add New Bill
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {bills.map((bill, index) => (
-              <BillCard
-                key={index}
-                bill={bill}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <BillCard bills={billSplits} />
+            </div>
+          )}
         </main>
       </div>
 
@@ -444,6 +449,12 @@ const BillSplit = () => {
                 onChange={handleCategoryChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
+                <option
+                  value=""
+                  disabled
+                >
+                  Select a Category
+                </option>
                 {Array.isArray(categories) &&
                   categories.map((category) => (
                     <option
@@ -552,7 +563,6 @@ const BillSplit = () => {
               {newBill.splitType === 'amountOwed' && (
                 <div className="mt-4">
                   <h3 className="font-semibold">
-                    {console.log('Remaining Amount:', newBill.remainingAmount)}
                     Remaining Amount: ${newBill.remainingAmount.toFixed(2)}
                   </h3>
                   {newBill.remainingAmount > 0 && (
