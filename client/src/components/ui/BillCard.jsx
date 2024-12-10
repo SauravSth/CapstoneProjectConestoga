@@ -1,17 +1,18 @@
 import { React, useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaMoneyBillTransfer } from 'react-icons/fa6';
 import getInitials from '../../helpers/getInitials';
 
 const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
 
-const BillCard = ({ bills, onEdit, onDelete }) => {
+const BillCard = ({ bills, onSettleUp, onEdit, onDelete }) => {
   console.log('Bill Card', bills);
 
   return (
     <>
       {bills.map((bill) => {
         const serverBaseUrl = 'http://localhost:3000/images/';
-        const imageName = bill.category_id.imagePath.split('\\').pop(); // Replace with your server URL in production
+        const imageName = bill.category_id.imagePath.split('\\').pop();
         const formattedImagePath = `${serverBaseUrl}/${imageName}`;
 
         const totalContribution = bill.amount;
@@ -22,34 +23,57 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
             className="flex flex-col bg-white shadow-md rounded-lg p-6 w-full border-l-4 border-lime-500 hover:shadow-lg transition-shadow duration-200 ease-in-out"
           >
             {/* Header with title and category */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
-                <img src={formattedImagePath} />
-                {/* <span
-                  role="img"
-                  aria-label="icon"
-                >
-                  🧾
-                </span> */}
+            <div className="flex items-center justify-between space-x-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-14 h-14 bg-red-200 rounded-full flex items-center justify-center">
+                  <img
+                    src={formattedImagePath}
+                    className="p-2"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {bill.title}
+                  </h2>
+                  <p className="text-base text-gray-500">
+                    {bill.category_id.name || 'No Category'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {bill.title}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {bill.category_id.name || 'No Category'}
-                </p>
+
+              {/* Buttons aligned at the right */}
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the `onClick`
+                    onEdit(bill._id);
+                  }}
+                  className="flex items-center space-x-1 bg-lime-300 text-gray-800 hover:text-gray-900 hover:bg-green-600 focus:outline-none"
+                  aria-label="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the `onClick`
+                    onDelete(bill._id);
+                  }}
+                  className="flex items-center space-x-1 bg-red-400 text-gray-800 hover:text-gray-200 hover:bg-red-600 focus:outline-none"
+                  aria-label="Delete"
+                >
+                  <FaTrash />
+                </button>
               </div>
             </div>
 
             {/* Bill description and date */}
-            <p className="text-sm text-gray-500 mt-2">{bill.description}</p>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-base text-gray-500 mt-2">{bill.description}</p>
+            <p className="text-base text-gray-500 mt-2">
               Bill Split on {new Date(bill.date).toLocaleDateString()}
             </p>
 
             {/* Split Type */}
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-base text-gray-500 mt-2">
               Split Type:
               {(() => {
                 if (bill.splitType === 'percent') {
@@ -63,7 +87,7 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
             </p>
 
             {/* Paid By */}
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-base text-gray-500 mt-2">
               {`Paid By: ${bill.paid_by.firstName} ${bill.paid_by.lastName}`}
             </p>
 
@@ -182,20 +206,12 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
             {/* Action Buttons */}
             <div className="flex items-center space-x-4 pt-4 border-t border-gray-200 mt-4">
               <button
-                onClick={onEdit}
-                className="flex items-center space-x-1 bg-lime-200 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label="Edit"
+                onClick={() => onSettleUp(bill._id)}
+                className="flex items-center space-x-1 bg-green-600 text-base text-white hover:text-gray-100 focus:outline-none"
+                aria-label="Settle Up"
               >
-                <FaEdit />
-                <span>Edit</span>
-              </button>
-              <button
-                onClick={onDelete}
-                className="flex items-center space-x-1 bg-gray-200 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label="Delete"
-              >
-                <FaTrash />
-                <span>Delete</span>
+                <FaMoneyBillTransfer />
+                <span>Settle Up</span>
               </button>
             </div>
           </div>
