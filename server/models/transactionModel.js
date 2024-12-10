@@ -21,10 +21,6 @@ const transactionSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'GroupExpense',
 	},
-	date: {
-		type: Date,
-		required: [true, 'Date is required'],
-	},
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',

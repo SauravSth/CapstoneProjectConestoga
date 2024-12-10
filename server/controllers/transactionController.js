@@ -39,18 +39,11 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			const {
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				groupExpense_id,
-				date,
-				group_id,
-			} = req.body;
+			const { title, receiver, paidAmount, groupExpense_id, group_id } =
+				req.body;
 
 			const { uid } = req.user;
-
+			const payer = uid;
 			const groupExpense = await GroupExpense.findById(groupExpense_id);
 			if (
 				!groupExpense ||
@@ -111,7 +104,6 @@ const transactionController = {
 				receiver,
 				paidAmount,
 				groupExpense_id,
-				date,
 				user_id: uid,
 			});
 
@@ -135,14 +127,8 @@ const transactionController = {
 
 	updateTransaction: async (req, res) => {
 		try {
-			const {
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				groupExpense_id,
-				date,
-			} = req.body;
+			const { title, payer, receiver, paidAmount, groupExpense_id } =
+				req.body;
 			const { _id } = req.params;
 
 			const updatedData = await Transaction.findOneAndUpdate(
@@ -154,7 +140,6 @@ const transactionController = {
 						receiver,
 						paidAmount,
 						groupExpense_id,
-						date,
 					},
 				},
 				{ new: true }
