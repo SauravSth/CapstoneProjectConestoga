@@ -45,7 +45,6 @@ const transactionController = {
 				paidAmount,
 				groupExpense_id,
 				date,
-
 				group_id,
 			} = req.body;
 			const { uid } = req.user;
