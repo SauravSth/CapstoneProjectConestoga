@@ -45,7 +45,6 @@ const transactionController = {
 				receiver,
 				paidAmount,
 				groupExpense_id,
-				date,
 				group_id,
 			} = req.body;
 
@@ -111,7 +110,6 @@ const transactionController = {
 				receiver,
 				paidAmount,
 				groupExpense_id,
-				date,
 				user_id: uid,
 			});
 
@@ -135,14 +133,8 @@ const transactionController = {
 
 	updateTransaction: async (req, res) => {
 		try {
-			const {
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				groupExpense_id,
-				date,
-			} = req.body;
+			const { title, payer, receiver, paidAmount, groupExpense_id } =
+				req.body;
 			const { _id } = req.params;
 
 			const updatedData = await Transaction.findOneAndUpdate(
@@ -154,7 +146,6 @@ const transactionController = {
 						receiver,
 						paidAmount,
 						groupExpense_id,
-						date,
 					},
 				},
 				{ new: true }
