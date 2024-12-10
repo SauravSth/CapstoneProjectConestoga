@@ -39,8 +39,7 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			const { title, receiver, paidAmount, groupExpense_id, group_id } =
-				req.body;
+			const { title, paidAmount, groupExpense_id, group_id } = req.body;
 
 			const { uid } = req.user;
 			const payer = uid;
@@ -54,6 +53,7 @@ const transactionController = {
 					message: 'Group expense not found.',
 				});
 			}
+			const receiver = groupExpense.paid_by;
 
 			const splitPerMemberData = await SplitPerMember.find({
 				groupExpense_id,

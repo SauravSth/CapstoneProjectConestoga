@@ -20,6 +20,7 @@ import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 
 import fileUploadHelper from '../helpers/fileUploadHelper.js';
+import splitPerMemberController from '../controllers/splitPerMemberController.js';
 
 const router = express.Router();
 
@@ -176,6 +177,18 @@ router.delete(
 	authentication,
 	authorization,
 	userController.deleteUser
+);
+
+// SPLIT PER MEMBER ROUTES
+router.get(
+	'/splitPerOneMember/:groupExpense_id',
+	authentication,
+	splitPerMemberController.getSplitPerOneMember
+);
+router.get(
+	'/splitPerMember/:groupExpense_id',
+	authentication,
+	splitPerMemberController.getSplitPerMember
 );
 
 // TEST ROUTES
