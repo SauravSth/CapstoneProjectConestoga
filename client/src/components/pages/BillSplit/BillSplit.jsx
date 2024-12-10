@@ -12,7 +12,7 @@ const BillSplit = () => {
       amount: '',
       category_id: '',
       description: '',
-      splitType: 'evenly',
+      splitType: '',
       splitDetails: [{ user_id: '' }],
       category_id: '',
       paid_by: '',
@@ -25,7 +25,7 @@ const BillSplit = () => {
     date: '',
     amount: '',
     description: '',
-    splitType: 'evenly',
+    splitType: '',
     splitDetails: [{ user_id: '' }],
     category_id: '',
     paid_by: '',
@@ -129,7 +129,7 @@ const BillSplit = () => {
         date: '',
         amount: '',
         description: '',
-        splitType: 'evenly',
+        splitType: '',
         splitDetails: [{ user_id: '' }],
         category_id: '',
         paid_by: '',
@@ -142,25 +142,54 @@ const BillSplit = () => {
 
   // Function to initialize percentages evenly
   const initializeEvenSplit = () => {
-    const evenPercentage = 100 / members.length;
-    const initialSplitDetails = members.map((member) => ({
-      user_id: member.user._id,
-      percent: evenPercentage.toFixed(0), // Distribute evenly
-    }));
+    if (newBill.splitType === 'evenly') {
+      const initialSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+      }));
 
-    setNewBill((prevBill) => ({
-      ...prevBill,
-      splitDetails: initialSplitDetails,
-      remainingPercentage: 0, // Initially, all percentages are assigned
-    }));
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: initialSplitDetails,
+        remainingPercentage: 0,
+        remainingAmount: 0, // Initially, all percentages are assigned
+      }));
+    }
+
+    if (newBill.splitType === 'percent') {
+      const evenPercentage = 100 / members.length;
+      const initialSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        percent: evenPercentage.toFixed(0), // Distribute evenly
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: initialSplitDetails,
+        remainingPercentage: 0,
+        remainingAmount: 0, // Initially, all percentages are assigned
+      }));
+    }
+
+    if (newBill.splitType === 'amountOwed') {
+      const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
+      const initialSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        amountOwed: evenAmount.toFixed(2), // Distribute evenly
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: initialSplitDetails,
+        remainingPercentage: 0,
+        remainingAmount: 0, // Initially, all percentages are assigned
+      }));
+    }
 
     console.log('initializeNewBill newBill', newBill);
   };
 
   const handleSplitType = (index, e) => {
     const { name, value } = e.target;
-    // console.log('Target', e.target);
-    // setNewBill((prevBill) => {...prevBill, splitDetails});
     const updatedSplitDetails = [...newBill.splitDetails];
     console.log('User', updatedSplitDetails);
 
@@ -209,7 +238,10 @@ const BillSplit = () => {
         updatedSplitDetails[index] = {}; // Initialize if undefined
       }
 
+      updatedSplitDetails[index].user_id = members[index].user._id;
       updatedSplitDetails[index].amountOwed = newAmount;
+
+      console.log('AfterChange', updatedSplitDetails);
 
       const totalAssignedAmount = updatedSplitDetails.reduce(
         (acc, detail) => acc + (parseFloat(detail.amountOwed) || 0),
@@ -224,13 +256,13 @@ const BillSplit = () => {
         remainingAmount,
       }));
     }
+
+    console.log('New Data', newBill);
   };
 
   // Use Effect to Initialize Even Distribution on Split Type Selection
   useEffect(() => {
-    if (newBill.splitType === 'percent') {
-      initializeEvenSplit();
-    }
+    initializeEvenSplit();
   }, [newBill.splitType]);
 
   const handleGroupChange = (e) => {
@@ -269,7 +301,21 @@ const BillSplit = () => {
         percent: evenPercentage.toFixed(2),
       }));
 
-      console.log('Update', updatedSplitDetails);
+      console.log('Update percent', updatedSplitDetails);
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitType: value,
+        splitDetails: updatedSplitDetails,
+      }));
+    } else if (name === 'splitType' && value === 'amountOwed') {
+      const evenAmount = newBill.amount / members.length;
+      const updatedSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        amountOwed: evenAmount.toFixed(2),
+      }));
+
+      console.log('Update amount', updatedSplitDetails);
 
       setNewBill((prevBill) => ({
         ...prevBill,
@@ -282,16 +328,6 @@ const BillSplit = () => {
         [name]: value,
       }));
     }
-  };
-
-  const handleAddMember = () => {
-    setNewBill((prevBill) => ({
-      ...prevBill,
-      splitDetails: [
-        ...prevBill.splitDetails,
-        { name: '', email: '', amountOwed: '' },
-      ],
-    }));
   };
 
   const handleSubmit = async (e) => {
@@ -327,12 +363,13 @@ const BillSplit = () => {
           date: '',
           amount: '',
           description: '',
-          splitType: 'evenly',
+          splitType: '',
           splitDetails: [{ user_id: '' }],
           category_id: '',
           paid_by: '',
           group_id: '',
           remainingPercentage: 0,
+          remainingAmount: 0,
         });
       } else {
         alert('Error submitting group expense');
@@ -450,7 +487,12 @@ const BillSplit = () => {
                 className="w-full p-2 border rounded"
                 required
               >
-                <option value="">Select a Group</option>
+                <option
+                  value=""
+                  disabled
+                >
+                  Select a Group
+                </option>
                 {Array.isArray(groups) &&
                   groups.map((group) => (
                     <option
@@ -473,7 +515,12 @@ const BillSplit = () => {
                 className="w-full p-2 border rounded"
                 required
               >
-                <option value="">Select a Member</option>
+                <option
+                  value=""
+                  disabled
+                >
+                  Select a Member
+                </option>
                 {Array.isArray(members) &&
                   members.map((member) => (
                     <option
@@ -525,10 +572,17 @@ const BillSplit = () => {
                 <select
                   name="splitType"
                   value={newBill.splitType}
+                  placeholder="Select a split type"
                   onChange={(e) => handleBillChange(e, members)}
                   className="w-full p-2 border rounded mt-1"
                   required
                 >
+                  <option
+                    value=""
+                    disabled
+                  >
+                    Select a Split Type
+                  </option>
                   <option value="evenly">Evenly</option>
                   <option value="percent">Percentage</option>
                   <option value="amountOwed">Amount</option>
