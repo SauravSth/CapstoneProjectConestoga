@@ -30,7 +30,7 @@ const calculateSplits = async (splitType, amount, members, splitDetails) => {
 			splitDetails.forEach((detail) => {
 				splits.push({
 					member_id: detail.user_id,
-					amount: detail.amount,
+					amount: detail.amountOwed,
 				});
 			});
 			break;
