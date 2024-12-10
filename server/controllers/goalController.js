@@ -5,9 +5,7 @@ const goalController = {
 	getGoal: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const goals = await Goal.find({ user_id: uid }).populate(
-				'user_id group_id'
-			);
+			const goals = await Goal.find({ user_id: uid }).populate('user_id');
 
 			res.status(200).json({ goals });
 		} catch (e) {
@@ -18,9 +16,7 @@ const goalController = {
 		try {
 			const id = req.params._id;
 
-			const goal = await Goal.findOne({ _id: id }).populate(
-				'user_id group_id'
-			);
+			const goal = await Goal.findOne({ _id: id }).populate('user_id');
 
 			res.status(200).json({ goal });
 		} catch (e) {

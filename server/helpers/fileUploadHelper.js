@@ -1,7 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 
-const uploadDir = path.join('./public/images/');
+const uploadDir = path.join('public/images/');
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, uploadDir);

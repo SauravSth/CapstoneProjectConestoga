@@ -156,7 +156,7 @@ const groupExpenseController = {
 			if (amount || splitType || splitDetails || paid_by) {
 				await SplitPerMember.deleteMany({ expense_id: _id });
 
-				const splits = calculateSplits(
+				const splits = await calculateSplits(
 					splitType || existingExpense.splitType,
 					amount || existingExpense.amount,
 					members,
@@ -164,10 +164,10 @@ const groupExpenseController = {
 				);
 
 				const splitEntries = splits.map((split) => ({
-					expense_id: _id,
+					groupExpense_id: _id,
 					group_id: group_id || existingExpense.group_id,
-					member_id: split.member_id,
-					amount:
+					user_id: split.member_id,
+					splitPerMember:
 						split.amount -
 						(paid_by.equals(split.member_id) ? amount : 0),
 				}));
