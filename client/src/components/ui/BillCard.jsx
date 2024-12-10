@@ -7,16 +7,15 @@ const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
 const BillCard = ({ bills, onEdit, onDelete }) => {
   console.log('Bill Card', bills);
 
-  const totalContribution = 5000;
-
   return (
     <>
       {bills.map((bill) => {
-        const serverBaseUrl = 'http://localhost:3000'; // Replace with your server URL in production
-        const formattedImagePath = `${serverBaseUrl}/${bill.category_id.imagePath.replace(
-          /\\/g,
-          '/'
-        )}`;
+        const serverBaseUrl = 'http://localhost:3000/images/';
+        const imageName = bill.category_id.imagePath.split('\\').pop(); // Replace with your server URL in production
+        const formattedImagePath = `${serverBaseUrl}/${imageName}`;
+
+        const totalContribution = bill.amount;
+
         return (
           <div
             key={bill._id} // Make sure to add a unique key for each bill item
@@ -51,7 +50,16 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
 
             {/* Split Type */}
             <p className="text-sm text-gray-500 mt-2">
-              Split Type: {bill.splitType}
+              Split Type:
+              {(() => {
+                if (bill.splitType === 'percent') {
+                  return ' Percentage';
+                } else if (bill.splitType === 'amountOwed') {
+                  return ' Amount';
+                } else {
+                  return ' Evenly';
+                }
+              })()}
             </p>
 
             {/* Paid By */}
@@ -85,10 +93,34 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
             <div className="mt-4">
               <div className="w-full h-4 rounded-full bg-gray-200 flex overflow-hidden">
                 {bill.splitDetails.map((detail, index) => {
-                  const percentage =
-                    bill.splitType === 'percent'
-                      ? detail.percent || 0
-                      : ((detail.amountOwed || 0) / totalContribution) * 100;
+                  let percentage;
+                  let amountOwed;
+
+                  if (bill.splitType === 'percent') {
+                    // Percent split logic
+                    percentage = detail.percent || 0;
+                    amountOwed = (
+                      totalContribution *
+                      (percentage / 100)
+                    ).toFixed(2);
+                  } else if (bill.splitType === 'evenly') {
+                    // Even split logic
+                    const totalUsers = bill.splitDetails.length;
+                    amountOwed = (totalContribution / totalUsers).toFixed(2);
+                    percentage = (100 / totalUsers).toFixed(2);
+                  } else if (bill.splitType === 'amountOwed') {
+                    // Amount owed logic
+                    amountOwed = detail.amountOwed || 0;
+                    percentage = (
+                      (amountOwed / totalContribution) *
+                      100
+                    ).toFixed(2);
+                  } else {
+                    // Default case
+                    percentage = 0;
+                    amountOwed = 0;
+                  }
+
                   const color = colors[index % colors.length];
 
                   return (
@@ -97,7 +129,7 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
                       title={`${detail.user_id.firstName || 'User'}: ${
                         bill.splitType === 'percent'
                           ? `${percentage}%`
-                          : `$${detail.amountOwed}`
+                          : `$${amountOwed}`
                       }`}
                       className="h-full"
                       style={{
@@ -112,27 +144,39 @@ const BillCard = ({ bills, onEdit, onDelete }) => {
 
             {/* Member Contribution Details */}
             <div className="mt-2 flex flex-col space-y-1 text-sm text-gray-700">
-              {bill.splitDetails.map((detail, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between"
-                >
-                  <span className="flex items-center space-x-2">
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor: colors[index % colors.length],
-                      }}
-                    ></span>
-                    <span>{detail.user_id.firstName || 'User'}</span>
-                  </span>
-                  <span>
-                    {bill.splitType === 'percent'
-                      ? `${detail.percent || 0}%`
-                      : `$${detail.amountOwed || 0}`}
-                  </span>
-                </div>
-              ))}
+              {bill.splitDetails.map((detail, index) => {
+                let displayValue;
+                let evenlySplitAmount;
+                if (bill.splitType === 'percent') {
+                  displayValue = `${detail.percent || 0}%`;
+                } else if (bill.splitType === 'evenly') {
+                  const totalUsers = bill.splitDetails.length;
+                  evenlySplitAmount = (totalContribution / totalUsers).toFixed(
+                    2
+                  );
+                  displayValue = `$${evenlySplitAmount}`;
+                } else {
+                  displayValue = `$${detail.amountOwed || 0}`;
+                }
+
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{
+                          backgroundColor: colors[index % colors.length],
+                        }}
+                      ></span>
+                      <span>{detail.user_id.firstName || 'User'}</span>
+                    </span>
+                    <span>{displayValue}</span>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Action Buttons */}
