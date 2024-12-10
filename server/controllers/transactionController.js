@@ -39,17 +39,11 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			const {
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				groupExpense_id,
-				group_id,
-			} = req.body;
+			const { title, receiver, paidAmount, groupExpense_id, group_id } =
+				req.body;
 
 			const { uid } = req.user;
-
+			const payer = uid;
 			const groupExpense = await GroupExpense.findById(groupExpense_id);
 			if (
 				!groupExpense ||

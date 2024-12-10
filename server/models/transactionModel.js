@@ -21,7 +21,6 @@ const transactionSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'GroupExpense',
 	},
-
 	user_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User',
