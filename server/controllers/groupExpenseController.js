@@ -11,8 +11,14 @@ const groupExpenseController = {
 			const { uid } = req.user;
 			const groupExpenses = await GroupExpense.find({
 				user_id: uid,
-			}).populate('category_id user_id paid_by group_id');
-
+			}).populate([
+				{ path: 'category_id' },
+				{ path: 'user_id' },
+				{ path: 'paid_by' },
+				{ path: 'group_id' },
+				{ path: 'splitDetails.user_id', select: 'firstName lastName' },
+			]);
+			// 'category_id user_id paid_by group_id'
 			res.status(200).json({ groupExpenses });
 		} catch (e) {
 			console.log(e);
