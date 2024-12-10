@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const transactionSchema = mongoose.Schema({
-	title: {
+	remarks: {
 		type: String,
-		required: [true, 'Please enter a title'],
+		required: [true, 'Please enter a remark'],
 	},
 	payer: {
 		type: mongoose.Types.ObjectId,
