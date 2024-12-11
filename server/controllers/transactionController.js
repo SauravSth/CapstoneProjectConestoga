@@ -40,17 +40,17 @@ const transactionController = {
 	postTransaction: async (req, res) => {
 		try {
 			const { remarks, paidAmount, groupExpense_id } = req.body;
-
 			const { uid } = req.user;
 			const payer = uid;
-			const groupExpense = await GroupExpense.findById(groupExpense_id);
 
+			const groupExpense = await GroupExpense.findById(groupExpense_id);
 			if (!groupExpense) {
 				return res.status(404).json({
 					success: false,
 					message: 'Group expense not found.',
 				});
 			}
+
 			const receiver = groupExpense.paid_by;
 
 			const splitPerMemberData = await SplitPerMember.find({
@@ -64,36 +64,30 @@ const transactionController = {
 				});
 			}
 
-			let remainingAmount = paidAmount;
-
 			const payerSplit = splitPerMemberData.find(
 				(split) => String(split.user_id) === String(payer)
 			);
-			if (payerSplit) {
-				payerSplit.splitPerMember += parseInt(paidAmount);
-				await payerSplit.save();
-			} else {
+			if (!payerSplit) {
 				return res.status(404).json({
 					success: false,
 					message: 'Payer not found in split data.',
 				});
 			}
 
-			const recipientSplits = splitPerMemberData.filter(
-				(split) => String(split.user_id) !== String(payer)
+			payerSplit.splitPerMember -= parseInt(paidAmount);
+			await payerSplit.save();
+
+			const receiverSplit = splitPerMemberData.find(
+				(split) => String(split.user_id) === String(receiver)
 			);
-
-			for (const recipientSplit of recipientSplits) {
-				if (remainingAmount <= 0) break;
-
-				const amountToSettle = Math.min(
-					remainingAmount,
-					Math.abs(recipientSplit.splitPerMember)
-				);
-				recipientSplit.splitPerMember -= amountToSettle;
-				remainingAmount -= amountToSettle;
-
-				await recipientSplit.save();
+			if (receiverSplit) {
+				receiverSplit.splitPerMember += parseInt(paidAmount);
+				await receiverSplit.save();
+			} else {
+				return res.status(404).json({
+					success: false,
+					message: 'Receiver not found in split data.',
+				});
 			}
 
 			const newTransaction = await Transaction.create({
@@ -122,7 +116,6 @@ const transactionController = {
 			res.status(400).json(errors);
 		}
 	},
-
 	updateTransaction: async (req, res) => {
 		try {
 			const { title, payer, receiver, paidAmount, groupExpense_id } =
