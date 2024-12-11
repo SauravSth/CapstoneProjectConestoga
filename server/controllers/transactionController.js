@@ -39,15 +39,13 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			const { title, paidAmount, groupExpense_id, group_id } = req.body;
+			const { remarks, paidAmount, groupExpense_id } = req.body;
 
 			const { uid } = req.user;
 			const payer = uid;
 			const groupExpense = await GroupExpense.findById(groupExpense_id);
-			if (
-				!groupExpense ||
-				String(groupExpense.group_id) !== String(group_id)
-			) {
+
+			if (!groupExpense) {
 				return res.status(404).json({
 					success: false,
 					message: 'Group expense not found.',
@@ -99,7 +97,7 @@ const transactionController = {
 			}
 
 			const newTransaction = await Transaction.create({
-				title,
+				remarks,
 				payer,
 				receiver,
 				paidAmount,
