@@ -70,7 +70,32 @@ const BillSplit = () => {
       ...prevTransaction,
       groupExpense_id: activeBill._id,
     }));
-    console.log(transaction);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transaction),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      console.log('NEW transaction', data);
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setTransaction({
+          paidAmount: '',
+        });
+      } else {
+        alert('Error submitting transaction');
+        console.error('Error:', data);
+      }
+    } catch (error) {
+      console.error('Error submitting new transaction:', error);
+    }
   };
 
   const handleSubmit = async (e) => {

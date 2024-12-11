@@ -121,6 +121,7 @@ const Signup = () => {
             password: '',
             confirmPassword: '',
           });
+          navigate('/login');
         } else {
           setErrors(data.errors || { general: data.message });
         }

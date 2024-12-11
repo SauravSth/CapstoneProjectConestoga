@@ -73,7 +73,7 @@ function App() {
               element={<Login />}
             />
             <Route
-              path="/verifyUser/:verificationCode"
+              path="/verify/:verificationCode"
               element={<VerifyUser />}
             />
             <Route
