@@ -4,7 +4,6 @@ import Logo from '../../../assets/img/Logo.png';
 
 const Signup = () => {
   const { groupID } = useParams();
-  console.log('PARAM', groupID);
 
   const [formData, setFormData] = useState({
     username: '',

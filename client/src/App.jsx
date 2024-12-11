@@ -15,10 +15,9 @@ import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
 import Login from './components/pages/Login/Login';
 import Signup from './components/pages/Signup/Signup';
+import VerifyUser from './components/pages/Signup/VerifyUser';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <Router>
@@ -72,6 +71,10 @@ function App() {
             <Route
               path="/login"
               element={<Login />}
+            />
+            <Route
+              path="/verifyUser/:verificationCode"
+              element={<VerifyUser />}
             />
             <Route
               path="/signup"
