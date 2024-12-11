@@ -27,7 +27,7 @@ const AllExpenses = () => {
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'amount', headerName: 'Amount' },
-    { field: 'type', headerName: 'Type' }, // Add a column to indicate type (personal/group)
+    { field: 'type', headerName: 'Type' },
   ];
 
   const toggleCardDetails = (id) => {
@@ -52,8 +52,8 @@ const AllExpenses = () => {
         date: new Date().toISOString().slice(0, 10),
         amount: Number(amount),
         category_id: category,
-        group_id: isGroupExpense ? 'group_id_placeholder' : null, // Adjust group_id based on type
-        type: isGroupExpense ? 'Group' : 'Personal', // Include type in the model
+        group_id: isGroupExpense ? 'group_id_placeholder' : null,
+        type: isGroupExpense ? 'Group' : 'Personal',
       };
 
       const response = await fetch('http://localhost:3000/api/expense', {
@@ -66,8 +66,6 @@ const AllExpenses = () => {
       });
 
       const data = await response.json();
-      console.log('asd', newExpense);
-      console.log('adrta', data);
 
       if (response.ok) {
         setData((prevData) => [...prevData, data.newExpense]);
@@ -86,7 +84,7 @@ const AllExpenses = () => {
     setExpenseName('');
     setCategory('');
     setAmount('');
-    setIsGroupExpense(false); // Reset the toggle switch
+    setIsGroupExpense(false);
   };
 
   const closeModal = () => {
@@ -126,7 +124,7 @@ const AllExpenses = () => {
           ...expense,
           category: expense.category_id?.name || 'Unknown Category',
           date: new Date(expense.date).toLocaleDateString('en-US'),
-          type: expense.group_id ? 'Group' : 'Personal', // Determine type dynamically
+          type: expense.group_id ? 'Group' : 'Personal',
         }));
 
         setData(formattedData);
