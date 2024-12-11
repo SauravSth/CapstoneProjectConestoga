@@ -74,14 +74,14 @@ const transactionController = {
 				});
 			}
 
-			payerSplit.splitPerMember -= parseInt(paidAmount);
+			payerSplit.splitPerMember -= parseFloat(paidAmount);
 			await payerSplit.save();
 
 			const receiverSplit = splitPerMemberData.find(
 				(split) => String(split.user_id) === String(receiver)
 			);
 			if (receiverSplit) {
-				receiverSplit.splitPerMember += parseInt(paidAmount);
+				receiverSplit.splitPerMember += parseFloat(paidAmount);
 				await receiverSplit.save();
 			} else {
 				return res.status(404).json({
