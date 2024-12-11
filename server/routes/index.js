@@ -204,7 +204,7 @@ router.post(
 	authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
-router.get('/verify/:verificationCode', authController.verifyUser);
+router.post('/verify/:verificationCode', authController.verifyUser);
 router.post('/registerFromInvite/:group_id', authController.registerFromInvite);
 
 export default router;
