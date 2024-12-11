@@ -3,7 +3,10 @@ import Budget from '../models/budgetModel.js';
 const budgetController = {
 	getBudget: async (req, res) => {
 		try {
-			const budgets = await Budget.find({}).populate('user group');
+			const { uid } = req.user;
+			const budgets = await Budget.find({ user_id: uid }).populate(
+				'user_id'
+			);
 
 			res.status(200).json({ budgets });
 		} catch (e) {
@@ -15,7 +18,7 @@ const budgetController = {
 			const id = req.params._id;
 
 			const budget = await Budget.findOne({ _id: id }).populate(
-				'user group'
+				'user_id'
 			);
 
 			res.status(200).json({ budget });
@@ -25,13 +28,16 @@ const budgetController = {
 	},
 	postBudget: async (req, res) => {
 		try {
-			const { title, upperLimit, lowerLimit, user_id, group_id } =
-				req.body;
+			const { title, description, amount, group_id } = req.body;
+
+			const { uid } = req.user;
+
 			let newBudget = await Budget.create({
 				title,
-				upperLimit,
-				lowerLimit,
-				user_id,
+				description,
+				amount,
+				remainingAmount: amount,
+				user_id: uid,
 				group_id,
 			});
 
@@ -47,12 +53,11 @@ const budgetController = {
 	},
 	updateBudget: async (req, res) => {
 		try {
-			const { _id, title, upperLimit, lowerLimit, user_id, group_id } =
-				req.body;
-
+			const { title, description, amount } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Budget.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, upperLimit, lowerLimit, user_id, group_id } },
+				{ $set: { title, description, amount } },
 				{ new: true }
 			);
 

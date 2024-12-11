@@ -6,6 +6,9 @@ const categorySchema = mongoose.Schema({
 		required: [true, 'Please enter the category name'],
 		unique: true,
 	},
+	imagePath: {
+		type: String,
+	},
 	isActive: {
 		type: Boolean,
 		default: true,

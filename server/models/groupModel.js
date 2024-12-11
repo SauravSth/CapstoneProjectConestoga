@@ -1,3 +1,4 @@
+import validator from 'validator';
 import mongoose from 'mongoose';
 
 const groupSchema = mongoose.Schema({
@@ -5,9 +6,23 @@ const groupSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Please provide a group name'],
 	},
-	members: {
-		type: Array,
-		default: [],
+	description: {
+		type: String,
+	},
+	members: [
+		{
+			email: {
+				type: String,
+				lowercase: true,
+				validate: [validator.isEmail, 'Please enter a valid email'],
+			},
+			user_id: { type: mongoose.Types.ObjectId, ref: 'User' },
+			invited: { type: Boolean, default: false },
+		},
+	],
+	user_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
 	},
 	isActive: {
 		type: Boolean,

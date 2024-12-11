@@ -78,15 +78,30 @@ const errorHandler = {
 	},
 	handleBudgetErrors: (err) => {
 		let errors = {
-			name: '',
-			upperLimit: '',
-			lowerLimit: '',
+			title: '',
+			amount: '',
 		};
 		if (err.code === 11000) {
-			errors.name = 'Category already exists';
+			errors.name = 'Budget already exists';
 			return { success: false, errors };
 		}
-		if (err.message.includes('Category validation failed')) {
+		if (err.message.includes('Budget validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleGoalErrors: (err) => {
+		let errors = {
+			title: '',
+			amount: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Goal already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Goal validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
@@ -96,13 +111,12 @@ const errorHandler = {
 	handleGroupErrors: (err) => {
 		let errors = {
 			name: '',
-			members: '',
 		};
 		if (err.code === 11000) {
-			errors.name = 'Category already exists';
+			errors.name = 'Group already exists';
 			return { success: false, errors };
 		}
-		if (err.message.includes('Category validation failed')) {
+		if (err.message.includes('Group validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});
@@ -115,11 +129,47 @@ const errorHandler = {
 			date: '',
 			amount: '',
 		};
+		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Expense already exists';
 			return { success: false, errors };
 		}
 		if (err.message.includes('Expense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleGroupExpenseErrors: (err) => {
+		let errors = {
+			title: '',
+			date: '',
+			amount: '',
+		};
+		console.log(err);
+		if (err.code === 11000) {
+			errors.name = 'GroupExpense already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('GroupExpense validation failed')) {
+			Object.values(err.errors).forEach(({ properties }) => {
+				errors[properties.path] = properties.message;
+			});
+		}
+		return { success: false, errors };
+	},
+	handleTransactionErrors: (err) => {
+		let errors = {
+			remarks: '',
+			paidAmount: '',
+			date: '',
+		};
+		if (err.code === 11000) {
+			errors.name = 'Transaction already exists';
+			return { success: false, errors };
+		}
+		if (err.message.includes('Transaction validation failed')) {
 			Object.values(err.errors).forEach(({ properties }) => {
 				errors[properties.path] = properties.message;
 			});

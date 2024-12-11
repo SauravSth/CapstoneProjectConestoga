@@ -12,6 +12,11 @@ const Budget = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Form state for creating a new budget
+  const [budgetTitle, setBudgetTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -21,6 +26,9 @@ const Budget = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setBudgetTitle(''); // Reset the form inputs
+    setAmount('');
+    setDescription('');
   };
 
   const handleBudgetCard = (budgetId) => {
@@ -29,19 +37,20 @@ const Budget = () => {
 
   useEffect(() => {
     const fetchBudget = async () => {
+      if (!user) {
+        return; // No user, no budget to fetch
+      }
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/api/budget?_id=${user}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3000/api/budget`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch budgets');
+        }
         const budgetData = await response.json();
-        console.log('budgetData', budgetData);
         setData(
           Array.isArray(budgetData) ? budgetData : budgetData.budgets || []
         );
@@ -53,7 +62,40 @@ const Budget = () => {
     };
 
     fetchBudget();
-  }, []);
+  }, [user]);
+
+  const handleFormSubmit = async () => {
+    try {
+      const newBudget = {
+        title: budgetTitle,
+        amount: Number(amount),
+        remainingAmount: Number(amount),
+        description: description,
+      };
+
+      console.log('newBudget', newBudget);
+
+      const response = await fetch('http://localhost:3000/api/budget', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(newBudget),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setData((prevData) => [...prevData, data.newBudget]); // Add new budget to the data state
+        closeModal(); // Close the modal after submission
+      } else {
+        console.error('Error:', data); // Log error to console
+      }
+    } catch (error) {
+      console.error('Error submitting new budget:', error);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -98,28 +140,15 @@ const Budget = () => {
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            // <div className="budget-cards">
-            //   {data.map((budget) => (
-            //     <div
-            //       key={budget._id}
-            //       className="budget-card"
-            //       onClick={() => handleCardClick(budget._id)}
-            //       style={{ cursor: 'pointer' }}
-            //     >
-            //       <h3>{budget.title}</h3>
-            //       <p>Budget: ${budget.upperLimit}</p>
-            //       <p>Remaining: ${budget.lowerLimit}</p>
-            //     </div>
-            //   ))}
-            // </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {data.map((budget, index) => (
+              {data.map((budget) => (
                 <BudgetCard
-                  key={index}
+                  key={budget._id}
                   name={budget.title}
-                  description={budget.user_id}
-                  createdDate={budget.createdDate}
-                  totalAmount={budget.totalAmount}
+                  description={budget.description}
+                  createdDate={budget.createdAt}
+                  totalAmount={budget.amount}
+                  remainingAmount={budget.remainingAmount ?? budget.amount}
                   onClick={() => handleBudgetCard(budget._id)}
                 />
               ))}
@@ -138,6 +167,8 @@ const Budget = () => {
               <input
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={budgetTitle}
+                onChange={(e) => setBudgetTitle(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -145,6 +176,8 @@ const Budget = () => {
               <input
                 type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -152,7 +185,25 @@ const Budget = () => {
               <textarea
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="3"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               ></textarea>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                onClick={handleFormSubmit}
+              >
+                Confirm
+              </button>
             </div>
           </form>
         </CustomModal>

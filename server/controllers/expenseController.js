@@ -1,10 +1,34 @@
 import Expense from '../models/expenseModel.js';
+import Budget from '../models/budgetModel.js';
 import errorHandler from '../helpers/errorHandler.js';
+
+const editBudgetAmount = async (amount, budget_id) => {
+	let budget = await Budget.findOne({ _id: budget_id }).select(
+		'amount remainingAmount'
+	);
+	let remainingBudget = (budget.remainingAmount || budget.amount) - amount;
+	if (remainingBudget >= 0) {
+		budget.remainingAmount = remainingBudget;
+		await budget.save();
+		return { success: true, remainingAmount: remainingBudget };
+	} else {
+		return { success: false, message: 'Insufficient budget' };
+	}
+};
 
 const expenseController = {
 	getExpense: async (req, res) => {
 		try {
-			const expenses = await Expense.find({}).populate('category user');
+			const { uid } = req.user;
+			const { budget_id } = req.query;
+
+			const filter = { user_id: uid };
+			if (budget_id) {
+				filter.budget_id = budget_id;
+			}
+			const expenses = await Expense.find(filter).populate(
+				'category_id user_id budget_id'
+			);
 
 			res.status(200).json({ expenses });
 		} catch (e) {
@@ -16,7 +40,7 @@ const expenseController = {
 			const id = req.params._id;
 
 			const expense = await Expense.findOne({ _id: id }).populate(
-				'category user'
+				'category_id user_id budget_id'
 			);
 
 			res.status(200).json({ expense });
@@ -26,16 +50,22 @@ const expenseController = {
 	},
 	postExpense: async (req, res) => {
 		try {
-			const { title, date, amount, category_id, user_id, group_id } =
+			let { title, date, amount, description, category_id, budget_id } =
 				req.body;
-			console.log(req.body);
+			const { uid } = req.user;
+
+			if (budget_id) {
+				editBudgetAmount(amount, budget_id);
+			}
+
 			let newExpense = await Expense.create({
 				title,
 				date,
 				amount,
+				description,
 				category_id,
-				user_id,
-				group_id,
+				user_id: uid,
+				budget_id,
 			});
 
 			res.status(200).json({
@@ -50,8 +80,14 @@ const expenseController = {
 	},
 	updateExpense: async (req, res) => {
 		try {
-			const { _id, title, date, amount, category_id, user_id, group_id } =
+			let { title, date, amount, description, category_id, budget_id } =
 				req.body;
+
+			const { _id } = req.params;
+
+			if (budget_id) {
+				editBudgetAmount(amount, budget_id);
+			}
 
 			const updatedData = await Expense.findOneAndUpdate(
 				{ _id },
@@ -60,9 +96,9 @@ const expenseController = {
 						title,
 						date,
 						amount,
+						description,
 						category_id,
-						user_id,
-						group_id,
+						budget_id,
 					},
 				},
 				{ new: true }

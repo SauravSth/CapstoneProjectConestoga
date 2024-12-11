@@ -6,7 +6,10 @@ import errorHandler from '../helpers/errorHandler.js';
 const itemController = {
 	getItem: async (req, res) => {
 		try {
-			const items = await Item.find({}).populate('category');
+			const { uid } = req.user;
+			const items = await Item.find({ user_id: uid }).populate(
+				'category_id'
+			);
 
 			res.status(200).json({ items });
 		} catch (e) {
@@ -27,11 +30,14 @@ const itemController = {
 	postItem: async (req, res) => {
 		try {
 			const { name, quantity, price, category_id } = req.body;
+			const { uid } = req.user;
+
 			let newItem = await Item.create({
 				name,
 				quantity,
 				price,
 				category_id,
+				user_id: uid,
 			});
 
 			res.status(200).json({
@@ -46,8 +52,8 @@ const itemController = {
 	},
 	updateItem: async (req, res) => {
 		try {
-			const { _id, name, quantity, price, category_id } = req.body;
-
+			const { name, quantity, price, category_id } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Item.findOneAndUpdate(
 				{ _id },
 				{ $set: { name, quantity, price, category_id } },

@@ -26,11 +26,9 @@ const storeController = {
 	},
 	postStore: async (req, res) => {
 		try {
-			const { name, address, postalCode } = req.body;
+			const { name } = req.body;
 			let newStore = await Store.create({
 				name,
-				// address,
-				// postalCode,
 			});
 
 			res.status(200).json({
@@ -45,8 +43,8 @@ const storeController = {
 	},
 	updateStore: async (req, res) => {
 		try {
-			const { _id, name } = req.body;
-
+			const { name } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Store.findOneAndUpdate(
 				{ _id },
 				{ $set: { name } },

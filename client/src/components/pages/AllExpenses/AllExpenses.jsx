@@ -10,82 +10,118 @@ const AllExpenses = () => {
   const { user } = useAuthStore();
 
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expenseName, setExpenseName] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isGroupExpense, setIsGroupExpense] = useState(false);
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
-    // { field: 'paidTo', headerName: 'Paid To' },
     { field: 'amount', headerName: 'Amount' },
+    { field: 'type', headerName: 'Type' }, // Add a column to indicate type (personal/group)
   ];
 
   const handleNewExpense = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handleFormSubmit = async () => {
+    if (!expenseName || !category || !amount) {
+      alert('Please fill out all fields');
+      return;
+    }
     try {
       const newExpense = {
         title: expenseName,
-        date: new Date().toISOString().slice(0, 10), // Current date
+        date: new Date().toISOString().slice(0, 10),
         amount: Number(amount),
         category_id: category,
-        user_id: user,
-        group_id: null,
+        group_id: isGroupExpense ? 'group_id_placeholder' : null, // Adjust group_id based on type
+        type: isGroupExpense ? 'Group' : 'Personal', // Include type in the model
       };
-      console.log('data', newExpense);
-      debugger;
+
       const response = await fetch('http://localhost:3000/api/expense', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newExpense),
+        credentials: 'include',
       });
 
       const data = await response.json();
+      console.log('asd', newExpense);
+      console.log('adrta', data);
 
       if (response.ok) {
         setData((prevData) => [...prevData, data.newExpense]);
         closeModal();
-        setExpenseName(''); // Reset input fields
-        setCategory('');
-        setAmount('');
+        resetFormFields();
       } else {
+        alert('Error submitting expense');
         console.error('Error:', data);
-        // You can also display an error message to the user here
       }
     } catch (error) {
       console.error('Error submitting new expense:', error);
     }
   };
 
+  const resetFormFields = () => {
+    setExpenseName('');
+    setCategory('');
+    setAmount('');
+    setIsGroupExpense(false); // Reset the toggle switch
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    resetFormFields();
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    const filtered = data.filter(
+      (expense) =>
+        expense.title.toLowerCase().includes(value.toLowerCase()) ||
+        expense.category.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const expenseResponse = await fetch(
-          `http://localhost:3000/api/expense?_id=${user}`,
+          'http://localhost:3000/api/expense',
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            credentials: 'include',
           }
         );
+
+        if (!expenseResponse.ok) {
+          throw new Error(`HTTP error! Status: ${expenseResponse.status}`);
+        }
+
         const expenseData = await expenseResponse.json();
-        console.log('Expense Data', expenseData);
-        setData(expenseData);
+        const formattedData = expenseData.expenses.map((expense) => ({
+          ...expense,
+          category: expense.category_id?.name || 'Unknown Category',
+          date: new Date(expense.date).toLocaleDateString('en-US'),
+          type: expense.group_id ? 'Group' : 'Personal', // Determine type dynamically
+        }));
+
+        setData(formattedData);
+        setFilteredData(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -100,12 +136,13 @@ const AllExpenses = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category?_id=${user}`,
+          `http://localhost:3000/api/category`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }
         );
         const categoryData = await categoryResponse.json();
@@ -135,7 +172,9 @@ const AllExpenses = () => {
             <div className="flex items-center space-x-4 max-w-lg">
               <input
                 type="text"
-                placeholder="Search..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                placeholder="Search by title or category"
                 className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
@@ -159,7 +198,7 @@ const AllExpenses = () => {
           ) : (
             <CustomTable
               columns={columns}
-              data={data}
+              data={filteredData}
             />
           )}
         </main>
@@ -206,20 +245,29 @@ const AllExpenses = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 mr-4">Group Expense</label>
+              <input
+                type="checkbox"
+                checked={isGroupExpense}
+                onChange={() => setIsGroupExpense(!isGroupExpense)}
+                className="w-5 h-5"
+              />
+            </div>
             <div className="flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                className="px-4 py-2 mr-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none"
                 onClick={handleFormSubmit}
               >
-                Confirm
+                Submit
               </button>
             </div>
           </form>
