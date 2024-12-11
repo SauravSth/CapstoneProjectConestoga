@@ -21,6 +21,7 @@ import authorization from '../middlewares/authorization.js';
 
 import fileUploadHelper from '../helpers/fileUploadHelper.js';
 import splitPerMemberController from '../controllers/splitPerMemberController.js';
+import graphController from '../controllers/graphController.js';
 
 const router = express.Router();
 
@@ -191,8 +192,12 @@ router.get(
 	splitPerMemberController.getSplitPerMember
 );
 
-// TEST ROUTES
-router.get('/test', authentication, userController.testRoute);
+// GRAPH DATA
+router.get(
+	'/graph/getExpensePerCategory',
+	authentication,
+	graphController.getExpensePerCategory
+);
 
 // Auth Routes
 router.get('/userDetail/:_id', authentication, userController.getOneUser);
