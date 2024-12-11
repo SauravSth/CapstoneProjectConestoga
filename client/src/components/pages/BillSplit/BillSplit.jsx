@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../../layouts/Header';
 import Navbar from '../../../layouts/Navbar';
 import BillCard from '../../ui/BillCard';
+import { FaHandHoldingUsd } from 'react-icons/fa';
+import useAuthStore from '../../../store/useAuthStore';
 import CustomModal from '../../modal/CustomModal';
 
 const BillSplit = () => {
+  const { user } = useAuthStore();
   const [bills, setBills] = useState([
     {
       title: '',
@@ -34,299 +37,64 @@ const BillSplit = () => {
     remainingAmount: 0,
   });
 
+  const [billSplits, setBillSplits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [groupID, setGroupID] = useState();
   const [categories, setCategories] = useState([]);
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transaction, setTransaction] = useState({ paidAmount: '' });
 
-  // groups fetch
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const groupResponse = await fetch(`http://localhost:3000/api/group`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-        const groupData = await groupResponse.json();
-        setGroups(groupData.groups);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [activeBill, setActiveBill] = useState(null);
+  const [splitDetail, setSplitDetail] = useState([]);
+  const [userSplitDetail, setUserSplitDetail] = useState([]);
 
-    const fetchCategories = async () => {
-      try {
-        const categoryResponse = await fetch(
-          `http://localhost:3000/api/category`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          }
-        );
-        const categoryData = await categoryResponse.json();
-        setCategories(categoryData.categories);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+  const handleSettleUp = (bill) => {
+    setActiveBill(() => bill);
+    setIsTransactionModalOpen(true);
+  };
 
-    fetchCategories();
+  const handleTransaction = (e) => {
+    const { name, value } = e.target;
+    setTransaction((prevTransaction) => ({
+      ...prevTransaction,
+      [name]: value,
+    }));
+  };
 
-    fetchGroups();
-  }, []);
+  const handleTransfer = async (e) => {
+    e.preventDefault();
+    setTransaction((prevTransaction) => ({
+      ...prevTransaction,
+      groupExpense_id: activeBill._id,
+    }));
 
-  useEffect(() => {
-    if (groupID) {
-      const fetchMembers = async () => {
-        try {
-          const groupDetailsResponse = await fetch(
-            `http://localhost:3000/api/group/${groupID}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-            }
-          );
-          const groupDetails = await groupDetailsResponse.json();
-
-          const memberDetailsPromises = groupDetails.group.members.map(
-            async (member) => {
-              const userResponse = await fetch(
-                `http://localhost:3000/api/userDetail/${member.user_id}`,
-                {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  credentials: 'include',
-                }
-              );
-              return await userResponse.json();
-            }
-          );
-          console.log('members', members);
-
-          const detailedMembers = await Promise.all(memberDetailsPromises);
-          setMembers(detailedMembers);
-        } catch (error) {
-          console.error('Error fetching members:', error);
-        }
-      };
-
-      fetchMembers();
-
-      setNewBill({
-        title: '',
-        date: '',
-        amount: '',
-        description: '',
-        splitType: '',
-        splitDetails: [{ user_id: '' }],
-        category_id: '',
-        paid_by: '',
-        group_id: groupID,
-        remainingPercentage: 0,
-        remainingAmount: 0,
+    try {
+      const response = await fetch('http://localhost:3000/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transaction),
+        credentials: 'include',
       });
-    }
-  }, [groupID]);
 
-  // Function to initialize percentages evenly
-  const initializeEvenSplit = () => {
-    if (newBill.splitType === 'evenly') {
-      const initialSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-      }));
+      const data = await response.json();
+      console.log('NEW transaction', data);
 
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: initialSplitDetails,
-        remainingPercentage: 0,
-        remainingAmount: 0, // Initially, all percentages are assigned
-      }));
-    }
-
-    if (newBill.splitType === 'percent') {
-      const evenPercentage = 100 / members.length;
-      const initialSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-        percent: evenPercentage.toFixed(0), // Distribute evenly
-      }));
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: initialSplitDetails,
-        remainingPercentage: 0,
-        remainingAmount: 0, // Initially, all percentages are assigned
-      }));
-    }
-
-    if (newBill.splitType === 'amountOwed') {
-      const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
-      const initialSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-        amountOwed: evenAmount.toFixed(2), // Distribute evenly
-      }));
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: initialSplitDetails,
-        remainingPercentage: 0,
-        remainingAmount: 0, // Initially, all percentages are assigned
-      }));
-    }
-
-    console.log('initializeNewBill newBill', newBill);
-  };
-
-  const handleSplitType = (index, e) => {
-    const { name, value } = e.target;
-    const updatedSplitDetails = [...newBill.splitDetails];
-    console.log('User', updatedSplitDetails);
-
-    if (name === 'percent') {
-      const newPercentage = parseFloat(value);
-
-      if (isNaN(newPercentage) || newPercentage < 0) {
-        alert('Please enter a valid percentage.');
-        return;
+      if (response.ok) {
+        setIsModalOpen(false);
+        setTransaction({
+          paidAmount: '',
+        });
+      } else {
+        alert('Error submitting transaction');
+        console.error('Error:', data);
       }
-
-      if (!updatedSplitDetails[index]) {
-        updatedSplitDetails[index] = {}; // Initialize if undefined
-      }
-
-      updatedSplitDetails[index].user_id = members[index].user._id;
-      updatedSplitDetails[index].percent = newPercentage;
-
-      console.log('AfterChange', updatedSplitDetails);
-
-      const totalAssignedPercentage = updatedSplitDetails.reduce(
-        (acc, detail) => acc + (parseFloat(detail.percent) || 0),
-        0
-      );
-
-      const remainingPercentage = 100 - totalAssignedPercentage;
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: updatedSplitDetails,
-        remainingPercentage,
-      }));
-
-      console.log('New Data', newBill);
-    }
-
-    if (name === 'amountOwed') {
-      const newAmount = parseFloat(value);
-
-      if (isNaN(newAmount) || newAmount < 0) {
-        alert('Please enter a valid amount.');
-        return;
-      }
-
-      if (!updatedSplitDetails[index]) {
-        updatedSplitDetails[index] = {}; // Initialize if undefined
-      }
-
-      updatedSplitDetails[index].user_id = members[index].user._id;
-      updatedSplitDetails[index].amountOwed = newAmount;
-
-      console.log('AfterChange', updatedSplitDetails);
-
-      const totalAssignedAmount = updatedSplitDetails.reduce(
-        (acc, detail) => acc + (parseFloat(detail.amountOwed) || 0),
-        0
-      );
-
-      const remainingAmount = newBill.amount - totalAssignedAmount;
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: updatedSplitDetails,
-        remainingAmount,
-      }));
-    }
-
-    console.log('New Data', newBill);
-  };
-
-  // Use Effect to Initialize Even Distribution on Split Type Selection
-  useEffect(() => {
-    initializeEvenSplit();
-  }, [newBill.splitType]);
-
-  const handleGroupChange = (e) => {
-    const { value } = e.target;
-    setNewBill((prevBill) => ({
-      ...prevBill,
-      group_id: value,
-    }));
-    setGroupID(() => value);
-  };
-
-  const handlePaidByChange = (e) => {
-    const { name, value } = e.target;
-    setNewBill((prevBill) => ({
-      ...prevBill,
-      [name]: value, // Dynamically update the selected value
-    }));
-  };
-
-  const handleCategoryChange = (e) => {
-    const { name, value } = e.target;
-    setNewBill((prevBill) => ({
-      ...prevBill,
-      [name]: value, // Dynamically update the selected value
-    }));
-    console.log(newBill);
-  };
-
-  const handleBillChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === 'splitType' && value === 'percent') {
-      const evenPercentage = 100 / members.length;
-      const updatedSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-        percent: evenPercentage.toFixed(2),
-      }));
-
-      console.log('Update percent', updatedSplitDetails);
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitType: value,
-        splitDetails: updatedSplitDetails,
-      }));
-    } else if (name === 'splitType' && value === 'amountOwed') {
-      const evenAmount = newBill.amount / members.length;
-      const updatedSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-        amountOwed: evenAmount.toFixed(2),
-      }));
-
-      console.log('Update amount', updatedSplitDetails);
-
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitType: value,
-        splitDetails: updatedSplitDetails,
-      }));
-    } else {
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        [name]: value,
-      }));
+    } catch (error) {
+      console.error('Error submitting new transaction:', error);
     }
   };
 
@@ -340,7 +108,6 @@ const BillSplit = () => {
       alert('Please assign all amounts before submitting.');
       return;
     }
-    console.log('NEWBILL', newBill);
 
     try {
       const response = await fetch('http://localhost:3000/api/groupExpense', {
@@ -380,6 +147,344 @@ const BillSplit = () => {
     }
   };
 
+  useEffect(() => {
+    if (activeBill) {
+      const filteredSplitDetail = activeBill.splitDetails.find(
+        (splitDetail) => splitDetail.user_id._id === user
+      );
+      setUserSplitDetail(filteredSplitDetail);
+      console.log('YEEEET', userSplitDetail);
+
+      const fetchSplitData = async () => {
+        try {
+          const splitDataResponse = await fetch(
+            `http://localhost:3000/api/splitPerOneMember/${activeBill._id}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            }
+          );
+          const splitData = await splitDataResponse.json();
+          setSplitDetail(() => splitData.splitPerMember);
+        } catch (error) {
+          console.error('Error fetching split detail:', error);
+        }
+      };
+      fetchSplitData();
+    }
+  }, [activeBill]);
+
+  const handleEdit = (bill) => {
+    console.log(`Edit ${bill._id}`);
+  };
+
+  const handleDelete = (bill) => {
+    console.log(`Delete ${bill._id}`);
+  };
+
+  // groups fetch
+  useEffect(() => {
+    const fetchGroupExpenses = async () => {
+      try {
+        const groupExpensesResponse = await fetch(
+          'http://localhost:3000/api/groupExpense',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
+        const groupExpenseData = await groupExpensesResponse.json();
+        setBillSplits(() => groupExpenseData.groupExpenses);
+        setLoading(() => false);
+      } catch (error) {
+        console.error('Error fetching bill splits:', error);
+      }
+    };
+
+    const fetchGroups = async () => {
+      try {
+        const groupResponse = await fetch(`http://localhost:3000/api/group`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        const groupData = await groupResponse.json();
+        setGroups(groupData.groups);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const categoryResponse = await fetch(
+          `http://localhost:3000/api/category`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
+        const categoryData = await categoryResponse.json();
+        setCategories(categoryData.categories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchGroupExpenses();
+
+    fetchCategories();
+
+    fetchGroups();
+  }, []);
+
+  useEffect(() => {
+    if (groupID) {
+      const fetchMembers = async () => {
+        try {
+          const groupDetailsResponse = await fetch(
+            `http://localhost:3000/api/group/${groupID}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            }
+          );
+          const groupDetails = await groupDetailsResponse.json();
+
+          const memberDetailsPromises = groupDetails.group.members.map(
+            async (member) => {
+              const userResponse = await fetch(
+                `http://localhost:3000/api/userDetail/${member.user_id}`,
+                {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  credentials: 'include',
+                }
+              );
+              return await userResponse.json();
+            }
+          );
+
+          const detailedMembers = await Promise.all(memberDetailsPromises);
+          setMembers(detailedMembers);
+        } catch (error) {
+          console.error('Error fetching members:', error);
+        }
+      };
+
+      fetchMembers();
+
+      setNewBill({
+        title: '',
+        date: '',
+        amount: '',
+        description: '',
+        splitType: '',
+        splitDetails: [{ user_id: '' }],
+        category_id: '',
+        paid_by: '',
+        group_id: groupID,
+        remainingPercentage: 0,
+        remainingAmount: 0,
+      });
+    }
+  }, [groupID]);
+
+  // Function to initialize percentages evenly
+  const initializeEvenSplit = () => {
+    if (newBill.splitType === 'evenly' || newBill.splitType === 'amountOwed') {
+      const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
+      const initialSplitDetails = members.map((member) => ({
+        amountOwed: evenAmount.toFixed(2),
+        user_id: member.user._id,
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: initialSplitDetails,
+        remainingPercentage: 0,
+        remainingAmount: 0, // Initially, all percentages are assigned
+      }));
+    }
+
+    if (newBill.splitType === 'percent') {
+      const evenPercentage = 100 / members.length;
+      const initialSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        percent: evenPercentage.toFixed(0), // Distribute evenly
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: initialSplitDetails,
+        remainingPercentage: 0,
+        remainingAmount: 0, // Initially, all percentages are assigned
+      }));
+    }
+
+    // if (newBill.splitType === 'amountOwed') {
+    //   const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
+    //   const initialSplitDetails = members.map((member) => ({
+    //     user_id: member.user._id,
+    //     amountOwed: evenAmount.toFixed(2), // Distribute evenly
+    //   }));
+
+    //   setNewBill((prevBill) => ({
+    //     ...prevBill,
+    //     splitDetails: initialSplitDetails,
+    //     remainingPercentage: 0,
+    //     remainingAmount: 0, // Initially, all percentages are assigned
+    //   }));
+    // }
+  };
+
+  const handleSplitType = (index, e) => {
+    const { name, value } = e.target;
+    const updatedSplitDetails = [...newBill.splitDetails];
+
+    if (name === 'percent') {
+      const newPercentage = parseFloat(value);
+
+      if (isNaN(newPercentage) || newPercentage < 0) {
+        alert('Please enter a valid percentage.');
+        return;
+      }
+
+      if (!updatedSplitDetails[index]) {
+        updatedSplitDetails[index] = {}; // Initialize if undefined
+      }
+
+      updatedSplitDetails[index].user_id = members[index].user._id;
+      updatedSplitDetails[index].percent = newPercentage;
+
+      const totalAssignedPercentage = updatedSplitDetails.reduce(
+        (acc, detail) => acc + (parseFloat(detail.percent) || 0),
+        0
+      );
+
+      const remainingPercentage = 100 - totalAssignedPercentage;
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: updatedSplitDetails,
+        remainingPercentage,
+      }));
+    }
+
+    if (name === 'amountOwed') {
+      const newAmount = parseFloat(value);
+
+      if (isNaN(newAmount) || newAmount < 0) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
+      if (!updatedSplitDetails[index]) {
+        updatedSplitDetails[index] = {}; // Initialize if undefined
+      }
+
+      updatedSplitDetails[index].user_id = members[index].user._id;
+      updatedSplitDetails[index].amountOwed = newAmount;
+
+      const totalAssignedAmount = updatedSplitDetails.reduce(
+        (acc, detail) => acc + (parseFloat(detail.amountOwed) || 0),
+        0
+      );
+
+      const remainingAmount = newBill.amount - totalAssignedAmount;
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitDetails: updatedSplitDetails,
+        remainingAmount,
+      }));
+    }
+  };
+
+  // Use Effect to Initialize Even Distribution on Split Type Selection
+  useEffect(() => {
+    initializeEvenSplit();
+  }, [newBill.splitType]);
+
+  const handleGroupChange = (e) => {
+    const { value } = e.target;
+    setNewBill((prevBill) => ({
+      ...prevBill,
+      group_id: value,
+    }));
+    setGroupID(() => value);
+  };
+
+  const handlePaidByChange = (e) => {
+    const { name, value } = e.target;
+    setNewBill((prevBill) => ({
+      ...prevBill,
+      [name]: value, // Dynamically update the selected value
+    }));
+  };
+
+  const handleCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setNewBill((prevBill) => ({
+      ...prevBill,
+      [name]: value, // Dynamically update the selected value
+    }));
+  };
+
+  const handleBillChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'splitType' && value === 'percent') {
+      const evenPercentage = 100 / members.length;
+      const updatedSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        percent: evenPercentage.toFixed(2),
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitType: value,
+        splitDetails: updatedSplitDetails,
+      }));
+    } else if (
+      name === 'splitType' &&
+      (value === 'amountOwed' || value === 'evenly')
+    ) {
+      const evenAmount = newBill.amount / members.length;
+      const updatedSplitDetails = members.map((member) => ({
+        user_id: member.user._id,
+        amountOwed: evenAmount.toFixed(2),
+      }));
+
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        splitType: value,
+        splitDetails: updatedSplitDetails,
+      }));
+    } else {
+      setNewBill((prevBill) => ({
+        ...prevBill,
+        [name]: value,
+      }));
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -399,14 +504,18 @@ const BillSplit = () => {
               Add New Bill
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {bills.map((bill, index) => (
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <BillCard
-                key={index}
-                bill={bill}
+                bills={billSplits}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onSettleUp={handleSettleUp}
               />
-            ))}
-          </div>
+            </div>
+          )}
         </main>
       </div>
 
@@ -444,6 +553,12 @@ const BillSplit = () => {
                 onChange={handleCategoryChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
+                <option
+                  value=""
+                  disabled
+                >
+                  Select a Category
+                </option>
                 {Array.isArray(categories) &&
                   categories.map((category) => (
                     <option
@@ -552,7 +667,6 @@ const BillSplit = () => {
               {newBill.splitType === 'amountOwed' && (
                 <div className="mt-4">
                   <h3 className="font-semibold">
-                    {console.log('Remaining Amount:', newBill.remainingAmount)}
                     Remaining Amount: ${newBill.remainingAmount.toFixed(2)}
                   </h3>
                   {newBill.remainingAmount > 0 && (
@@ -659,6 +773,154 @@ const BillSplit = () => {
             >
               Save
             </button>
+          </div>
+        </form>
+      </CustomModal>
+
+      <CustomModal
+        title="Settle Up"
+        isOpen={isTransactionModalOpen}
+        onClose={() => setIsTransactionModalOpen(false)}
+      >
+        <form
+          onSubmit={handleTransfer}
+          className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg space-y-6"
+        >
+          <div className="space-y-4">
+            {activeBill ? (
+              <>
+                {/* Title */}
+                <h2 className="text-2xl font-bold text-center text-gray-800">
+                  {activeBill.title}
+                </h2>
+                {/* Date */}
+                <p className="text-center text-gray-600">
+                  <span className="font-semibold">Date:</span>
+                  {new Date(activeBill.date).toLocaleDateString('en-US')}
+                </p>
+                {/* Your Share */}
+                <p className="text-center text-lg font-medium text-gray-700">
+                  Your Share:{' '}
+                  <span className="text-green-600 text-xl font-semibold">
+                    {activeBill.splitType === 'percent'
+                      ? `$${(
+                          (activeBill.amount * userSplitDetail.percent) /
+                          100
+                        ).toFixed(2)}`
+                      : `$${userSplitDetail.amountOwed}`}
+                  </span>
+                </p>
+
+                {splitDetail.splitPerMember > 0 ? (
+                  <>
+                    {/* Progress Bar */}
+                    <div className="mt-4">
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Payment Progress
+                      </label>
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div
+                          className="bg-green-500 h-4 rounded-full"
+                          style={{
+                            width:
+                              activeBill.splitType === 'percent'
+                                ? `${
+                                    splitDetail.splitPerMember -
+                                    (
+                                      (activeBill.amount *
+                                        userSplitDetail.percent) /
+                                      100
+                                    ).toFixed(2)
+                                  }%`
+                                : `${
+                                    ((splitDetail.splitPerMember -
+                                      userSplitDetail.amountOwed) /
+                                      userSplitDetail.amountOwed) *
+                                    100
+                                  }%`, // Calculate width based on amount owed
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-right text-sm text-gray-500 mt-1">
+                        Paid: $
+                        {activeBill.splitType === 'percent'
+                          ? `${
+                              splitDetail.splitPerMember -
+                              (
+                                (activeBill.amount * userSplitDetail.percent) /
+                                100
+                              ).toFixed(2)
+                            }/ ${(
+                              (activeBill.amount * userSplitDetail.percent) /
+                              100
+                            ).toFixed(2)}`
+                          : `${
+                              splitDetail.splitPerMember -
+                              userSplitDetail.amountOwed
+                            }/ ${userSplitDetail.amountOwed}`}
+                      </p>
+                    </div>
+                    {/* Input Section */}
+                    <div>
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Pay Amount:
+                      </label>
+                      <input
+                        type="number"
+                        name="paidAmount"
+                        placeholder={`Enter amount`}
+                        value={transaction.paidAmount}
+                        onChange={(e) => {
+                          if (
+                            parseFloat(e.target.value) <=
+                            splitDetail.splitPerMember
+                          ) {
+                            handleTransaction(e); // Only allow changes if the input is within limits
+                          }
+                        }}
+                        max={splitDetail.splitPerMember}
+                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+                        required
+                      />
+                    </div>
+                    {/* Notes Section */}
+                    <div>
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Add a Note:
+                      </label>
+                      <textarea
+                        name="remarks"
+                        value={transaction.remarks}
+                        onChange={handleTransaction}
+                        rows="3"
+                        placeholder="Write a note about this payment..."
+                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
+                        required
+                      ></textarea>
+                    </div>
+                    {/* Action Button */}
+                    <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
+                      <button
+                        type="submit"
+                        className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+                        aria-label="Settle Up"
+                      >
+                        <FaHandHoldingUsd className="mr-2 text-xl" />
+                        <span className="text-lg font-medium">Settle Up</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-center text-2xl">
+                      You are owed ${Math.abs(splitDetail.splitPerMember)}
+                    </h3>
+                  </>
+                )}
+              </>
+            ) : (
+              <div>No Active Bill Data</div>
+            )}
           </div>
         </form>
       </CustomModal>

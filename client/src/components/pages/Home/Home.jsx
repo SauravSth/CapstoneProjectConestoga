@@ -7,14 +7,15 @@ import { RiBillFill } from 'react-icons/ri';
 import { MdGroups } from 'react-icons/md';
 
 // Sample data for the PieChart
-const chartData = [
-  { name: 'Housing', value: 400 },
-  { name: 'Food', value: 300 },
-  { name: 'Transportation', value: 200 },
-  { name: 'Others', value: 100 },
-];
 
 const Home = () => {
+  const chartData = [
+    { name: 'Housing', value: 400 },
+    { name: 'Food', value: 300 },
+    { name: 'Transportation', value: 200 },
+    { name: 'Others', value: 100 },
+  ];
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
