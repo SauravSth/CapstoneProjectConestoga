@@ -8,6 +8,7 @@ import CustomModal from '../../modal/CustomModal';
 
 const BillSplit = () => {
   const { user } = useAuthStore();
+  console.log(user);
   const [bills, setBills] = useState([
     {
       title: '',
@@ -147,6 +148,7 @@ const BillSplit = () => {
   };
 
   useEffect(() => {
+    console.log('activebill', activeBill);
     if (activeBill) {
       const filteredSplitDetail = activeBill.splitDetails.find(
         (splitDetail) => splitDetail.user_id._id === user
@@ -815,7 +817,7 @@ const BillSplit = () => {
                   </span>
                 </p>
 
-                {splitDetail.splitPerMember > 0 ? (
+                {activeBill.paid_by._id != user ? (
                   <>
                     {/* Progress Bar */}
                     <div className="mt-4">
@@ -829,15 +831,17 @@ const BillSplit = () => {
                             width:
                               activeBill.splitType === 'percent'
                                 ? `${
-                                    ((
-                                      activeBill.amount *
-                                      (userSplitDetail.percent / 100)
+                                    (((
+                                      (activeBill.amount *
+                                        userSplitDetail.percent) /
+                                      100
                                     ).toFixed(2) -
                                       splitDetail.splitPerMember) /
-                                    (
-                                      activeBill.amount *
-                                      (userSplitDetail.percent / 100)
-                                    ).toFixed(2) /
+                                      (
+                                        (activeBill.amount *
+                                          userSplitDetail.percent) /
+                                        100
+                                      ).toFixed(2)) *
                                     100
                                   }%`
                                 : `${
@@ -852,13 +856,12 @@ const BillSplit = () => {
                       <p className="text-right text-sm text-gray-500 mt-1">
                         Paid: $
                         {activeBill.splitType === 'percent'
-                          ? `${
-                              splitDetail.splitPerMember -
+                          ? `${(
                               (
-                                activeBill.amount *
-                                (userSplitDetail.percent / 100)
-                              ).toFixed(2)
-                            }/ ${(
+                                (activeBill.amount * userSplitDetail.percent) /
+                                100
+                              ).toFixed(2) - splitDetail.splitPerMember
+                            ).toFixed(2)}/ $${(
                               (activeBill.amount * userSplitDetail.percent) /
                               100
                             ).toFixed(2)}`
@@ -868,55 +871,65 @@ const BillSplit = () => {
                             }/ ${userSplitDetail.amountOwed}`}
                       </p>
                     </div>
-                    {/* Input Section */}
-                    <div>
-                      <label className="block text-gray-700 text-lg font-medium mb-2">
-                        Pay Amount:
-                      </label>
-                      <input
-                        type="number"
-                        name="paidAmount"
-                        placeholder={`Enter amount`}
-                        value={transaction.paidAmount}
-                        onChange={(e) => {
-                          if (
-                            parseFloat(e.target.value) <=
-                            splitDetail.splitPerMember
-                          ) {
-                            handleTransaction(e); // Only allow changes if the input is within limits
-                          }
-                        }}
-                        max={splitDetail.splitPerMember}
-                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
-                        required
-                      />
-                    </div>
-                    {/* Notes Section */}
-                    <div>
-                      <label className="block text-gray-700 text-lg font-medium mb-2">
-                        Add a Note:
-                      </label>
-                      <textarea
-                        name="remarks"
-                        value={transaction.remarks}
-                        onChange={handleTransaction}
-                        rows="3"
-                        placeholder="Write a note about this payment..."
-                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
-                        required
-                      ></textarea>
-                    </div>
-                    {/* Action Button */}
-                    <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
-                      <button
-                        type="submit"
-                        className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
-                        aria-label="Settle Up"
-                      >
-                        <FaHandHoldingUsd className="mr-2 text-xl" />
-                        <span className="text-lg font-medium">Settle Up</span>
-                      </button>
-                    </div>
+                    {splitDetail.splitPerMember > 0 ? (
+                      <>
+                        {/* Input Section */}
+                        <div>
+                          <label className="block text-gray-700 text-lg font-medium mb-2">
+                            Pay Amount:
+                          </label>
+                          <input
+                            type="number"
+                            name="paidAmount"
+                            placeholder={`Enter amount`}
+                            value={transaction.paidAmount}
+                            onChange={(e) => {
+                              if (
+                                parseFloat(e.target.value) <=
+                                splitDetail.splitPerMember
+                              ) {
+                                handleTransaction(e); // Only allow changes if the input is within limits
+                              }
+                            }}
+                            max={splitDetail.splitPerMember}
+                            className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+                            required
+                          />
+                        </div>
+                        {/* Notes Section */}
+                        <div>
+                          <label className="block text-gray-700 text-lg font-medium mb-2">
+                            Add a Note:
+                          </label>
+                          <textarea
+                            name="remarks"
+                            value={transaction.remarks}
+                            onChange={handleTransaction}
+                            rows="3"
+                            placeholder="Write a note about this payment..."
+                            className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
+                            required
+                          ></textarea>
+                        </div>
+                        {/* Action Button */}
+                        <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
+                          <button
+                            type="submit"
+                            className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+                            aria-label="Settle Up"
+                          >
+                            <FaHandHoldingUsd className="mr-2 text-xl" />
+                            <span className="text-lg font-medium">
+                              Settle Up
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p>You have settled your share</p>
+                      </>
+                    )}
                   </>
                 ) : (
                   <>
