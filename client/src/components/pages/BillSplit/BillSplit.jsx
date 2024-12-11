@@ -68,7 +68,6 @@ const BillSplit = () => {
     e.preventDefault();
     setTransaction((prevTransaction) => ({
       ...prevTransaction,
-      groupExpense_id: activeBill._id,
     }));
 
     try {
@@ -154,6 +153,11 @@ const BillSplit = () => {
       );
       setUserSplitDetail(filteredSplitDetail);
       console.log('YEEEET', userSplitDetail);
+
+      setTransaction((prevTransaction) => ({
+        ...prevTransaction,
+        groupExpense_id: activeBill._id,
+      }));
 
       const fetchSplitData = async () => {
         try {
@@ -825,12 +829,16 @@ const BillSplit = () => {
                             width:
                               activeBill.splitType === 'percent'
                                 ? `${
-                                    splitDetail.splitPerMember -
+                                    ((
+                                      activeBill.amount *
+                                      (userSplitDetail.percent / 100)
+                                    ).toFixed(2) -
+                                      splitDetail.splitPerMember) /
                                     (
-                                      (activeBill.amount *
-                                        userSplitDetail.percent) /
-                                      100
-                                    ).toFixed(2)
+                                      activeBill.amount *
+                                      (userSplitDetail.percent / 100)
+                                    ).toFixed(2) /
+                                    100
                                   }%`
                                 : `${
                                     ((splitDetail.splitPerMember -
@@ -847,8 +855,8 @@ const BillSplit = () => {
                           ? `${
                               splitDetail.splitPerMember -
                               (
-                                (activeBill.amount * userSplitDetail.percent) /
-                                100
+                                activeBill.amount *
+                                (userSplitDetail.percent / 100)
                               ).toFixed(2)
                             }/ ${(
                               (activeBill.amount * userSplitDetail.percent) /
