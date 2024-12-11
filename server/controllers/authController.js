@@ -25,12 +25,27 @@ const authController = {
 			const { email, password } = req.body;
 
 			const userData = await User.login(email, password);
+
+			if (!userData.isVerified) {
+				return res
+					.status(400)
+					.json({
+						success: false,
+						message: 'Please verify user before logging in.',
+					});
+			}
+			if (!userData.isActive) {
+				return res
+					.status(400)
+					.json({
+						success: false,
+						message: 'Account has been deactivated.',
+					});
+			}
 			const token = createToken(
 				userData._id,
 				userData.userType,
-				userData.email,
-				userData.isActive,
-				userData.isVerified
+				userData.email
 			);
 			res.cookie('jwt', token, {
 				httpOnly: true,
