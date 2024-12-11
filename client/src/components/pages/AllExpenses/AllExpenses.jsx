@@ -216,7 +216,7 @@ const AllExpenses = () => {
               <div className="sm:hidden space-y-4">
                 {filteredData.map((expense) => (
                   <div
-                    key={expense.id}
+                    key={expense._id}
                     className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
                   >
                     <div className="flex items-center justify-between">
@@ -228,16 +228,16 @@ const AllExpenses = () => {
                       </span>
                       <button
                         className="ml-4 text-gray-500"
-                        onClick={() => toggleCardDetails(expense.id)}
+                        onClick={() => toggleCardDetails(expense._id)}
                       >
-                        {expandedCards[expense.id] ? (
+                        {expandedCards[expense._id] ? (
                           <FaChevronUp />
                         ) : (
                           <FaChevronDown />
                         )}
                       </button>
                     </div>
-                    {expandedCards[expense.id] && (
+                    {expandedCards[expense._id] && (
                       <div className="mt-4 text-sm text-gray-600 grid grid-cols-2 gap-2">
                         <span>{expense.category}</span>
                         <span className="text-right">{expense.date}</span>
