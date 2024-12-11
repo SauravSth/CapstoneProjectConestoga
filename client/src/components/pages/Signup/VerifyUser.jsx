@@ -20,7 +20,7 @@ const VerifyUser = () => {
         alert(response.data.message);
       }
     } catch (error) {
-      console.error('Error accepting invite:', error);
+      console.error('Error verifying user:', error);
       alert('Something went wrong.');
     }
   };
