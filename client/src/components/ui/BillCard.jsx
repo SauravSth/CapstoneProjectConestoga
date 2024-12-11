@@ -7,8 +7,6 @@ import getInitials from '../../helpers/getInitials';
 const colors = ['#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#9C27B0'];
 
 const BillCard = ({ bills, onEdit, onDelete, onSettleUp }) => {
-  console.log('Bill Card', bills);
-
   return (
     <>
       {bills.map((bill) => {
@@ -128,12 +126,10 @@ const BillCard = ({ bills, onEdit, onDelete, onSettleUp }) => {
                       totalContribution *
                       (percentage / 100)
                     ).toFixed(2);
-                  } else if (bill.splitType === 'evenly') {
-                    // Even split logic
-                    const totalUsers = bill.splitDetails.length;
-                    amountOwed = (totalContribution / totalUsers).toFixed(2);
-                    percentage = (100 / totalUsers).toFixed(2);
-                  } else if (bill.splitType === 'amountOwed') {
+                  } else if (
+                    bill.splitType === 'amountOwed' ||
+                    bill.splitType === 'evenly'
+                  ) {
                     // Amount owed logic
                     amountOwed = detail.amountOwed || 0;
                     percentage = (
@@ -171,15 +167,8 @@ const BillCard = ({ bills, onEdit, onDelete, onSettleUp }) => {
             <div className="mt-2 flex flex-col space-y-1 text-sm text-gray-700">
               {bill.splitDetails.map((detail, index) => {
                 let displayValue;
-                let evenlySplitAmount;
                 if (bill.splitType === 'percent') {
                   displayValue = `${detail.percent || 0}%`;
-                } else if (bill.splitType === 'evenly') {
-                  const totalUsers = bill.splitDetails.length;
-                  evenlySplitAmount = (totalContribution / totalUsers).toFixed(
-                    2
-                  );
-                  displayValue = `$${evenlySplitAmount}`;
                 } else {
                   displayValue = `$${detail.amountOwed || 0}`;
                 }

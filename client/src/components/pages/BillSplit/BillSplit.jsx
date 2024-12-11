@@ -3,9 +3,11 @@ import Header from '../../../layouts/Header';
 import Navbar from '../../../layouts/Navbar';
 import BillCard from '../../ui/BillCard';
 import { FaHandHoldingUsd } from 'react-icons/fa';
+import useAuthStore from '../../../store/useAuthStore';
 import CustomModal from '../../modal/CustomModal';
 
 const BillSplit = () => {
+  const { user } = useAuthStore();
   const [bills, setBills] = useState([
     {
       title: '',
@@ -42,20 +44,113 @@ const BillSplit = () => {
   const [categories, setCategories] = useState([]);
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transaction, setTransaction] = useState({ paidAmount: '' });
+
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
-  const [transaction, setTransaction] = useState([
-    {
-      paidAmount: 0,
-      groupExpense_id: '',
-      remarks: '',
-    },
-  ]);
-  const [activeBill, setActiveBill] = useState([]);
+  const [activeBill, setActiveBill] = useState(null);
+  const [splitDetail, setSplitDetail] = useState([]);
+  const [userSplitDetail, setUserSplitDetail] = useState([]);
 
   const handleSettleUp = (bill) => {
-    setIsTransactionModalOpen(true);
     setActiveBill(() => bill);
+    setIsTransactionModalOpen(true);
   };
+
+  const handleTransaction = (e) => {
+    const { name, value } = e.target;
+    setTransaction((prevTransaction) => ({
+      ...prevTransaction,
+      [name]: value,
+    }));
+  };
+
+  const handleTransfer = async (e) => {
+    e.preventDefault();
+    setTransaction((prevTransaction) => ({
+      ...prevTransaction,
+      groupExpense_id: activeBill._id,
+    }));
+    console.log(transaction);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (newBill.splitType === 'percent' && newBill.remainingPercentage > 0) {
+      alert('Please assign all percentages before submitting.');
+      return;
+    }
+    if (newBill.splitType === 'amountOwed' && newBill.remainingAmount > 0) {
+      alert('Please assign all amounts before submitting.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/api/groupExpense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newBill),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      console.log('NEW GROUP EXPENSE', data);
+
+      if (response.ok) {
+        setBills((prevBills) => [...prevBills, newBill]);
+        setIsModalOpen(false);
+        setNewBill({
+          title: '',
+          date: '',
+          amount: '',
+          description: '',
+          splitType: '',
+          splitDetails: [{ user_id: '' }],
+          category_id: '',
+          paid_by: '',
+          group_id: '',
+          remainingPercentage: 0,
+          remainingAmount: 0,
+        });
+      } else {
+        alert('Error submitting group expense');
+        console.error('Error:', data);
+      }
+    } catch (error) {
+      console.error('Error submitting new group expense:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeBill) {
+      const filteredSplitDetail = activeBill.splitDetails.find(
+        (splitDetail) => splitDetail.user_id._id === user
+      );
+      setUserSplitDetail(filteredSplitDetail);
+      console.log('YEEEET', userSplitDetail);
+
+      const fetchSplitData = async () => {
+        try {
+          const splitDataResponse = await fetch(
+            `http://localhost:3000/api/splitPerOneMember/${activeBill._id}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            }
+          );
+          const splitData = await splitDataResponse.json();
+          setSplitDetail(() => splitData.splitPerMember);
+        } catch (error) {
+          console.error('Error fetching split detail:', error);
+        }
+      };
+      fetchSplitData();
+    }
+  }, [activeBill]);
 
   const handleEdit = (bill) => {
     console.log(`Edit ${bill._id}`);
@@ -64,6 +159,7 @@ const BillSplit = () => {
   const handleDelete = (bill) => {
     console.log(`Delete ${bill._id}`);
   };
+
   // groups fetch
   useEffect(() => {
     const fetchGroupExpenses = async () => {
@@ -187,8 +283,10 @@ const BillSplit = () => {
 
   // Function to initialize percentages evenly
   const initializeEvenSplit = () => {
-    if (newBill.splitType === 'evenly') {
+    if (newBill.splitType === 'evenly' || newBill.splitType === 'amountOwed') {
+      const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
       const initialSplitDetails = members.map((member) => ({
+        amountOwed: evenAmount.toFixed(2),
         user_id: member.user._id,
       }));
 
@@ -215,20 +313,20 @@ const BillSplit = () => {
       }));
     }
 
-    if (newBill.splitType === 'amountOwed') {
-      const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
-      const initialSplitDetails = members.map((member) => ({
-        user_id: member.user._id,
-        amountOwed: evenAmount.toFixed(2), // Distribute evenly
-      }));
+    // if (newBill.splitType === 'amountOwed') {
+    //   const evenAmount = newBill.amount ? newBill.amount / members.length : 0;
+    //   const initialSplitDetails = members.map((member) => ({
+    //     user_id: member.user._id,
+    //     amountOwed: evenAmount.toFixed(2), // Distribute evenly
+    //   }));
 
-      setNewBill((prevBill) => ({
-        ...prevBill,
-        splitDetails: initialSplitDetails,
-        remainingPercentage: 0,
-        remainingAmount: 0, // Initially, all percentages are assigned
-      }));
-    }
+    //   setNewBill((prevBill) => ({
+    //     ...prevBill,
+    //     splitDetails: initialSplitDetails,
+    //     remainingPercentage: 0,
+    //     remainingAmount: 0, // Initially, all percentages are assigned
+    //   }));
+    // }
   };
 
   const handleSplitType = (index, e) => {
@@ -316,10 +414,6 @@ const BillSplit = () => {
     }));
   };
 
-  const handleTransfer = () => {
-    console.log('SUBMITTED');
-  };
-
   const handleCategoryChange = (e) => {
     const { name, value } = e.target;
     setNewBill((prevBill) => ({
@@ -343,7 +437,10 @@ const BillSplit = () => {
         splitType: value,
         splitDetails: updatedSplitDetails,
       }));
-    } else if (name === 'splitType' && value === 'amountOwed') {
+    } else if (
+      name === 'splitType' &&
+      (value === 'amountOwed' || value === 'evenly')
+    ) {
       const evenAmount = newBill.amount / members.length;
       const updatedSplitDetails = members.map((member) => ({
         user_id: member.user._id,
@@ -360,55 +457,6 @@ const BillSplit = () => {
         ...prevBill,
         [name]: value,
       }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (newBill.splitType === 'percent' && newBill.remainingPercentage > 0) {
-      alert('Please assign all percentages before submitting.');
-      return;
-    }
-    if (newBill.splitType === 'amountOwed' && newBill.remainingAmount > 0) {
-      alert('Please assign all amounts before submitting.');
-      return;
-    }
-
-    try {
-      const response = await fetch('http://localhost:3000/api/groupExpense', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newBill),
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-      console.log('NEW GROUP EXPENSE', data);
-
-      if (response.ok) {
-        setBills((prevBills) => [...prevBills, newBill]);
-        setIsModalOpen(false);
-        setNewBill({
-          title: '',
-          date: '',
-          amount: '',
-          description: '',
-          splitType: '',
-          splitDetails: [{ user_id: '' }],
-          category_id: '',
-          paid_by: '',
-          group_id: '',
-          remainingPercentage: 0,
-          remainingAmount: 0,
-        });
-      } else {
-        alert('Error submitting group expense');
-        console.error('Error:', data);
-      }
-    } catch (error) {
-      console.error('Error submitting new group expense:', error);
     }
   };
 
@@ -714,91 +762,140 @@ const BillSplit = () => {
           className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg space-y-6"
         >
           <div className="space-y-4">
-            {/* Title */}
-            <h2 className="text-2xl font-bold text-center text-gray-800">
-              {activeBill.title}
-            </h2>
+            {activeBill ? (
+              <>
+                {/* Title */}
+                <h2 className="text-2xl font-bold text-center text-gray-800">
+                  {activeBill.title}
+                </h2>
+                {/* Date */}
+                <p className="text-center text-gray-600">
+                  <span className="font-semibold">Date:</span>
+                  {new Date(activeBill.date).toLocaleDateString('en-US')}
+                </p>
+                {/* Your Share */}
+                <p className="text-center text-lg font-medium text-gray-700">
+                  Your Share:{' '}
+                  <span className="text-green-600 text-xl font-semibold">
+                    {activeBill.splitType === 'percent'
+                      ? `$${(
+                          (activeBill.amount * userSplitDetail.percent) /
+                          100
+                        ).toFixed(2)}`
+                      : `$${userSplitDetail.amountOwed}`}
+                  </span>
+                </p>
 
-            {/* Date */}
-            <p className="text-center text-gray-600">
-              <span className="font-semibold">Due Date:</span>{' '}
-              {new Date(activeBill.date).toLocaleDateString('en-US')}
-            </p>
-
-            {/* Your Share */}
-            <p className="text-center text-lg font-medium text-gray-700">
-              Your Share:{' '}
-              <span className="text-green-600 text-xl font-semibold">
-                ${activeBill.amount}
-              </span>
-            </p>
-
-            {/* Progress Bar */}
-            <div className="mt-4">
-              <label className="block text-gray-700 text-lg font-medium mb-2">
-                Payment Progress
-              </label>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div
-                  className="bg-green-500 h-4 rounded-full"
-                  style={{
-                    width: `${(10 / activeBill.amount) * 100}%`,
-                  }}
-                ></div>
-              </div>
-              <p className="text-right text-sm text-gray-500 mt-1">
-                Paid: ${10} / ${activeBill.amount}
-              </p>
-            </div>
-          </div>
-
-          {/* Input Section */}
-          <div>
-            <label className="block text-gray-700 text-lg font-medium mb-2">
-              Pay Amount:
-            </label>
-            <input
-              type="number"
-              name="paidAmount"
-              placeholder={`Enter amount (max: $${activeBill.amount - 10})`}
-              value={20}
-              onChange={(e) => handlePayAmount(e.target.value)}
-              className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
-            />
-          </div>
-
-          {/* Notes Section */}
-          <div>
-            <label className="block text-gray-700 text-lg font-medium mb-2">
-              Add a Note (Optional):
-            </label>
-            <textarea
-              name="paymentNote"
-              rows="3"
-              placeholder="Write a note about this payment..."
-              className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
-            ></textarea>
-          </div>
-
-          {/* Action Button */}
-          <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
-            <button
-              type="submit"
-              className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
-              aria-label="Settle Up"
-            >
-              <FaHandHoldingUsd className="mr-2 text-xl" />
-              <span className="text-lg font-medium">Settle Up</span>
-            </button>
-
-            {/* Cancel Option */}
-            <button
-              type="button"
-              // onClick={handleCancel}
-              className="text-gray-600 hover:text-gray-800 text-sm"
-            >
-              Cancel Payment
-            </button>
+                {splitDetail.splitPerMember > 0 ? (
+                  <>
+                    {/* Progress Bar */}
+                    <div className="mt-4">
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Payment Progress
+                      </label>
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div
+                          className="bg-green-500 h-4 rounded-full"
+                          style={{
+                            width:
+                              activeBill.splitType === 'percent'
+                                ? `${
+                                    splitDetail.splitPerMember -
+                                    (
+                                      (activeBill.amount *
+                                        userSplitDetail.percent) /
+                                      100
+                                    ).toFixed(2)
+                                  }%`
+                                : `${
+                                    ((splitDetail.splitPerMember -
+                                      userSplitDetail.amountOwed) /
+                                      userSplitDetail.amountOwed) *
+                                    100
+                                  }%`, // Calculate width based on amount owed
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-right text-sm text-gray-500 mt-1">
+                        Paid: $
+                        {activeBill.splitType === 'percent'
+                          ? `${
+                              splitDetail.splitPerMember -
+                              (
+                                (activeBill.amount * userSplitDetail.percent) /
+                                100
+                              ).toFixed(2)
+                            }/ ${(
+                              (activeBill.amount * userSplitDetail.percent) /
+                              100
+                            ).toFixed(2)}`
+                          : `${
+                              splitDetail.splitPerMember -
+                              userSplitDetail.amountOwed
+                            }/ ${userSplitDetail.amountOwed}`}
+                      </p>
+                    </div>
+                    {/* Input Section */}
+                    <div>
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Pay Amount:
+                      </label>
+                      <input
+                        type="number"
+                        name="paidAmount"
+                        placeholder={`Enter amount`}
+                        value={transaction.paidAmount}
+                        onChange={(e) => {
+                          if (
+                            parseFloat(e.target.value) <=
+                            splitDetail.splitPerMember
+                          ) {
+                            handleTransaction(e); // Only allow changes if the input is within limits
+                          }
+                        }}
+                        max={splitDetail.splitPerMember}
+                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-green-300"
+                        required
+                      />
+                    </div>
+                    {/* Notes Section */}
+                    <div>
+                      <label className="block text-gray-700 text-lg font-medium mb-2">
+                        Add a Note:
+                      </label>
+                      <textarea
+                        name="remarks"
+                        value={transaction.remarks}
+                        onChange={handleTransaction}
+                        rows="3"
+                        placeholder="Write a note about this payment..."
+                        className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring focus:ring-gray-300"
+                        required
+                      ></textarea>
+                    </div>
+                    {/* Action Button */}
+                    <div className="flex flex-col items-center space-y-4 pt-6 border-t border-gray-300 mt-6">
+                      <button
+                        type="submit"
+                        className="flex items-center justify-center w-full py-3 px-5 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+                        aria-label="Settle Up"
+                      >
+                        <FaHandHoldingUsd className="mr-2 text-xl" />
+                        <span className="text-lg font-medium">Settle Up</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-center text-2xl">
+                      You are owed ${Math.abs(splitDetail.splitPerMember)}
+                    </h3>
+                  </>
+                )}
+              </>
+            ) : (
+              <div>No Active Bill Data</div>
+            )}
           </div>
         </form>
       </CustomModal>
