@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const transactionSchema = mongoose.Schema({
-	title: {
+	remarks: {
 		type: String,
-		required: [true, 'Please enter a title'],
+		required: [true, 'Please enter a remark'],
 	},
 	payer: {
 		type: mongoose.Types.ObjectId,
@@ -17,13 +17,9 @@ const transactionSchema = mongoose.Schema({
 		type: Number,
 		required: [true, 'Paid Amount is required'],
 	},
-	expense_id: {
+	groupExpense_id: {
 		type: mongoose.Types.ObjectId,
-		ref: 'Expense',
-	},
-	date: {
-		type: Date,
-		required: [true, 'Date is required'],
+		ref: 'GroupExpense',
 	},
 	user_id: {
 		type: mongoose.Types.ObjectId,

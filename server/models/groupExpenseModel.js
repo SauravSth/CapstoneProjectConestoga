@@ -18,7 +18,7 @@ const groupExpenseSchema = mongoose.Schema({
 	},
 	splitType: {
 		type: String,
-		enum: ['evenly', 'percent', 'amount'],
+		enum: ['evenly', 'percent', 'amountOwed'],
 		default: 'evenly',
 	},
 	splitDetails: [
@@ -27,7 +27,7 @@ const groupExpenseSchema = mongoose.Schema({
 				type: mongoose.Types.ObjectId,
 				ref: 'User',
 			},
-			amount: { type: Number },
+			amountOwed: { type: Number },
 			percent: { type: Number },
 		},
 	],
@@ -46,10 +46,6 @@ const groupExpenseSchema = mongoose.Schema({
 	group_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Group',
-	},
-	budget_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'Budget',
 	},
 	createdAt: {
 		type: Date,

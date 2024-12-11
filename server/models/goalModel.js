@@ -20,10 +20,6 @@ const goalSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'User',
 	},
-	group_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'Group',
-	},
 	createdAt: {
 		type: Date,
 		default: Date.now(),

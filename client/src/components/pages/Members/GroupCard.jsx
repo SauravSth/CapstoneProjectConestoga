@@ -9,17 +9,28 @@ const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
       onClick={onClick}
     >
       {/* Card Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-semibold text-gray-800">{name}</h3>
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent triggering the `onClick`
-            onEdit(_id);
-          }}
-          className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600 transition-all duration-200"
-        >
-          Edit
-        </button>
+      <div className="flex justify-between items-start mb-4">
+        <h3 className=" text-2xl font-semibold text-gray-800">{name}</h3>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the `onClick`
+              onEdit(_id);
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 focus:outline-none"
+          >
+            Edit
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the `onClick`
+              onDelete(_id);
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 focus:outline-none"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       {/* Group Details */}

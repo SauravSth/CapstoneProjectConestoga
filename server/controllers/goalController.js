@@ -5,9 +5,7 @@ const goalController = {
 	getGoal: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const goals = await Goal.find({ user_id: uid }).populate(
-				'user_id group_id'
-			);
+			const goals = await Goal.find({ user_id: uid }).populate('user_id');
 
 			res.status(200).json({ goals });
 		} catch (e) {
@@ -18,9 +16,7 @@ const goalController = {
 		try {
 			const id = req.params._id;
 
-			const goal = await Goal.findOne({ _id: id }).populate(
-				'user_id group_id'
-			);
+			const goal = await Goal.findOne({ _id: id }).populate('user_id');
 
 			res.status(200).json({ goal });
 		} catch (e) {
@@ -29,14 +25,13 @@ const goalController = {
 	},
 	postGoal: async (req, res) => {
 		try {
-			const { title, description, goalAmount, group_id } = req.body;
+			const { title, description, goalAmount } = req.body;
 			const { uid } = req.user;
 			let newGoal = await Goal.create({
 				title,
 				goalAmount,
 				description,
 				user_id: uid,
-				group_id,
 			});
 
 			res.status(200).json({
@@ -51,11 +46,19 @@ const goalController = {
 	},
 	updateGoal: async (req, res) => {
 		try {
-			const { _id, title, description, amount, group_id } = req.body;
+			const { title, description, goalAmount, savedAmount } = req.body;
+			const { _id } = req.params;
 
 			const updatedData = await Goal.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, description, amount, group_id } },
+				{
+					$set: {
+						title,
+						description,
+						goalAmount,
+						savedAmount,
+					},
+				},
 				{ new: true }
 			);
 

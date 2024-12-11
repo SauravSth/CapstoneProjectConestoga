@@ -1,6 +1,7 @@
 import Transaction from '../models/transactionModel.js';
 import errorHandler from '../helpers/errorHandler.js';
-import Expense from '../models/expenseModel.js';
+import GroupExpense from '../models/groupExpenseModel.js';
+import SplitPerMember from '../models/splitPerMemberModel.js';
 
 const transactionController = {
 	getTransaction: async (req, res) => {
@@ -10,7 +11,7 @@ const transactionController = {
 				[
 					{ path: 'payer' },
 					{ path: 'receiver' },
-					{ path: 'expense_id', select: 'amount' },
+					{ path: 'groupExpense_id', select: 'amount' },
 				]
 			);
 
@@ -27,7 +28,7 @@ const transactionController = {
 				[
 					{ path: 'payer' },
 					{ path: 'receiver' },
-					{ path: 'expense_id', select: 'amount' },
+					{ path: 'groupExpense_id', select: 'amount' },
 				]
 			);
 
@@ -38,60 +39,88 @@ const transactionController = {
 	},
 	postTransaction: async (req, res) => {
 		try {
-			let {
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				expense_id,
-				date,
-
-				group_id,
-			} = req.body;
+			const { remarks, paidAmount, groupExpense_id } = req.body;
 			const { uid } = req.user;
-			let totalAmount = await Expense.findOne({
-				_id: expense_id,
-				group_id: group_id,
-			}).select('amount');
-			let newTotal = totalAmount - paidAmount;
+			const payer = uid;
 
-			if (newTotal > 0) {
-				await Expense.save({ amount: newTotal });
-			} else {
-				console.log('Paid Fully');
+			const groupExpense = await GroupExpense.findById(groupExpense_id);
+			if (!groupExpense) {
+				return res.status(404).json({
+					success: false,
+					message: 'Group expense not found.',
+				});
 			}
 
-			let newTransaction = await Transaction.create({
-				title,
+			const receiver = groupExpense.paid_by;
+
+			const splitPerMemberData = await SplitPerMember.find({
+				groupExpense_id,
+			});
+
+			if (!splitPerMemberData.length) {
+				return res.status(400).json({
+					success: false,
+					message: 'No split data found for this group expense.',
+				});
+			}
+
+			const payerSplit = splitPerMemberData.find(
+				(split) => String(split.user_id) === String(payer)
+			);
+			if (!payerSplit) {
+				return res.status(404).json({
+					success: false,
+					message: 'Payer not found in split data.',
+				});
+			}
+
+			payerSplit.splitPerMember -= parseInt(paidAmount);
+			await payerSplit.save();
+
+			const receiverSplit = splitPerMemberData.find(
+				(split) => String(split.user_id) === String(receiver)
+			);
+			if (receiverSplit) {
+				receiverSplit.splitPerMember += parseInt(paidAmount);
+				await receiverSplit.save();
+			} else {
+				return res.status(404).json({
+					success: false,
+					message: 'Receiver not found in split data.',
+				});
+			}
+
+			const newTransaction = await Transaction.create({
+				remarks,
 				payer,
 				receiver,
 				paidAmount,
-				expense_id,
-				date,
+				groupExpense_id,
 				user_id: uid,
 			});
 
+			const isSettled = splitPerMemberData.every(
+				(split) => split.splitPerMember === 0
+			);
+
 			res.status(200).json({
 				success: true,
-				message: 'Transaction added successfully.',
+				message: isSettled
+					? 'Balance settled. Transaction added successfully.'
+					: 'Transaction added successfully.',
 				newTransaction,
 			});
 		} catch (e) {
+			console.error(e);
 			const errors = errorHandler.handleTransactionErrors(e);
 			res.status(400).json(errors);
 		}
 	},
 	updateTransaction: async (req, res) => {
 		try {
-			const {
-				_id,
-				title,
-				payer,
-				receiver,
-				paidAmount,
-				expense_id,
-				date,
-			} = req.body;
+			const { title, payer, receiver, paidAmount, groupExpense_id } =
+				req.body;
+			const { _id } = req.params;
 
 			const updatedData = await Transaction.findOneAndUpdate(
 				{ _id },
@@ -101,8 +130,7 @@ const transactionController = {
 						payer,
 						receiver,
 						paidAmount,
-						expense_id,
-						date,
+						groupExpense_id,
 					},
 				},
 				{ new: true }

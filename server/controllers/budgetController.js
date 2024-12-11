@@ -5,7 +5,7 @@ const budgetController = {
 		try {
 			const { uid } = req.user;
 			const budgets = await Budget.find({ user_id: uid }).populate(
-				'user_id group_id'
+				'user_id'
 			);
 
 			res.status(200).json({ budgets });
@@ -18,7 +18,7 @@ const budgetController = {
 			const id = req.params._id;
 
 			const budget = await Budget.findOne({ _id: id }).populate(
-				'user_id group_id'
+				'user_id'
 			);
 
 			res.status(200).json({ budget });
@@ -53,11 +53,11 @@ const budgetController = {
 	},
 	updateBudget: async (req, res) => {
 		try {
-			const { _id, title, description, amount, group_id } = req.body;
-
+			const { title, description, amount } = req.body;
+			const { _id } = req.params;
 			const updatedData = await Budget.findOneAndUpdate(
 				{ _id },
-				{ $set: { title, description, amount, group_id } },
+				{ $set: { title, description, amount } },
 				{ new: true }
 			);
 

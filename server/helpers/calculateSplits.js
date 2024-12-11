@@ -1,4 +1,4 @@
-const calculateSplits = (splitType, amount, members, splitDetails) => {
+const calculateSplits = async (splitType, amount, members, splitDetails) => {
 	const splits = [];
 
 	switch (splitType) {
@@ -15,13 +15,13 @@ const calculateSplits = (splitType, amount, members, splitDetails) => {
 			}
 			splitDetails.forEach((detail) => {
 				splits.push({
-					member_id: detail.member_id,
+					member_id: detail.user_id,
 					amount: (amount * detail.percent) / 100,
 				});
 			});
 			break;
 
-		case 'amount':
+		case 'amountOwed':
 			if (!splitDetails || splitDetails.length !== members.length) {
 				throw new Error(
 					'Invalid split details for amount-based split.'
@@ -29,8 +29,8 @@ const calculateSplits = (splitType, amount, members, splitDetails) => {
 			}
 			splitDetails.forEach((detail) => {
 				splits.push({
-					member_id: detail.member_id,
-					amount: detail.amount,
+					member_id: detail.user_id,
+					amount: detail.amountOwed,
 				});
 			});
 			break;
@@ -38,7 +38,6 @@ const calculateSplits = (splitType, amount, members, splitDetails) => {
 		default:
 			throw new Error('Invalid split type.');
 	}
-
 	return splits;
 };
 

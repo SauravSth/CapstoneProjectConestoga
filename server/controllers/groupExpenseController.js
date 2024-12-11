@@ -5,27 +5,20 @@ import SplitPerMember from '../models/splitPerMemberModel.js';
 import errorHandler from '../helpers/errorHandler.js';
 import calculateSplits from '../helpers/calculateSplits.js';
 
-// const editBudgetAmount = async (amount) => {
-// 	let budgetAmount = await Budget.findOne({ budget_id }).select('amount');
-// 	let remainingBudget = budgetAmount - amount;
-// 	if (remainingBudget >= 0) {
-// 		await Budget.save({ remainingAmount: remainingBudget });
-// 	} else {
-// 		res.status(400).json({
-// 			success: false,
-// 			message: 'Budget limit has been exceeded',
-// 		});
-// 	}
-// };
-
 const groupExpenseController = {
 	getExpense: async (req, res) => {
 		try {
 			const { uid } = req.user;
 			const groupExpenses = await GroupExpense.find({
 				user_id: uid,
-			}).populate('category_id user_id paid_by group_id');
-
+			}).populate([
+				{ path: 'category_id' },
+				{ path: 'user_id' },
+				{ path: 'paid_by' },
+				{ path: 'group_id' },
+				{ path: 'splitDetails.user_id', select: 'firstName lastName' },
+			]);
+			// 'category_id user_id paid_by group_id'
 			res.status(200).json({ groupExpenses });
 		} catch (e) {
 			console.log(e);
@@ -72,10 +65,6 @@ const groupExpenseController = {
 					.status(400)
 					.json({ message: 'Group has no members' });
 
-			// if (budget_id) {
-			// 	editBudgetAmount(amount);
-			// }
-
 			let newExpense = await GroupExpense.create({
 				title,
 				date,
@@ -88,18 +77,17 @@ const groupExpenseController = {
 				user_id: uid,
 				group_id,
 			});
-			const splits = calculateSplits(
+			const splits = await calculateSplits(
 				splitType,
 				amount,
 				members,
 				splitDetails
 			);
-
 			const splitEntries = splits.map((split) => ({
-				expense_id: newExpense._id,
+				groupExpense_id: newExpense._id,
 				group_id: group_id,
-				member_id: split.member_id,
-				amount:
+				user_id: split.member_id,
+				splitPerMember:
 					split.amount -
 					(String(paid_by) === String(split.member_id) ? amount : 0),
 			}));
@@ -118,7 +106,6 @@ const groupExpenseController = {
 	updateExpense: async (req, res) => {
 		try {
 			let {
-				_id,
 				title,
 				date,
 				amount,
@@ -129,6 +116,7 @@ const groupExpenseController = {
 				group_id,
 				splitDetails,
 			} = req.body;
+			const { _id } = req.params;
 
 			const existingExpense = await GroupExpense.findById(_id);
 			if (!existingExpense) {
@@ -168,7 +156,7 @@ const groupExpenseController = {
 			if (amount || splitType || splitDetails || paid_by) {
 				await SplitPerMember.deleteMany({ expense_id: _id });
 
-				const splits = calculateSplits(
+				const splits = await calculateSplits(
 					splitType || existingExpense.splitType,
 					amount || existingExpense.amount,
 					members,
@@ -176,10 +164,10 @@ const groupExpenseController = {
 				);
 
 				const splitEntries = splits.map((split) => ({
-					expense_id: _id,
+					groupExpense_id: _id,
 					group_id: group_id || existingExpense.group_id,
-					member_id: split.member_id,
-					amount:
+					user_id: split.member_id,
+					splitPerMember:
 						split.amount -
 						(paid_by.equals(split.member_id) ? amount : 0),
 				}));

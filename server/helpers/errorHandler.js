@@ -161,11 +161,10 @@ const errorHandler = {
 	},
 	handleTransactionErrors: (err) => {
 		let errors = {
-			title: '',
+			remarks: '',
 			paidAmount: '',
 			date: '',
 		};
-		console.log(err);
 		if (err.code === 11000) {
 			errors.name = 'Transaction already exists';
 			return { success: false, errors };

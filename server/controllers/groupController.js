@@ -9,7 +9,7 @@ const groupController = {
 	getGroup: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const groups = await Group.find({ user_id: uid });
+			const groups = await Group.find({ 'members.user_id': uid });
 
 			res.status(200).json({ groups });
 		} catch (e) {
@@ -29,18 +29,18 @@ const groupController = {
 	},
 	postGroup: async (req, res) => {
 		try {
-			const { name, members } = req.body;
-			const { uid } = req.user;
-
-			const memberEmails = members.map((email) => ({
-				email,
-				user_id: null,
-				invited: false,
-			}));
-
+			const { name, description } = req.body;
+			const { uid, email } = req.user;
 			let newGroup = await Group.create({
 				name,
-				members: memberEmails,
+				description,
+				members: [
+					{
+						email,
+						user_id: uid,
+						isInvited: true,
+					},
+				],
 				user_id: uid,
 			});
 
@@ -56,11 +56,12 @@ const groupController = {
 	},
 	updateGroup: async (req, res) => {
 		try {
-			const { _id, name, members } = req.body;
+			const { _id } = req.params;
+			const { name, description, members } = req.body;
 
 			const updatedData = await Group.findOneAndUpdate(
 				{ _id },
-				{ $set: { name, members } },
+				{ $set: { name, description, members } },
 				{ new: true }
 			);
 
@@ -105,12 +106,26 @@ const groupController = {
 				? true
 				: false;
 
+			const newMember = {
+				email: email,
+			};
+
+			await Group.findOneAndUpdate(
+				{ _id: group_id },
+				{ $addToSet: { members: newMember } },
+				{ new: true }
+			);
 			await sendGroupInvite(
 				email,
 				groupDetails,
 				senderData,
 				isExistingUser
 			);
+
+			res.status(200).json({
+				success: true,
+				message: 'Invite Email Sent',
+			});
 		} catch (e) {
 			console.log(e);
 		}
@@ -122,7 +137,7 @@ const groupController = {
 			const userData = await User.findOne({ email });
 
 			const updateGroupData = await Group.findOneAndUpdate(
-				{ _id: groupId, 'members.email': userData.email },
+				{ _id: groupId, 'members.email': email },
 				{
 					$set: {
 						'members.$.user_id': userData._id,

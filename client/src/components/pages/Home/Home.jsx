@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import PieChartComponent from '../../ui/PieChart';
@@ -7,14 +7,15 @@ import { RiBillFill } from 'react-icons/ri';
 import { MdGroups } from 'react-icons/md';
 
 // Sample data for the PieChart
-const chartData = [
-  { name: 'Housing', value: 400 },
-  { name: 'Food', value: 300 },
-  { name: 'Transportation', value: 200 },
-  { name: 'Others', value: 100 },
-];
 
 const Home = () => {
+  const chartData = [
+    { name: 'Housing', value: 400 },
+    { name: 'Food', value: 300 },
+    { name: 'Transportation', value: 200 },
+    { name: 'Others', value: 100 },
+  ];
+
   return (
     <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
       {/* Sidebar */}

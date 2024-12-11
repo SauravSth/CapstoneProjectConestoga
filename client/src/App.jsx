@@ -5,6 +5,7 @@ import Home from './components/pages/Home/Home';
 import Budget from './components/pages/Budget/Budget';
 import BudgetExpense from './components/pages/Budget/BudgetExpense';
 import Group from './components/pages/Members/Group';
+import AcceptInvite from './components/pages/Members/AcceptedInvite';
 import GroupDetails from './components/pages/Members/GroupDetails';
 // import Member from './components/pages/Members/Member';
 import Goals from './components/pages/Goals/Goals';
@@ -14,10 +15,9 @@ import Categories from './components/pages/Categories/Categories';
 import Settings from './components/pages/Settings/Settings';
 import Login from './components/pages/Login/Login';
 import Signup from './components/pages/Signup/Signup';
+import VerifyUser from './components/pages/Signup/VerifyUser';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <Router>
@@ -48,6 +48,10 @@ function App() {
               element={<Group />}
             />
             <Route
+              path="/group/acceptedInvite/:email/:groupId"
+              element={<AcceptInvite />}
+            />
+            <Route
               path="/group/:id"
               element={<GroupDetails />}
             />
@@ -67,6 +71,10 @@ function App() {
             <Route
               path="/login"
               element={<Login />}
+            />
+            <Route
+              path="/verify/:verificationCode"
+              element={<VerifyUser />}
             />
             <Route
               path="/signup"

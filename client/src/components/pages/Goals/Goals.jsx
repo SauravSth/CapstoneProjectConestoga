@@ -184,30 +184,52 @@ const Goals = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
         >
-          <form>
+          <form onSubmit={(e) => e.preventDefault()}>
             <div className="mb-4">
-              <label className="block text-gray-700">Goal Title</label>
+              <label
+                htmlFor="goalTitle"
+                className="block text-gray-700"
+              >
+                Goal Title
+              </label>
               <input
+                id="goalTitle"
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="Enter your goal title"
+                required
               />
             </div>
+
             <div className="mb-4">
-              <label className="block text-gray-700">Target Amount</label>
+              <label
+                htmlFor="targetAmount"
+                className="block text-gray-700"
+              >
+                Goal Amount
+              </label>
               <input
+                id="goalAmount"
                 type="number"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 value={targetAmount}
                 onChange={(e) => setTargetAmount(e.target.value)}
                 placeholder="Enter the target amount"
+                required
               />
             </div>
+
             <div className="mb-4">
-              <label className="block text-gray-700">Description</label>
+              <label
+                htmlFor="description"
+                className="block text-gray-700"
+              >
+                Description
+              </label>
               <textarea
+                id="description"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 rows="4"
                 value={description}
