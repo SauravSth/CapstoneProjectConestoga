@@ -13,7 +13,6 @@ const AcceptInvite = () => {
       );
 
       if (response.data.success) {
-        // Redirect to success page
         navigate('/');
       } else {
         alert(response.data.message);
@@ -24,12 +23,21 @@ const AcceptInvite = () => {
     }
   };
 
-  // Trigger the action when the component loads
   React.useEffect(() => {
     handleAcceptInvite();
   }, []);
 
-  return <div>Processing your invite...</div>;
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white">
+      <div className="text-center bg-black bg-opacity-40 p-8 rounded-lg shadow-md">
+        <h1 className="text-3xl font-semibold mb-4">Processing Your Invite</h1>
+        <p className="text-lg">
+          Please wait while we process your invitation. You will be redirected
+          shortly.
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default AcceptInvite;

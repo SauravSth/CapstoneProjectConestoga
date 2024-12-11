@@ -13,7 +13,7 @@ const VerifyUser = () => {
       );
 
       if (response.data.success) {
-        // Redirect to success page
+        console.log(response);
         alert('Successfully Verified');
         navigate('/login');
       } else {
@@ -25,11 +25,18 @@ const VerifyUser = () => {
     }
   };
 
-  // Trigger the action when the component loads
   React.useEffect(() => {
     handleAcceptInvite();
   }, []);
 
-  return <div>Verifying the user ...</div>;
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-400 to-teal-400 text-white">
+      <div className="bg-black bg-opacity-50 p-8 rounded-lg shadow-lg text-center">
+        <h1 className="text-4xl font-bold mb-4">Verifying...</h1>
+        <p className="text-lg">Please wait while we verify your account.</p>
+      </div>
+    </div>
+  );
 };
+
 export default VerifyUser;
