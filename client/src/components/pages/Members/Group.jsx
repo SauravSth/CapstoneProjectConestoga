@@ -228,8 +228,9 @@ const Group = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow-lg">
+    <div className="flex flex-col sm:flex-row h-full bg-gray-100 overflow-x-hidden">
+
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
@@ -237,7 +238,8 @@ const Group = () => {
         <Header title="Groups" />
 
         <main className="p-6 space-y-6">
-          <div className="flex items-center space-x-4 max-w-lg">
+        <div className="flex items-center space-x-4 max-w-lg">
+
             <input
               type="text"
               placeholder="Search groups"
@@ -248,9 +250,11 @@ const Group = () => {
             <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
               Filter by Date
             </button>
+            
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {filteredGroups.map((group) => (
               <GroupCard
                 key={group._id}
@@ -264,7 +268,7 @@ const Group = () => {
           <div className="flex justify-end mt-6">
             <button
               onClick={handleAddGroup}
-              className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
             >
               <FaPlus className="mr-2" />
               Add Group
@@ -286,7 +290,7 @@ const Group = () => {
                   onChange={(e) =>
                     setNewGroup({ ...newGroup, name: e.target.value })
                   }
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
 
                 {/* Email Input for Members */}

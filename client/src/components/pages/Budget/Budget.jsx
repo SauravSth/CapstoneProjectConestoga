@@ -73,8 +73,6 @@ const Budget = () => {
         description: description,
       };
 
-      console.log('newBudget', newBudget);
-
       const response = await fetch('http://localhost:3000/api/budget', {
         method: 'POST',
         headers: {
@@ -98,34 +96,36 @@ const Budget = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg">
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-grow">
+      <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="Budget" />
 
-        <main className="p-6 space-y-6">
-          <div className="text-5xl font-bold">Budget</div>
-          <div className="text-gray-500">Organize your expenses by Budget</div>
+        <main className="p-4 sm:p-6 space-y-6">
+          <div>
+            <h1 className="text-2xl sm:text-4xl font-bold">Budget</h1>
+            <p className="text-gray-500 mt-1">Organize your expenses by Budget</p>
+          </div>
 
-          {/* Search, Filter, and New Budget */}
-          <div className="flex items-center justify-between mt-4 max-w-full">
-            <div className="flex items-center space-x-4 max-w-lg">
+          {/* Search, Filter, and Create Budget */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
               <input
                 type="text"
                 placeholder="Search..."
-                className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
                 Filter by Date
               </button>
             </div>
             <button
-              className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
+              className="px-4 py-2 text-black rounded-lg focus:outline-none"
               style={{
                 backgroundColor: '#80C028',
                 opacity: '0.45',
@@ -140,7 +140,7 @@ const Budget = () => {
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.map((budget) => (
                 <BudgetCard
                   key={budget._id}
@@ -156,6 +156,7 @@ const Budget = () => {
           )}
         </main>
 
+        {/* Modal for Creating New Budget */}
         <CustomModal
           title="Create New Budget"
           isOpen={isModalOpen}
@@ -189,17 +190,17 @@ const Budget = () => {
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-4">
               <button
                 type="button"
-                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none transition duration-150"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none transition duration-150"
                 onClick={handleFormSubmit}
               >
                 Confirm
