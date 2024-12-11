@@ -28,7 +28,9 @@ const authController = {
 			const token = createToken(
 				userData._id,
 				userData.userType,
-				userData.email
+				userData.email,
+				userData.isActive,
+				userData.isVerified
 			);
 			res.cookie('jwt', token, {
 				httpOnly: true,
