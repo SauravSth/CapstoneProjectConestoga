@@ -70,7 +70,7 @@ const transactionController = {
 				(split) => String(split.user_id) === String(payer)
 			);
 			if (payerSplit) {
-				parseInt(payerSplit.splitPerMember) += parseInt(paidAmount);
+				payerSplit.splitPerMember += parseInt(paidAmount);
 				await payerSplit.save();
 			} else {
 				return res.status(404).json({
