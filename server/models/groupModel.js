@@ -5,6 +5,7 @@ const groupSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: [true, 'Please provide a group name'],
+		unique: true,
 	},
 	description: {
 		type: String,

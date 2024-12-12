@@ -16,6 +16,7 @@ import goalController from '../controllers/goalController.js';
 // Middleware Imports
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
+import tokenDecoder from '../middlewares/tokenDecoder.js';
 import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 

@@ -3,6 +3,7 @@ import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 import useAuthStore from '../../../store/useAuthStore.js';
 
@@ -19,6 +20,7 @@ const AllExpenses = () => {
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isGroupExpense, setIsGroupExpense] = useState(false);
+  const [expandedCards, setExpandedCards] = useState({}); // Track expanded state for each card
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
@@ -27,6 +29,13 @@ const AllExpenses = () => {
     { field: 'amount', headerName: 'Amount' },
     { field: 'type', headerName: 'Type' }, // Add a column to indicate type (personal/group)
   ];
+
+  const toggleCardDetails = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Toggle the expanded state for the specific card
+    }));
+  };
 
   const handleNewExpense = () => {
     setIsModalOpen(true);
@@ -156,53 +165,97 @@ const AllExpenses = () => {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow-lg">
+    <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
+      {/* Sidebar */}
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
-      <div className="flex flex-col flex-grow">
+      {/* Main Content */}
+      <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="All Expenses" />
 
-        <main className="p-6 space-y-6">
-          <div className="text-5xl font-bold">My Wallet</div>
-          <div className="text-gray-500">Keep track of your financial plan</div>
+        <main className="p-4 sm:p-6 space-y-6">
+          <div>
+            <h1 className="text-2xl sm:text-4xl font-bold">My Wallet</h1>
+            <p className="text-gray-500 mt-1">Keep track of your financial plan</p>
+          </div>
 
-          <div className="flex items-center justify-between mt-4 max-w-full">
-            <div className="flex items-center space-x-4 max-w-lg">
+          {/* Search and Add New Expense */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 placeholder="Search by title or category"
-                className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
                 Filter by Date
               </button>
             </div>
             <button
-              className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
-              style={{
-                backgroundColor: '#80C028',
-                opacity: '0.45',
-              }}
+              className="px-4 py-2 text-black rounded-lg focus:outline-none"
+              style={{ backgroundColor: '#80C028', opacity: '0.45' }}
               onClick={handleNewExpense}
             >
               + New Expense
             </button>
           </div>
 
+          {/* Expense Table or Card View */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
-              columns={columns}
-              data={filteredData}
-            />
+            <>
+              {/* Table View for larger screens */}
+              <div className="hidden sm:block">
+                <CustomTable columns={columns} data={filteredData} />
+              </div>
+
+              {/* Card View for smaller screens */}
+              <div className="sm:hidden space-y-4">
+                {filteredData.map((expense) => (
+                  <div
+                    key={expense.id}
+                    className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-gray-800 flex-grow">
+                        {expense.title}
+                      </h3>
+                      <span className="text-lg font-bold text-green-600 ml-4">
+                        ${expense.amount}
+                      </span>
+                      <button
+                        className="ml-4 text-gray-500"
+                        onClick={() => toggleCardDetails(expense.id)}
+                      >
+                        {expandedCards[expense.id] ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )}
+                      </button>
+                    </div>
+                    {expandedCards[expense.id] && (
+                      <div className="mt-4 text-sm text-gray-600 grid grid-cols-2 gap-2">
+                        <span>{expense.category}</span>
+                        <span className="text-right">{expense.date}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+
+
+            </>
           )}
         </main>
 
+        {/* Add New Expense Modal */}
         <CustomModal
           title="Add New Expense"
           isOpen={isModalOpen}
@@ -225,15 +278,11 @@ const AllExpenses = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
-                {Array.isArray(categories) &&
-                  categories.map((category) => (
-                    <option
-                      key={category._id}
-                      value={category._id}
-                    >
-                      {category.name}
-                    </option>
-                  ))}
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
@@ -254,17 +303,17 @@ const AllExpenses = () => {
                 className="w-5 h-5"
               />
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-4">
               <button
                 type="button"
-                className="px-4 py-2 mr-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none transition duration-150"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none"
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none transition duration-150"
                 onClick={handleFormSubmit}
               >
                 Submit

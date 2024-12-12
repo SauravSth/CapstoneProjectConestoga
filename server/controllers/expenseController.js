@@ -66,6 +66,7 @@ const expenseController = {
 				category_id,
 				user_id: uid,
 				budget_id,
+				goal_id,
 			});
 
 			res.status(200).json({
@@ -89,6 +90,12 @@ const expenseController = {
 				editBudgetAmount(amount, budget_id);
 			}
 
+			if (budget_id) {
+				editBudgetAmount(amount, budget_id);
+			} else if (goal_id) {
+				editGoalAmount(amount, goal_id);
+			}
+
 			const updatedData = await Expense.findOneAndUpdate(
 				{ _id },
 				{
@@ -99,6 +106,7 @@ const expenseController = {
 						description,
 						category_id,
 						budget_id,
+						goal_id,
 					},
 				},
 				{ new: true }

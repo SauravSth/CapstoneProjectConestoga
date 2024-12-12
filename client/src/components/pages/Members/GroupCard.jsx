@@ -58,7 +58,17 @@ const GroupCard = ({ group, onEdit, onDelete, onClick }) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-6 flex justify-end space-x-2"></div>
+      <div className="mt-6 flex justify-end space-x-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent triggering the `onClick`
+            onDelete(_id);
+          }}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 focus:outline-none"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
 };
