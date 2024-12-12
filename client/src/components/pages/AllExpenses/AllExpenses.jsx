@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import ReactPaginate from 'react-paginate';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import ExpensePDF from '../../pdfs/expensePDF.jsx';
 
 import useAuthStore from '../../../store/useAuthStore.js';
 
@@ -20,12 +23,27 @@ const AllExpenses = () => {
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
+
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'amount', headerName: 'Amount' },
   ];
+
+  // Handle pagination
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  // Get paginated data
+  const paginatedData = filteredData.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
 
   const handleNewExpense = () => {
     setIsModalOpen(true);
@@ -101,6 +119,7 @@ const AllExpenses = () => {
         expense.category.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredData(filtered);
+    setCurrentPage(0);
   };
 
   useEffect(() => {
@@ -197,15 +216,50 @@ const AllExpenses = () => {
             >
               + New Expense
             </button>
+            <PDFDownloadLink
+              document={<ExpensePDF data={filteredData} />}
+              fileName="Expenses_Report.pdf"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
+            >
+              {({ loading }) =>
+                loading ? 'Generating PDF...' : 'Download PDF Report'
+              }
+            </PDFDownloadLink>
           </div>
 
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <CustomTable
-              columns={columns}
-              data={filteredData}
-            />
+            <>
+              <CustomTable
+                columns={columns}
+                data={paginatedData}
+              />
+              <ReactPaginate
+                previousLabel={'← Previous'}
+                nextLabel={'Next →'}
+                pageCount={Math.ceil(filteredData.length / itemsPerPage)}
+                onPageChange={handlePageChange}
+                containerClassName={
+                  'flex justify-center items-center space-x-2 mt-4 '
+                }
+                activeClassName={
+                  'py-1.5 text-gray-600 bg-green-600 font-bold rounded-md'
+                }
+                disabledClassName={'text-red-800 cursor-not-allowed'}
+                pageLinkClassName={
+                  'px-3 py-2 border border-gray-300 text-gray-200 bg-blue-600 rounded-md hover:bg-green-600 transition duration-150 ease-in-out'
+                }
+                previousLinkClassName={
+                  'px-3 py-2 border border-gray-300 rounded-md bg-blue-600 hover:bg-green-600 transition duration-150 ease-in-out'
+                }
+                nextLinkClassName={
+                  'px-3 py-2 border border-gray-300 bg-blue-600 rounded-md hover:bg-green-600 transition duration-150 ease-in-out'
+                }
+                breakLabel={'...'}
+                breakClassName={'px-3 py-2 border border-gray-300 rounded-md'}
+              />
+            </>
           )}
         </main>
 

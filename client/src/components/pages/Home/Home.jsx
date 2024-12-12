@@ -3,15 +3,11 @@ import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import PieChartComponent from '../../ui/PieChart';
 import LineChartComponent from '../../ui/LineChart';
-import { FaUsers, FaFileInvoiceDollar } from 'react-icons/fa';
-import { RiBillFill } from 'react-icons/ri';
-import { MdGroups } from 'react-icons/md';
-
-// Sample data for the PieChart
 
 const Home = () => {
   const [pieChartData, setPieChartData] = useState([]);
-  const [lineChartData, setlineChartData] = useState([]);
+  const [combinedData, setCombinedData] = useState([]);
+
   useEffect(() => {
     const fetchPieData = async () => {
       const response = await fetch(
@@ -22,50 +18,82 @@ const Home = () => {
         }
       );
       const data = await response.json();
-      console.log('pieData', data);
-
       setPieChartData(Array.isArray(data) ? data : data.graphData || []);
     };
 
     const fetchLineData = async () => {
-      const response = await fetch(
-        'http://localhost:3000/api/graph/getExpensePerMonth',
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      );
-      const data = await response.json();
-      console.log('lineData', data);
+      try {
+        const response = await fetch(
+          'http://localhost:3000/api/graph/getExpensePerMonth',
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
-      setlineChartData(Array.isArray(data) ? data : data.graphData || []);
+        const data = await response.json();
+
+        const lastMonthData = processDailyData(
+          data.groupedLastMonth,
+          'Last Month'
+        );
+        const twoMonthsAgoData = processDailyData(
+          data.groupedTwoMonthsAgo,
+          'Two Months Ago'
+        );
+
+        const combinedData = mergeDailyData(lastMonthData, twoMonthsAgoData);
+        setCombinedData(combinedData);
+      } catch (error) {
+        console.error('Error fetching line chart data:', error);
+      }
     };
+
     fetchPieData();
     fetchLineData();
   }, []);
+
+  const processDailyData = (groupedData, label) => {
+    const result = [];
+
+    Object.entries(groupedData || {}).forEach(([date, details]) => {
+      const day = new Date(date).getDate(); // Extract day of the month
+      result.push({
+        day, // X-axis: Day of the month
+        totalAmount: details.totalAmount, // Y-axis: Total daily amount
+        label, // Label for the line ("Last Month" or "Two Months Ago")
+      });
+    });
+
+    return result;
+  };
+
+  const mergeDailyData = (lastMonthData, twoMonthsAgoData) => {
+    const maxDays = Math.max(
+      ...[...lastMonthData, ...twoMonthsAgoData].map((item) => item.day)
+    );
+
+    const mergedData = Array.from({ length: maxDays }, (_, i) => {
+      const day = i + 1; // Days start at 1
+      const lastMonthEntry =
+        lastMonthData.find((item) => item.day === day) || {};
+      const twoMonthsAgoEntry =
+        twoMonthsAgoData.find((item) => item.day === day) || {};
+
+      return {
+        day,
+        lastMonth: lastMonthEntry.totalAmount || 0,
+        twoMonthsAgo: twoMonthsAgoEntry.totalAmount || 0,
+      };
+    });
+
+    return mergedData;
+  };
 
   const chartData = pieChartData.map((item) => ({
     name: item.category,
     value: item.amountSpent,
   }));
-
-  const processGraphData = (graphData) => {
-    const daysInMonth = { lastMonth: 30, twoMonthsAgo: 30 }; // Adjust as needed
-    return graphData.map((data) => {
-      const dailyAmount = data.totalAmount / daysInMonth[data._id];
-      return {
-        name: data._id, // Use month name for X-axis
-        value: dailyAmount, // Daily average expense
-      };
-    });
-  };
-
-  const graphData = [
-    { _id: 'lastMonth', totalAmount: 159, count: 6 },
-    { _id: 'twoMonthsAgo', totalAmount: 2323, count: 1 },
-  ];
-
-  const processedLineData = processGraphData(graphData);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -78,75 +106,35 @@ const Home = () => {
       <div className="flex flex-col flex-grow">
         <Header title="Overview" />
 
-        {/* Main Content */}
         <main className="p-8 space-y-6">
-          {/* Welcome Section */}
-          <div>
-            <h1 className="text-4xl font-bold">👋 Welcome User</h1>
-            <p className="text-gray-500 mt-1">
-              Keep track of your financial plan
-            </p>
-          </div>
-
-          {/* Expenses Chart & Quick Actions */}
-          <div className="grid grid-cols-3 gap-6">
-            {/* Expenses Chart */}
-            <div className="col-span-2 bg-white p-6 rounded-lg shadow h-[40rem]">
-              <h2 className="text-2xl font-bold">Expenses</h2>
-              <p className="text-3xl font-semibold mt-4">
-                ${pieChartData.reduce((sum, item) => sum + item.amountSpent, 0)}
-              </p>
-              <p className="text-gray-500">Total expense</p>
-              {/* Pie Chart Component */}
-              <div className="mt-6">
-                <PieChartComponent data={chartData} />
-              </div>
+          <h1>Hi User</h1>
+          <div className="grid grid-cols-3 gap-6 p-6">
+            {/* Messages Section */}
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold">Messages</h2>
             </div>
 
-            <div className="col-span-2 bg-white p-6 rounded-lg shadow h-[40rem]">
-              <h2 className="text-2xl font-bold">Expenses</h2>
-              <p className="text-3xl font-semibold mt-4">
-                ${pieChartData.reduce((sum, item) => sum + item.amountSpent, 0)}
-              </p>
-              <p className="text-gray-500">Total expense</p>
-              {/* Pie Chart Component */}
-              <div className="mt-6">
-                <LineChartComponent data={processedLineData} />
-              </div>
+            {/* Activity Section */}
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold">Activity</h2>
             </div>
 
-            {/* Quick Actions */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <button className="bg-white p-12 rounded-lg shadow text-center">
-                  <RiBillFill className="text-4xl mx-auto text-blue-500" />
-                  <p className="mt-2 font-semibold text-gray-500">
-                    Split a Bill
-                  </p>
-                </button>
-                <button className="bg-white p-12 rounded-lg shadow text-center">
-                  <MdGroups className="text-4xl mx-auto text-green-500" />
-                  <p className="mt-2 font-semibold text-gray-500">
-                    Saving Group
-                  </p>
-                </button>
-              </div>
+            {/* Messages Section */}
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold">Messages</h2>
+            </div>
 
-              {/* Members and Bills */}
-              <div className="bg-white py-10 px-8 rounded-lg shadow">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <FaUsers className="text-blue-500 mr-2" /> Members
-                </h3>
-                <p className="text-gray-500">Last update on August 28, 2022</p>
-                <p className="text-2xl font-bold mt-4">8</p>
-              </div>
-              <div className="bg-white py-10 px-8 rounded-lg shadow">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <FaFileInvoiceDollar className="text-yellow-500 mr-2" /> Bills
-                </h3>
-                <p className="text-gray-500">Last update on August 28, 2022</p>
-                <p className="text-2xl font-bold mt-4">8</p>
-              </div>
+            <div className="col-span-1 md:col-span-2 bg-white p-6 rounded-lg shadow">
+              <h2 className="text-2xl mb-4 font-semibold">
+                Comparing Expenses
+              </h2>
+              <LineChartComponent data={combinedData} />
+            </div>
+
+            {/* Tasks Section */}
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
+              <h2 className="text-2xl font-semibold">Category Expenses</h2>
+              <PieChartComponent data={chartData} />
             </div>
           </div>
         </main>

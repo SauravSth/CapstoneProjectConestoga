@@ -6,6 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -26,15 +27,28 @@ const LineChartComponent = ({ data }) => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
+          <XAxis
+            dataKey="day"
+            label={{ value: 'Day', position: 'insideBottom' }}
+          />
+          <YAxis
+            label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+          />
           <Tooltip />
+          <Legend />
           <Line
             type="monotone"
-            dataKey="value"
+            dataKey="lastMonth"
             stroke="#007bff"
             strokeWidth={2}
-            activeDot={{ r: 8 }}
+            name="Last Month"
+          />
+          <Line
+            type="monotone"
+            dataKey="twoMonthsAgo"
+            stroke="#28a745"
+            strokeWidth={2}
+            name="Two Months Ago"
           />
         </LineChart>
       </ResponsiveContainer>
