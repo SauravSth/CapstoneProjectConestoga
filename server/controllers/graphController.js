@@ -48,6 +48,38 @@ const graphController = {
 			console.log(e);
 		}
 	},
+	getGraphForExpensePerMonth: async (req, res) => {
+		const today = new Date();
+		const oneMonthAgo = new Date();
+		oneMonthAgo.setMonth(today.getMonth() - 1);
+		const twoMonthsAgo = new Date();
+		twoMonthsAgo.setMonth(today.getMonth() - 2);
+
+		const graphData = await Expense.aggregate([
+			{
+				$match: {
+					date: {
+						$gte: twoMonthsAgo,
+						$lte: today,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$cond: [
+							{ $gte: ['$date', oneMonthAgo] },
+							'lastMonth',
+							'twoMonthsAgo',
+						],
+					},
+					totalAmount: { $sum: '$amount' },
+					count: { $sum: 1 },
+				},
+			},
+		]);
+		res.status(200).json({ graphData });
+	},
 };
 
 export default graphController;
