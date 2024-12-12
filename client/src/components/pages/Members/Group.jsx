@@ -169,13 +169,22 @@ const Group = () => {
     setGroupID(group._id); // This will trigger the useEffect when groupID is updated
     console.log('Group ID being set:', group._id); // Log for verification
 
-    // Extract user_ids from the members array of the selected group
-    const memberIds = group.members.map((member) => member.user_id);
-    console.log('Member IDs:', memberIds);
+    // Separate members with valid user_ids and those with undefined user_ids
+    const membersWithValidUserId = group.members.filter(
+      (member) => member.user_id
+    );
+    const membersWithoutUserId = group.members.filter(
+      (member) => !member.user_id
+    );
 
-    // Fetch details of each user_id if needed
+    // Extract user_ids for members with valid user_id
+    const memberIds = membersWithValidUserId.map((member) => member.user_id);
+    console.log('Valid Member IDs:', memberIds);
+
+    // Fetch details of each valid user_id
     const fetchMemberDetails = async () => {
       try {
+        // Fetch details for members with valid user_ids
         const memberDetails = await Promise.all(
           memberIds.map(async (userId) => {
             const response = await fetch(
@@ -196,10 +205,31 @@ const Group = () => {
         console.log('Member Details:', memberDetails);
 
         // Extract emails from the fetched member details
-        const emails = memberDetails.map(
-          (memberDetail) => memberDetail.user.email
+        const emailsFromValidUserIds = memberDetails.map((memberDetail) => ({
+          email: memberDetail.user.email,
+          invited: false, // Not invited, since they have a valid user_id
+        }));
+
+        // Extract emails for members without user_ids directly from the group data
+        const emailsFromUndefinedUserIds = membersWithoutUserId
+          .filter((member) => member.email) // Ensure the member has an email field
+          .map((member) => ({
+            email: member.email,
+            invited: true, // Mark as invited
+          }));
+
+        console.log(
+          'Emails from undefined user_ids:',
+          emailsFromUndefinedUserIds
         );
-        setMemberEmails(emails); // Update the state with member emails
+
+        // Combine both email lists
+        const combinedEmails = [
+          ...emailsFromValidUserIds,
+          ...emailsFromUndefinedUserIds,
+        ];
+
+        setMemberEmails(combinedEmails); // Update the state with all emails
       } catch (error) {
         console.error('Error fetching member details:', error);
       }
@@ -372,17 +402,26 @@ const Group = () => {
                     Members' Emails
                   </label>
                   <div className="mt-2 space-y-2">
-                    {memberEmails.map((email, index) => (
-                      <input
+                    {memberEmails.map((member, index) => (
+                      <div
                         key={index}
-                        type="email"
-                        value={email}
-                        onChange={(e) =>
-                          handleEmailChange(e.target.value, index)
-                        }
-                        placeholder="Member Email"
-                        className="w-full p-2 border rounded"
-                      />
+                        className="flex items-center space-x-2"
+                      >
+                        <input
+                          type="email"
+                          value={member.email}
+                          // onChange={(e) =>
+                          //   handleEmailChange(e.target.value, index)
+                          // }
+                          placeholder="Member Email"
+                          className="w-full p-2 border rounded"
+                        />
+                        {member.invited && (
+                          <span className="text-sm text-gray-500 italic">
+                            Invited
+                          </span>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
