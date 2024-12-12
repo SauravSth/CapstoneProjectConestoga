@@ -198,6 +198,11 @@ router.get(
 	authentication,
 	graphController.getExpensePerCategory
 );
+router.get(
+	'/graph/getExpensePerMonth',
+	authentication,
+	graphController.getGraphForExpensePerMonth
+);
 
 // Auth Routes
 router.get('/userDetail/:_id', authentication, userController.getOneUser);
