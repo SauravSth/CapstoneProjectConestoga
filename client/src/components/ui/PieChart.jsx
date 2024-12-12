@@ -1,44 +1,45 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
-// Sample colors for the chart
-const COLORS = ['#007bff', '#28a745', '#ffc107', '#dc3545'];
-
-// PieChartComponent: Takes data as a prop
-const PieChartComponent = ({ data }) => {
+const LineChartComponent = ({ data }) => {
   return (
     <div className="w-full h-[28rem]">
-      {' '}
-      {/* Increased height */}
       <ResponsiveContainer
         width="100%"
         height="100%"
       >
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            outerRadius={180} /* Increased outerRadius */
-            innerRadius={
-              70
-            } /* Optional: Add innerRadius for a donut chart effect */
-            fill="#8884d8"
-            dataKey="value"
-            label
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
+        <LineChart
+          data={data}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 20,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
           <Tooltip />
-        </PieChart>
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#007bff"
+            strokeWidth={2}
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default PieChartComponent;
+export default LineChartComponent;

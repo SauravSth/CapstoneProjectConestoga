@@ -42,7 +42,7 @@ const Login = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include', // Important for sending cookies
+          credentials: 'include',
           body: JSON.stringify({ email, password }),
         });
 
@@ -50,7 +50,7 @@ const Login = () => {
 
         if (response.ok) {
           // Successfully logged in
-          login(data); // Assuming login updates your app state
+          login(data);
           navigate('/');
         } else {
           // Handle login error

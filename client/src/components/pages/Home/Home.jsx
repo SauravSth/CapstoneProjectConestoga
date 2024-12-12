@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import PieChartComponent from '../../ui/PieChart';
+import LineChartComponent from '../../ui/PieChart';
 import { FaUsers, FaFileInvoiceDollar } from 'react-icons/fa';
 import { RiBillFill } from 'react-icons/ri';
 import { MdGroups } from 'react-icons/md';
@@ -9,12 +10,29 @@ import { MdGroups } from 'react-icons/md';
 // Sample data for the PieChart
 
 const Home = () => {
-  const chartData = [
-    { name: 'Housing', value: 400 },
-    { name: 'Food', value: 300 },
-    { name: 'Transportation', value: 200 },
-    { name: 'Others', value: 100 },
-  ];
+  const [pieChartData, setPieChartData] = useState([]);
+  useEffect(() => {
+    const fetchPieData = async () => {
+      const response = await fetch(
+        'http://localhost:3000/api/graph/getExpensePerCategory',
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+      const data = await response.json();
+      console.log('pieData', data);
+
+      setPieChartData(Array.isArray(data) ? data : data.graphData || []);
+    };
+
+    fetchPieData();
+  }, []);
+
+  const chartData = pieChartData.map((item) => ({
+    name: item.category,
+    value: item.amountSpent,
+  }));
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -42,11 +60,25 @@ const Home = () => {
             {/* Expenses Chart */}
             <div className="col-span-2 bg-white p-6 rounded-lg shadow h-[40rem]">
               <h2 className="text-2xl font-bold">Expenses</h2>
-              <p className="text-3xl font-semibold mt-4">$124,543</p>
+              <p className="text-3xl font-semibold mt-4">
+                ${pieChartData.reduce((sum, item) => sum + item.amountSpent, 0)}
+              </p>
               <p className="text-gray-500">Total expense</p>
               {/* Pie Chart Component */}
               <div className="mt-6">
                 <PieChartComponent data={chartData} />
+              </div>
+            </div>
+
+            <div className="col-span-2 bg-white p-6 rounded-lg shadow h-[40rem]">
+              <h2 className="text-2xl font-bold">Expenses</h2>
+              <p className="text-3xl font-semibold mt-4">
+                ${pieChartData.reduce((sum, item) => sum + item.amountSpent, 0)}
+              </p>
+              <p className="text-gray-500">Total expense</p>
+              {/* Pie Chart Component */}
+              <div className="mt-6">
+                <LineChartComponent data={chartData} />
               </div>
             </div>
 

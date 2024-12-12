@@ -18,14 +18,12 @@ const AllExpenses = () => {
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isGroupExpense, setIsGroupExpense] = useState(false);
 
   const columns = [
     { field: 'title', headerName: 'Expense Title' },
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'amount', headerName: 'Amount' },
-    { field: 'type', headerName: 'Type' }, // Add a column to indicate type (personal/group)
   ];
 
   const handleNewExpense = () => {
@@ -43,8 +41,6 @@ const AllExpenses = () => {
         date: new Date().toISOString().slice(0, 10),
         amount: Number(amount),
         category_id: category,
-        group_id: isGroupExpense ? 'group_id_placeholder' : null, // Adjust group_id based on type
-        type: isGroupExpense ? 'Group' : 'Personal', // Include type in the model
       };
 
       const response = await fetch('http://localhost:3000/api/expense', {
@@ -57,11 +53,22 @@ const AllExpenses = () => {
       });
 
       const data = await response.json();
-      console.log('asd', newExpense);
-      console.log('adrta', data);
 
       if (response.ok) {
-        setData((prevData) => [...prevData, data.newExpense]);
+        const formattedExpense = {
+          ...data.newExpense,
+          category:
+            categories.find((cat) => cat._id === category)?.name ||
+            'Unknown Category',
+          date: new Date(data.newExpense.date).toLocaleDateString('en-US'),
+        };
+
+        setData((prevData) => {
+          const updatedData = [...prevData, formattedExpense];
+          setFilteredData(updatedData);
+          return updatedData;
+        });
+
         closeModal();
         resetFormFields();
       } else {
@@ -77,7 +84,6 @@ const AllExpenses = () => {
     setExpenseName('');
     setCategory('');
     setAmount('');
-    setIsGroupExpense(false); // Reset the toggle switch
   };
 
   const closeModal = () => {
@@ -117,7 +123,6 @@ const AllExpenses = () => {
           ...expense,
           category: expense.category_id?.name || 'Unknown Category',
           date: new Date(expense.date).toLocaleDateString('en-US'),
-          type: expense.group_id ? 'Group' : 'Personal', // Determine type dynamically
         }));
 
         setData(formattedData);
@@ -225,6 +230,12 @@ const AllExpenses = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
+                <option
+                  value={''}
+                  disabled
+                >
+                  -- Select a Category --
+                </option>
                 {Array.isArray(categories) &&
                   categories.map((category) => (
                     <option
@@ -245,15 +256,7 @@ const AllExpenses = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
-            <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 mr-4">Group Expense</label>
-              <input
-                type="checkbox"
-                checked={isGroupExpense}
-                onChange={() => setIsGroupExpense(!isGroupExpense)}
-                className="w-5 h-5"
-              />
-            </div>
+
             <div className="flex justify-end">
               <button
                 type="button"
