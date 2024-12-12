@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../../layouts/Navbar';
 import Header from '../../../layouts/Header';
 import PieChartComponent from '../../ui/PieChart';
-import LineChartComponent from '../../ui/PieChart';
+import LineChartComponent from '../../ui/LineChart';
 import { FaUsers, FaFileInvoiceDollar } from 'react-icons/fa';
 import { RiBillFill } from 'react-icons/ri';
 import { MdGroups } from 'react-icons/md';
@@ -11,6 +11,7 @@ import { MdGroups } from 'react-icons/md';
 
 const Home = () => {
   const [pieChartData, setPieChartData] = useState([]);
+  const [lineChartData, setlineChartData] = useState([]);
   useEffect(() => {
     const fetchPieData = async () => {
       const response = await fetch(
@@ -26,13 +27,45 @@ const Home = () => {
       setPieChartData(Array.isArray(data) ? data : data.graphData || []);
     };
 
+    const fetchLineData = async () => {
+      const response = await fetch(
+        'http://localhost:3000/api/graph/getExpensePerMonth',
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+      const data = await response.json();
+      console.log('lineData', data);
+
+      setlineChartData(Array.isArray(data) ? data : data.graphData || []);
+    };
     fetchPieData();
+    fetchLineData();
   }, []);
 
   const chartData = pieChartData.map((item) => ({
     name: item.category,
     value: item.amountSpent,
   }));
+
+  const processGraphData = (graphData) => {
+    const daysInMonth = { lastMonth: 30, twoMonthsAgo: 30 }; // Adjust as needed
+    return graphData.map((data) => {
+      const dailyAmount = data.totalAmount / daysInMonth[data._id];
+      return {
+        name: data._id, // Use month name for X-axis
+        value: dailyAmount, // Daily average expense
+      };
+    });
+  };
+
+  const graphData = [
+    { _id: 'lastMonth', totalAmount: 159, count: 6 },
+    { _id: 'twoMonthsAgo', totalAmount: 2323, count: 1 },
+  ];
+
+  const processedLineData = processGraphData(graphData);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -78,7 +111,7 @@ const Home = () => {
               <p className="text-gray-500">Total expense</p>
               {/* Pie Chart Component */}
               <div className="mt-6">
-                <LineChartComponent data={chartData} />
+                <LineChartComponent data={processedLineData} />
               </div>
             </div>
 

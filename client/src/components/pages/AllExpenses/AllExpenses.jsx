@@ -15,6 +15,7 @@ const AllExpenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expenseName, setExpenseName] = useState('');
+  const [expenseDate, setExpenseDate] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,7 +39,7 @@ const AllExpenses = () => {
     try {
       const newExpense = {
         title: expenseName,
-        date: new Date().toISOString().slice(0, 10),
+        date: expenseDate,
         amount: Number(amount),
         category_id: category,
       };
@@ -220,6 +221,15 @@ const AllExpenses = () => {
                 type="text"
                 value={expenseName}
                 onChange={(e) => setExpenseName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Expense Date</label>
+              <input
+                type="date"
+                value={expenseDate}
+                onChange={(e) => setExpenseDate(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
