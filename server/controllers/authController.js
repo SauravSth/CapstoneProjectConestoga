@@ -57,7 +57,11 @@ const authController = {
 				sameSite: 'none',
 			})
 				.status(200)
-				.json({ success: true, message: successMessage });
+				.json({
+					success: true,
+					message: successMessage,
+					user: userData,
+				});
 		} catch (e) {
 			const errors = errorHandler.handleAuthErrors(e);
 			res.status(400).json(errors);
