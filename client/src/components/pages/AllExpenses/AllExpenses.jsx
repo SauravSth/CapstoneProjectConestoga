@@ -6,6 +6,7 @@ import CustomTable from '../../table/CustomTable';
 import CustomModal from '../../modal/CustomModal';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ExpensePDF from '../../pdfs/expensePDF.jsx';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const AllExpenses = () => {
   const [data, setData] = useState([]);
@@ -20,6 +21,8 @@ const AllExpenses = () => {
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedCards, setExpandedCards] = useState({});
+
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(0);
@@ -277,6 +280,14 @@ const AllExpenses = () => {
     fetchCategories();
   }, []);
 
+  const toggleCardDetails = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+
   return (
     <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
       {/* Sidebar */}
@@ -288,22 +299,23 @@ const AllExpenses = () => {
       <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="All Expenses" />
 
-        <main className="p-6 space-y-6">
-          <div className="flex items-center justify-between mt-4 max-w-full">
-            <div className="flex items-center space-x-8 w-full">
+        <main className="p-4 sm:p-6 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Search Bar */}
+            <div className="flex items-center w-full sm:w-auto">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 placeholder="Search by title or category"
-                className="w-[400px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-[400px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
 
-            {/* Right Section: New Expense and Download PDF */}
-            <div className="flex items-center space-x-4 ml-auto">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full sm:w-auto space-y-2 sm:space-y-0">
               <button
-                className="w-[150px] px-4 py-2 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+                className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg focus:outline-none hover:bg-green-700 text-center"
                 onClick={handleNewExpense}
               >
                 + New Expense
@@ -311,7 +323,7 @@ const AllExpenses = () => {
               <PDFDownloadLink
                 document={<ExpensePDF data={filteredData} />}
                 fileName="Expenses_Report.pdf"
-                className="w-[200px] px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:text-white focus:outline-none"
+                className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg focus:outline-none hover:bg-blue-600 text-center"
               >
                 {({ loading }) =>
                   loading ? 'Generating PDF...' : 'Download PDF Report'
@@ -320,15 +332,75 @@ const AllExpenses = () => {
             </div>
           </div>
 
+
           {/* Expense Table or Card View */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
             <>
-              <CustomTable
-                columns={columns}
-                data={paginatedData}
-              />
+              {/* Table View for larger screens */}
+              <div className="hidden sm:block">
+                <CustomTable
+                  columns={columns}
+                  data={paginatedData}
+                />
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="sm:hidden space-y-4">
+                {paginatedData.map((expense) => (
+                  <div
+                    key={expense._id}
+                    className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-gray-800 flex-grow">
+                        {expense.title}
+                      </h3>
+                      <span className="text-lg font-bold text-green-600 ml-4">
+                        ${expense.amount}
+                      </span>
+                      <button
+                        className="ml-4 text-gray-500"
+                        onClick={() => toggleCardDetails(expense._id)}
+                      >
+                        {expandedCards[expense._id] ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )}
+                      </button>
+                    </div>
+
+                    {expandedCards[expense._id] && (
+                      <div className="mt-4 text-sm text-gray-600">
+                        <div className="grid grid-cols-2 gap-2">
+                          <span>{expense.category}</span>
+                          <span className="text-right">{expense.date}</span>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="mt-4 flex justify-between space-x-4">
+                          <button
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() => handleEdit(expense)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={() => handleDelete(expense)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
               <ReactPaginate
                 previousLabel={'← Previous'}
                 nextLabel={'Next →'}
@@ -342,13 +414,13 @@ const AllExpenses = () => {
                 }
                 disabledClassName={'text-red-800 cursor-not-allowed'}
                 pageLinkClassName={
-                  'px-3 py-2 border border-gray-300 text-gray-200 bg-blue-600 rounded-md hover:bg-green-600 transition duration-150 ease-in-out'
+                  'px-3 py-2 border border-gray-300 text-gray-800 bg-white rounded-md hover:bg-blue-600 hover:text-white transition duration-150 ease-in-out'
                 }
                 previousLinkClassName={
-                  'px-3 py-2 border border-gray-300 rounded-md bg-blue-600 hover:bg-green-600 transition duration-150 ease-in-out'
+                  'px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-blue-600 hover:text-white transition duration-150 ease-in-out'
                 }
                 nextLinkClassName={
-                  'px-3 py-2 border border-gray-300 bg-blue-600 rounded-md hover:bg-green-600 transition duration-150 ease-in-out'
+                  'px-3 py-2 border border-gray-300 bg-white rounded-md hover:bg-blue-600 hover:text-white transition duration-150 ease-in-out'
                 }
                 breakLabel={'...'}
                 breakClassName={'px-3 py-2 border border-gray-300 rounded-md'}

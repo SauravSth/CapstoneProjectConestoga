@@ -17,7 +17,7 @@ const Settings = () => {
 
         <main className="p-6 space-y-8">
           {/* Profile Header */}
-          <section className="bg-white shadow rounded-lg p-6 space-y-4">
+          <div className="bg-white shadow rounded-lg p-6 space-y-4">
             <div className="flex items-center">
               <img
                 src="https://via.placeholder.com/80"
@@ -33,10 +33,10 @@ const Settings = () => {
                 <FiEdit2 />
               </button>
             </div>
-          </section>
+          </div>
 
           {/* Personal Information */}
-          <section className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-6">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Personal Information</h2>
               <button className="text-gray-500 hover:text-gray-700">
@@ -61,10 +61,10 @@ const Settings = () => {
                 <p>+1 548-333-7988</p>
               </div>
             </div>
-          </section>
+          </div>
 
           {/* Address */}
-          <section className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-6">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Address</h2>
               <button className="text-gray-500 hover:text-gray-700">
@@ -89,10 +89,10 @@ const Settings = () => {
                 <p>N2A 3C4</p>
               </div>
             </div>
-          </section>
+          </div>
 
           {/* Password & Security */}
-          <section className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-6">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Password & Security</h2>
               <button className="text-gray-500 hover:text-gray-700">
@@ -134,7 +134,7 @@ const Settings = () => {
                 />
               </div>
             </div>
-          </section>
+          </div>
 
           {/* Sign Out Button */}
           <div className="flex justify-center mt-6">

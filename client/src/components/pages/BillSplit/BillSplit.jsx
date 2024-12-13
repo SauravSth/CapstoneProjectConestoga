@@ -494,7 +494,7 @@ const BillSplit = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg">
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
       <div className="flex flex-col flex-grow">
@@ -530,16 +530,36 @@ const BillSplit = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
           <div className="space-y-4">
-            {/* Bill Title and Description */}
+            <h3 className="text-lg font-semibold text-gray-800">Select Group</h3>
+            <select
+              name="group_id"
+              value={newBill.group_id}
+              onChange={handleGroupChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="" disabled>
+                Select a Group
+              </option>
+              {Array.isArray(groups) &&
+                groups.map((group) => (
+                  <option key={group._id} value={group._id}>
+                    {group.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="space-y-4">
             <input
               type="text"
               name="title"
               placeholder="Bill Title"
               value={newBill.title}
               onChange={handleBillChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <textarea
@@ -547,30 +567,25 @@ const BillSplit = () => {
               placeholder="Description"
               value={newBill.description}
               onChange={handleBillChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
 
-            <div className="mb-4">
-              <label className="block text-gray-700">Category</label>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">Category</h3>
               <select
                 value={newBill.category_id}
                 name="category_id"
                 onChange={handleCategoryChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               >
-                <option
-                  value=""
-                  disabled
-                >
+                <option value="" disabled>
                   Select a Category
                 </option>
                 {Array.isArray(categories) &&
                   categories.map((category) => (
-                    <option
-                      key={category._id}
-                      value={category._id}
-                    >
+                    <option key={category._id} value={category._id}>
                       {category.name}
                     </option>
                   ))}
@@ -580,207 +595,151 @@ const BillSplit = () => {
             <input
               type="date"
               name="date"
-              placeholder="Date"
               value={newBill.date}
               onChange={handleBillChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
 
-            {/* Total Amount */}
             <input
               type="number"
               name="amount"
               placeholder="Total Amount"
               value={newBill.amount}
               onChange={handleBillChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-
-            {/* Group Selection Dropdown */}
-            <div>
-              <h3 className="font-semibold">Select Group</h3>
-              <select
-                name="group_id"
-                value={newBill.group_id}
-                onChange={handleGroupChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a Group
-                </option>
-                {Array.isArray(groups) &&
-                  groups.map((group) => (
-                    <option
-                      key={group._id}
-                      value={group._id}
-                    >
-                      {group.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            {/* Paid By Selection Dropdown */}
-            <div>
-              <h3 className="font-semibold">Paid By</h3>
-              <select
-                name="paid_by"
-                value={newBill.paid_by}
-                onChange={handlePaidByChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a Member
-                </option>
-                {Array.isArray(members) &&
-                  members.map((member) => (
-                    <option
-                      key={member.user._id}
-                      value={member.user._id}
-                    >
-                      {member.user.firstName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="space-y-4">
-              {newBill.splitType === 'percent' && (
-                <div className="mt-4">
-                  <h3 className="font-semibold">
-                    Remaining Percentage:{' '}
-                    {newBill.remainingPercentage.toFixed(2)}%
-                  </h3>
-
-                  {newBill.remainingPercentage < 0 && (
-                    <p className="text-red-500">
-                      Total percentage exceeds 100%. Please adjust.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {newBill.splitType === 'amountOwed' && (
-                <div className="mt-4">
-                  <h3 className="font-semibold">
-                    Remaining Amount: ${newBill.remainingAmount.toFixed(2)}
-                  </h3>
-                  {newBill.remainingAmount > 0 && (
-                    <p className="text-red-500">
-                      You need to assign ${newBill.remainingAmount.toFixed(2)}{' '}
-                      to the members before saving.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Split Type Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Split Type
-                </label>
-                <select
-                  name="splitType"
-                  value={newBill.splitType}
-                  placeholder="Select a split type"
-                  onChange={(e) => handleBillChange(e, members)}
-                  className="w-full p-2 border rounded mt-1"
-                  required
-                >
-                  <option
-                    value=""
-                    disabled
-                  >
-                    Select a Split Type
-                  </option>
-                  <option value="evenly">Evenly</option>
-                  <option value="percent">Percentage</option>
-                  <option value="amountOwed">Amount</option>
-                </select>
-              </div>
-
-              {/* Members Input Fields */}
-              <h3 className="font-semibold">Group Members</h3>
-              {members.map((member, index) => (
-                <div
-                  key={index}
-                  className="flex items-center space-x-4 bg-gray-50 p-2 rounded border"
-                >
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      name="name"
-                      value={
-                        `${member.user.firstName} ${member.user.lastName}` || ''
-                      }
-                      readOnly
-                      className="w-full p-2 bg-gray-200 rounded"
-                      placeholder="Name"
-                    />
-                  </div>
-
-                  {newBill.splitType === 'amountOwed' && (
-                    <div className="flex-1">
-                      <input
-                        type="number"
-                        name="amountOwed"
-                        placeholder="Amount"
-                        value={newBill.splitDetails[index]?.amountOwed || 0}
-                        onChange={(e) => handleSplitType(index, e)}
-                        className="w-full p-2 border rounded"
-                      />
-                    </div>
-                  )}
-
-                  {newBill.splitType === 'percent' && (
-                    <div className="flex-1">
-                      <input
-                        type="number"
-                        name="percent"
-                        placeholder="Percentage"
-                        value={newBill.splitDetails[index]?.percent || 0}
-                        onChange={(e) => handleSplitType(index, e)}
-                        className="w-full p-2 border rounded"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800">Paid By</h3>
+            <select
+              name="paid_by"
+              value={newBill.paid_by}
+              onChange={handlePaidByChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="" disabled>
+                Select a Member
+              </option>
+              {Array.isArray(members) &&
+                members.map((member) => (
+                  <option key={member.user._id} value={member.user._id}>
+                    {member.user.firstName}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          {newBill.splitType === 'percent' && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold text-gray-800">
+                Remaining Percentage: {newBill.remainingPercentage.toFixed(2)}%
+              </h3>
+              {newBill.remainingPercentage < 0 && (
+                <p className="text-sm text-red-500">
+                  Total percentage exceeds 100%. Please adjust.
+                </p>
+              )}
+            </div>
+          )}
+
+          {newBill.splitType === 'amountOwed' && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold text-gray-800">
+                Remaining Amount: ${newBill.remainingAmount.toFixed(2)}
+              </h3>
+              {newBill.remainingAmount > 0 && (
+                <p className="text-sm text-red-500">
+                  You need to assign ${newBill.remainingAmount.toFixed(2)} to the
+                  members before saving.
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800">Split Type</h3>
+            <select
+              name="splitType"
+              value={newBill.splitType}
+              onChange={(e) => handleBillChange(e, members)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="" disabled>
+                Select a Split Type
+              </option>
+              <option value="evenly">Evenly</option>
+              <option value="percent">Percentage</option>
+              <option value="amountOwed">Amount</option>
+            </select>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800">Group Members</h3>
+            {members.map((member, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg border border-gray-300"
+              >
+                <input
+                  type="text"
+                  value={`${member.user.firstName} ${member.user.lastName}` || ''}
+                  readOnly
+                  className="w-1/2 p-3 bg-gray-200 rounded-lg"
+                />
+
+                {newBill.splitType === 'amountOwed' && (
+                  <input
+                    type="number"
+                    name="amountOwed"
+                    placeholder="Amount"
+                    value={newBill.splitDetails[index]?.amountOwed || 0}
+                    onChange={(e) => handleSplitType(index, e)}
+                    className="w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+
+                {newBill.splitType === 'percent' && (
+                  <input
+                    type="number"
+                    name="percent"
+                    placeholder="Percentage"
+                    value={newBill.splitDetails[index]?.percent || 0}
+                    onChange={(e) => handleSplitType(index, e)}
+                    className="w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
           <div className="flex justify-end space-x-4 mt-6">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-gray-300 rounded"
+              className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 rounded ${
-                newBill.remainingPercentage != 0 || newBill.remainingAmount != 0
+              className={`px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${newBill.remainingPercentage !== 0 || newBill.remainingAmount !== 0
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-green-500 text-white'
-              }`}
+                  : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
               disabled={
-                newBill.remainingPercentage != 0 || newBill.remainingAmount != 0
-              } // Disable Save if there is remaining percentage
+                newBill.remainingPercentage !== 0 || newBill.remainingAmount !== 0
+              }
             >
               Save
             </button>
           </div>
         </form>
+
       </CustomModal>
 
       <CustomModal
@@ -810,9 +769,9 @@ const BillSplit = () => {
                   <span className="text-green-600 text-xl font-semibold">
                     {activeBill.splitType === 'percent'
                       ? `$${(
-                          (activeBill.amount * userSplitDetail.percent) /
-                          100
-                        ).toFixed(2)}`
+                        (activeBill.amount * userSplitDetail.percent) /
+                        100
+                      ).toFixed(2)}`
                       : `$${userSplitDetail.amountOwed}`}
                   </span>
                 </p>
@@ -830,26 +789,24 @@ const BillSplit = () => {
                           style={{
                             width:
                               activeBill.splitType === 'percent'
-                                ? `${
-                                    (((
-                                      (activeBill.amount *
-                                        userSplitDetail.percent) /
-                                      100
-                                    ).toFixed(2) -
-                                      splitDetail.splitPerMember) /
-                                      (
-                                        (activeBill.amount *
-                                          userSplitDetail.percent) /
-                                        100
-                                      ).toFixed(2)) *
+                                ? `${(((
+                                  (activeBill.amount *
+                                    userSplitDetail.percent) /
+                                  100
+                                ).toFixed(2) -
+                                  splitDetail.splitPerMember) /
+                                  (
+                                    (activeBill.amount *
+                                      userSplitDetail.percent) /
                                     100
-                                  }%`
-                                : `${
-                                    ((splitDetail.splitPerMember -
-                                      userSplitDetail.amountOwed) /
-                                      userSplitDetail.amountOwed) *
-                                    100
-                                  }%`, // Calculate width based on amount owed
+                                  ).toFixed(2)) *
+                                100
+                                }%`
+                                : `${((splitDetail.splitPerMember -
+                                  userSplitDetail.amountOwed) /
+                                  userSplitDetail.amountOwed) *
+                                100
+                                }%`, // Calculate width based on amount owed
                           }}
                         ></div>
                       </div>
@@ -857,18 +814,17 @@ const BillSplit = () => {
                         Paid: $
                         {activeBill.splitType === 'percent'
                           ? `${(
-                              (
-                                (activeBill.amount * userSplitDetail.percent) /
-                                100
-                              ).toFixed(2) - splitDetail.splitPerMember
-                            ).toFixed(2)}/ $${(
+                            (
                               (activeBill.amount * userSplitDetail.percent) /
                               100
-                            ).toFixed(2)}`
-                          : `${
-                              splitDetail.splitPerMember -
-                              userSplitDetail.amountOwed
-                            }/ ${userSplitDetail.amountOwed}`}
+                            ).toFixed(2) - splitDetail.splitPerMember
+                          ).toFixed(2)}/ $${(
+                            (activeBill.amount * userSplitDetail.percent) /
+                            100
+                          ).toFixed(2)}`
+                          : `${splitDetail.splitPerMember -
+                          userSplitDetail.amountOwed
+                          }/ ${userSplitDetail.amountOwed}`}
                       </p>
                     </div>
                     {splitDetail.splitPerMember > 0 ? (

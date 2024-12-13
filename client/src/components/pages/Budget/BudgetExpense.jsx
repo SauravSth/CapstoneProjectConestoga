@@ -161,53 +161,86 @@ const BudgetExpense = () => {
       .reduce((total, expense) => total + expense.amount, 0);
   };
   return (
-    <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow-lg">
+    <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
+      {/* Sidebar */}
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
 
-      <div className="flex flex-col flex-grow">
+      {/* Main Content */}
+      <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="Budget Expenses" />
 
-        <main className="p-6 space-y-6">
-          <div className="text-5xl font-bold">Budget Management</div>
-          <div className="text-gray-500">
+        <main className="p-4 sm:p-6 space-y-6">
+          <div className="text-3xl sm:text-5xl font-bold">Budget Management</div>
+          <div className="text-gray-500 text-sm sm:text-base">
             Keep track of your spending and budgets
           </div>
-          <div className="flex items-center justify-between mt-4 max-w-full">
-            <div className="flex items-center space-x-4 max-w-lg">
+
+          {/* Search Bar and Buttons */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Search Bar */}
+            <div className="flex items-center w-full sm:w-auto">
               <input
                 type="text"
                 placeholder="Search..."
-                className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-[400px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
-              <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
-                Filter by Date
+            </div>
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full sm:w-auto space-y-2 sm:space-y-0">
+              <button
+                className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg focus:outline-none hover:bg-green-700 text-center"
+                onClick={handleNewExpense}
+              >
+                + New Expense
               </button>
             </div>
-            <button
-              className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
-              style={{
-                backgroundColor: '#80C028',
-                opacity: '0.45',
-              }}
-              onClick={handleNewExpense}
-            >
-              + New Expense
-            </button>
           </div>
 
+          {/* Error Message */}
           {error && <div className="text-red-500">{error}</div>}
+
+          {/* Budget Table or Card View */}
           {loading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
-            <BudgetTable
-              columns={columns}
-              data={data}
-            />
+            <>
+              {/* Table View for larger screens */}
+              <div className="hidden sm:block">
+                <BudgetTable columns={columns} data={data} />
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="sm:hidden space-y-4">
+                {data.map((expense) => (
+                  <div
+                    key={expense._id}
+                    className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-gray-800 flex-grow">
+                        {expense.title}
+                      </h3>
+                      <span className="text-lg font-bold text-green-600 ml-4">
+                        ${expense.amount}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-4 text-sm text-gray-600">
+                      <span>{expense.category_id?.name || 'N/A'}</span>
+                      <span className="text-right">
+                        {new Date(expense.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </main>
 
+        {/* Add New Expense Modal */}
         <CustomModal
           title="Add New Expense"
           isOpen={isModalOpen}
@@ -230,11 +263,11 @@ const BudgetExpense = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
+                <option value="" disabled>
+                  -- Select a Category --
+                </option>
                 {categories.map((category) => (
-                  <option
-                    key={category._id}
-                    value={category._id}
-                  >
+                  <option key={category._id} value={category._id}>
                     {category.name}
                   </option>
                 ))}
@@ -254,11 +287,10 @@ const BudgetExpense = () => {
               type="submit"
               onClick={handleFormSubmit}
               disabled={!expenseName || !category || !amount}
-              className={`w-full px-4 py-2 text-white rounded-lg ${
-                expenseName && category && amount
+              className={`w-full px-4 py-2 text-white rounded-lg ${expenseName && category && amount
                   ? 'bg-blue-500'
                   : 'bg-gray-400 cursor-not-allowed'
-              }`}
+                }`}
             >
               Add Expense
             </button>
@@ -266,6 +298,7 @@ const BudgetExpense = () => {
         </CustomModal>
       </div>
     </div>
+
   );
 };
 

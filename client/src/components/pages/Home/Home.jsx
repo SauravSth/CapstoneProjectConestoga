@@ -178,49 +178,54 @@ const Home = () => {
       <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="Overview" />
 
-        <main className="p-8 space-y-6">
-          <h1>Hi User</h1>
-          <div className="grid grid-cols-3 gap-6 p-6">
-            {/* Messages Section */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold flex justify-between items-center">
+        <main className="p-4 sm:p-6 md:p-8 space-y-6">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Hi User</h1>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Total Expenses Section */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+              <h2 className="text-lg sm:text-xl font-semibold flex justify-between items-center">
                 Total Expenses
-                <span className="ml-auto">${expenseSum}</span>
+                <span className="text-green-600 text-base sm:text-lg font-bold ml-auto">${expenseSum}</span>
               </h2>
             </div>
 
-            {/* Activity Section */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold flex justify-between items-center">
+            {/* Total Groups Section */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+              <h2 className="text-lg sm:text-xl font-semibold flex justify-between items-center">
                 Total Groups
-                <span className="ml-auto">{groups}</span>
+                <span className="text-blue-600 text-base sm:text-lg font-bold ml-auto">{groups}</span>
               </h2>
             </div>
 
-            {/* Messages Section */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold flex justify-between items-center">
+            {/* Total Goals Section */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+              <h2 className="text-lg sm:text-xl font-semibold flex justify-between items-center">
                 Total Goals
-                <span className="ml-auto">{goals}</span>
+                <span className="text-purple-600 text-base sm:text-lg font-bold ml-auto">{goals}</span>
               </h2>
             </div>
 
-            <div className="col-span-1 md:col-span-2 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl mb-4 font-semibold">
-                Comparing Expenses
-              </h2>
-              <LineChartComponent data={combinedData} />
+            {/* Comparing Expenses Section */}
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-2 bg-white p-4 sm:p-6 rounded-lg shadow">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4">Comparing Expenses</h2>
+              <div className="w-full ">
+                <LineChartComponent data={combinedData} />
+              </div>
             </div>
 
-            {/* Tasks Section */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold">Category Expenses</h2>
-              <PieChartComponent data={chartData} />
+            {/* Category Expenses Section */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4">Category Expenses</h2>
+              <div className="w-full">
+                <PieChartComponent data={chartData} />
+              </div>
             </div>
           </div>
         </main>
       </div>
     </div>
+
   );
 };
 
