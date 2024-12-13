@@ -27,20 +27,16 @@ const authController = {
 			const userData = await User.login(email, password);
 
 			if (!userData.isVerified) {
-				return res
-					.status(400)
-					.json({
-						success: false,
-						message: 'Please verify user before logging in.',
-					});
+				return res.status(400).json({
+					success: false,
+					message: 'Please verify user before logging in.',
+				});
 			}
 			if (!userData.isActive) {
-				return res
-					.status(400)
-					.json({
-						success: false,
-						message: 'Account has been deactivated.',
-					});
+				return res.status(400).json({
+					success: false,
+					message: 'Account has been deactivated.',
+				});
 			}
 			const token = createToken(
 				userData._id,
@@ -97,6 +93,10 @@ const authController = {
 				user.isVerified = true;
 				user.isActive = true;
 				await user.save();
+				res.status(400).json({
+					success: true,
+					message: 'Successfully verified',
+				});
 			} else {
 				res.status(400).json({
 					success: false,
