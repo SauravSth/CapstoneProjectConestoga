@@ -68,7 +68,10 @@ const Card = ({
         {/* Action Button */}
         <div className="mt-6">
           <button
-            onClick={onEditClick}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent parent div click
+              onEditClick();
+            }}
             className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
           >
             Edit Details
@@ -77,7 +80,10 @@ const Card = ({
 
         <div className="mt-6">
           <button
-            onClick={onDeleteClick}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent parent div click
+              onDeleteClick();
+            }}
             className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
           >
             Delete
