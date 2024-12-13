@@ -16,6 +16,8 @@ const AllExpenses = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editedData, setEditedData] = useState([]);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expenseName, setExpenseName] = useState('');
   const [expenseDate, setExpenseDate] = useState('');
@@ -32,6 +34,26 @@ const AllExpenses = () => {
     { field: 'category', headerName: 'Category' },
     { field: 'date', headerName: 'Date' },
     { field: 'amount', headerName: 'Amount' },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      render: (row) => (
+        <div className="flex space-x-2">
+          <button
+            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={() => handleEdit(row)}
+          >
+            Edit
+          </button>
+          <button
+            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => handleDelete(row)}
+          >
+            Delete
+          </button>
+        </div>
+      ),
+    },
   ];
 
   // Handle pagination
@@ -47,6 +69,83 @@ const AllExpenses = () => {
 
   const handleNewExpense = () => {
     setIsModalOpen(true);
+  };
+
+  const handleEdit = (existingData) => {
+    console.log(existingData);
+    setEditModalOpen(true);
+    setEditedData(existingData);
+  };
+
+  const handleDelete = async (existingData) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/expense/`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ _id: existingData._id }),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        // Remove the deleted expense from the state
+        setData((prevData) => {
+          const updatedData = prevData.filter(
+            (item) => item._id !== existingData._id
+          );
+          setFilteredData(updatedData); // Update filtered data if necessary
+          return updatedData;
+        });
+
+        alert('Expense successfully deleted');
+      } else {
+        const errorText = await response.text(); // Retrieve detailed error message
+        console.error('Error deleting expense:', errorText);
+        alert('Error deleting expense');
+      }
+    } catch (error) {
+      console.error('Error during delete operation:', error);
+      alert('Something went wrong while deleting the expense.');
+    }
+  };
+
+  const handleEditFormSubmit = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/expense/${editedData._id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(editedData),
+          credentials: 'include',
+        }
+      );
+
+      const updatedExpense = await response.json();
+
+      if (response.ok) {
+        setData((prevData) => {
+          const updatedData = prevData.map((item) =>
+            item._id === updatedExpense._id ? updatedExpense : item
+          );
+          setFilteredData(updatedData);
+          return updatedData;
+        });
+
+        alert('Expense successfully updated');
+        closeModal();
+        resetFormFields();
+      } else {
+        console.error('Error editing expense:', updatedExpense);
+        alert('Error editing expense');
+      }
+    } catch (error) {
+      console.error('Error during edit operation:', error);
+      alert('Something went wrong while editing the expense.');
+    }
   };
 
   const handleFormSubmit = async () => {
@@ -102,11 +201,13 @@ const AllExpenses = () => {
   const resetFormFields = () => {
     setExpenseName('');
     setCategory('');
+    setExpenseDate('');
     setAmount('');
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setEditModalOpen(false);
     resetFormFields();
   };
 
@@ -190,41 +291,35 @@ const AllExpenses = () => {
         <Header title="All Expenses" />
 
         <main className="p-6 space-y-6">
-          <div className="text-5xl font-bold">My Wallet</div>
-          <div className="text-gray-500">Keep track of your financial plan</div>
-
           <div className="flex items-center justify-between mt-4 max-w-full">
-            <div className="flex items-center space-x-4 max-w-lg">
+            <div className="flex items-center space-x-8 w-full">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 placeholder="Search by title or category"
-                className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-[400px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
-              <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
-                Filter by Date
-              </button>
             </div>
-            <button
-              className="ml-4 px-4 py-2 text-black rounded-lg focus:outline-none"
-              style={{
-                backgroundColor: '#80C028',
-                opacity: '0.45',
-              }}
-              onClick={handleNewExpense}
-            >
-              + New Expense
-            </button>
-            <PDFDownloadLink
-              document={<ExpensePDF data={filteredData} />}
-              fileName="Expenses_Report.pdf"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
-            >
-              {({ loading }) =>
-                loading ? 'Generating PDF...' : 'Download PDF Report'
-              }
-            </PDFDownloadLink>
+
+            {/* Right Section: New Expense and Download PDF */}
+            <div className="flex items-center space-x-4 ml-auto">
+              <button
+                className="w-[150px] px-4 py-2 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+                onClick={handleNewExpense}
+              >
+                + New Expense
+              </button>
+              <PDFDownloadLink
+                document={<ExpensePDF data={filteredData} />}
+                fileName="Expenses_Report.pdf"
+                className="w-[200px] px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:text-white focus:outline-none"
+              >
+                {({ loading }) =>
+                  loading ? 'Generating PDF...' : 'Download PDF Report'
+                }
+              </PDFDownloadLink>
+            </div>
           </div>
 
           {loading ? (
@@ -333,6 +428,106 @@ const AllExpenses = () => {
                 type="button"
                 className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none"
                 onClick={handleFormSubmit}
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </CustomModal>
+
+        <CustomModal
+          title="Edit Expense"
+          isOpen={isEditModalOpen}
+          onClose={closeModal}
+        >
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label className="block text-gray-700">Expense Title</label>
+              <input
+                type="text"
+                required
+                value={editedData.title}
+                onChange={(e) =>
+                  setEditedData((prevData) => ({
+                    ...prevData,
+                    title: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Expense Date</label>
+              <input
+                type="date"
+                required
+                value={editedData.date}
+                onChange={(e) =>
+                  setEditedData((prevData) => ({
+                    ...prevData,
+                    date: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Category</label>
+              <select
+                value={editedData?.category_id?._id}
+                onChange={(e) =>
+                  setEditedData((prevData) => ({
+                    ...prevData,
+                    category_id: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              >
+                <option
+                  value={''}
+                  disabled
+                >
+                  -- Select a Category --
+                </option>
+                {Array.isArray(categories) &&
+                  categories.map((category) => (
+                    <option
+                      key={category._id}
+                      value={category._id}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount</label>
+              <input
+                required
+                type="number"
+                value={editedData.amount}
+                onChange={(e) =>
+                  setEditedData((prevData) => ({
+                    ...prevData,
+                    amount: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 mr-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none"
+                onClick={handleEditFormSubmit}
               >
                 Submit
               </button>
