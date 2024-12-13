@@ -9,7 +9,7 @@ import Navbar from './Navbar'; // Import Navbar component
 const Header = ({ title }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-  console.log('USER', user?.message);
+  console.log('USER', user?.user);
 
   const { viewMode, toggleViewMode } = useViewModeStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,7 +88,7 @@ const Header = ({ title }) => {
         {/* Authenticated Actions */}
         {isAuthenticated ? (
           <div className="hidden sm:flex items-center space-x-4">
-            <span className="text-gray-800">Hello {user?.firstName}</span>
+            <span className="text-gray-800">Hello {user?.user.firstName}</span>
             <button
               onClick={handleLogout}
               className="flex items-center space-x-2"

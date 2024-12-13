@@ -5,6 +5,9 @@ import Header from '../../../../layouts/Header';
 import CustomTable from '../../../table/CustomTable';
 import CustomModal from '../../../modal/CustomModal';
 
+import { FaCheck } from 'react-icons/fa';
+import { ImCross } from 'react-icons/im';
+
 const AdminUser = () => {
   const [usersList, setUsersList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,8 +39,16 @@ const AdminUser = () => {
     { field: 'firstName', headerName: 'First Name' },
     { field: 'lastName', headerName: 'Last Name' },
     { field: 'email', headerName: 'Email' },
-    { field: 'isVerified', headerName: 'Is Verified' },
-    { field: 'isActive', headerName: 'Is Active' },
+    {
+      field: 'isVerified',
+      headerName: 'Is Verified',
+      render: (row) => (row.isVerified ? <FaCheck /> : <ImCross />),
+    },
+    {
+      field: 'isActive',
+      headerName: 'Is Active',
+      render: (row) => (row.isActive ? <FaCheck /> : <ImCross />),
+    },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -68,7 +79,7 @@ const AdminUser = () => {
 
   const handleDelete = async (existingData) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/`, {
+      const response = await fetch(`http://localhost:3000/api/user`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -100,23 +111,47 @@ const AdminUser = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow-lg">
+    <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
+      {/* Sidebar */}
+      <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
-      <div className="flex flex-col flex-grow">
+
+      {/* Main Content */}
+      <div className="flex flex-col flex-grow overflow-y-auto">
         <Header title="Admin Users" />
+
         <main className="p-6 space-y-6">
           <div className="flex items-center justify-between mt-4 max-w-full">
-            {loading ? (
-              <div className="text-center text-gray-500">Loading...</div>
-            ) : (
-              <CustomTable
-                columns={columns}
-                data={usersList}
-              />
-            )}
+            <div className="flex items-center space-x-8 w-full">
+              <div className="flex items-center space-x-4 ml-auto">
+                <button
+                  className="w-[150px] px-4 py-2 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+                  // onClick={handleNewExpense}
+                >
+                  + New User
+                </button>
+
+                {/* <PDFDownloadLink
+                  document={<ExpensePDF data={filteredData} />}
+                  fileName="Expenses_Report.pdf"
+                  className="w-[200px] px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:text-white focus:outline-none"
+                >
+                  {({ loading }) =>
+                    loading ? 'Generating PDF...' : 'Download PDF Report'
+                  }
+                </PDFDownloadLink> */}
+              </div>
+            </div>
           </div>
+          {loading ? (
+            <div className="text-center text-gray-500">Loading...</div>
+          ) : (
+            <CustomTable
+              columns={columns}
+              data={usersList}
+            />
+          )}
         </main>
       </div>
     </div>
