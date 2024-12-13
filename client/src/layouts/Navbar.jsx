@@ -19,7 +19,7 @@ import { FaUsersCog } from 'react-icons/fa';
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [userType, setUserType] = useState('');
+  const [userType, setUserType] = useState('User');
 
   const { activePage, setActivePage } = useNavbarStore();
   const { viewMode } = useViewModeStore();
