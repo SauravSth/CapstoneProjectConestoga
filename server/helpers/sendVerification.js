@@ -20,7 +20,7 @@ const sendVerification = async (email, verificationCode) => {
 				<p>Thank you for signing up with PerCent. We’re excited to have you on board!</p>
 				<p>To complete your registration, please verify your email address by clicking the button below:</p>
 				<div style="text-align: center; margin: 20px 0;">
-				<a href="http://localhost:5173/verify/${verificationCode}" style="background-color: #4caf50; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; display: inline-block;">Verify Your Account</a>
+				<a href="${process.env.FRONTEND_URL}/verify/${verificationCode}" style="background-color: #4caf50; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; display: inline-block;">Verify Your Account</a>
 				</div>
 				
 				<p>If you did not sign up for PerCent, please ignore this email or contact our support team.</p>
