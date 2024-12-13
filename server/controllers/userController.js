@@ -5,9 +5,6 @@ import nodemailer from 'nodemailer';
 import errorHandler from '../helpers/errorHandler.js';
 
 const userController = {
-	testRoute: async (req, res) => {
-		res.send(req.user);
-	},
 	getUser: async (req, res) => {
 		try {
 			const users = await User.find({});

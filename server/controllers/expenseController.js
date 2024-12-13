@@ -22,7 +22,7 @@ const expenseController = {
 			const { uid } = req.user;
 			const { budget_id } = req.query;
 
-			const filter = { user_id: uid };
+			const filter = { user_id: uid, isActive: true };
 			if (budget_id) {
 				filter.budget_id = budget_id;
 			}
@@ -39,9 +39,10 @@ const expenseController = {
 		try {
 			const id = req.params._id;
 
-			const expense = await Expense.findOne({ _id: id }).populate(
-				'category_id user_id budget_id'
-			);
+			const expense = await Expense.findOne({
+				_id: id,
+				isActive: true,
+			}).populate('category_id user_id budget_id');
 
 			res.status(200).json({ expense });
 		} catch (e) {
