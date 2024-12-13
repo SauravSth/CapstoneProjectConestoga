@@ -38,7 +38,7 @@ const AdminUser = () => {
   }, [isAuthenticated, navigate]);
 
   const [usersList, setUsersList] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  // const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -74,7 +74,7 @@ const AdminUser = () => {
   };
 
   // Get paginated data
-  const paginatedData = filteredData.slice(
+  const paginatedData = usersList.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
@@ -318,16 +318,6 @@ const AdminUser = () => {
                 >
                   + New User
                 </button>
-
-                {/* <PDFDownloadLink
-                  document={<ExpensePDF data={filteredData} />}
-                  fileName="Expenses_Report.pdf"
-                  className="w-[200px] px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:text-white focus:outline-none"
-                >
-                  {({ loading }) =>
-                    loading ? 'Generating PDF...' : 'Download PDF Report'
-                  }
-                </PDFDownloadLink> */}
               </div>
             </div>
           </div>
@@ -337,12 +327,12 @@ const AdminUser = () => {
             <>
               <CustomTable
                 columns={columns}
-                data={usersList}
+                data={paginatedData}
               />
               <ReactPaginate
                 previousLabel={'← Previous'}
                 nextLabel={'Next →'}
-                pageCount={Math.ceil(filteredData.length / itemsPerPage)}
+                pageCount={Math.ceil(usersList.length / itemsPerPage)}
                 onPageChange={handlePageChange}
                 containerClassName={
                   'flex justify-center items-center space-x-2 mt-4 '
@@ -438,7 +428,6 @@ const AdminUser = () => {
               <input
                 type="password"
                 required
-                disabled
                 value={newUser.password}
                 onChange={(e) =>
                   setNewUser((prevData) => ({

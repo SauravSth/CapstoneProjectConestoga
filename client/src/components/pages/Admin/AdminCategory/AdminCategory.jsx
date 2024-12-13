@@ -38,7 +38,7 @@ const AdminCategory = () => {
   }, [isAuthenticated, navigate]);
 
   const [categoryList, setCategoryList] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  // const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [newCategory, setNewCategory] = React.useState({
@@ -63,7 +63,7 @@ const AdminCategory = () => {
   };
 
   // Get paginated data
-  const paginatedData = filteredData.slice(
+  const paginatedData = categoryList.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
@@ -167,46 +167,54 @@ const AdminCategory = () => {
     setEditModalOpen(true);
     setEditedData(existingData);
   };
-
   const handleEditFormSubmit = async () => {
-    try {
-      console.log('EditedData:', editedData);
+    // Validation for required fields
+    if (!editedData.name || !editedData.imagePath) {
+      alert('Please provide both a name and an image.');
+      return;
+    }
 
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('name', editedData.name); // Add the name
+    formData.append('image', editedData.imagePath); // Add the file (ensure this is a File object)
+
+    try {
+      // API call to update the category
       const response = await fetch(
         `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category/${
           editedData._id
         }`,
         {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(editedData),
-          credentials: 'include',
+          body: formData, // Use FormData
+          credentials: 'include', // Include cookies for authentication
         }
       );
 
+      // Parse the response
       const data = await response.json();
 
+      // Handle the response
       if (response.ok) {
-        console.log('OK');
+        console.log('Category edited successfully:', data);
 
-        // Update the categoryList state by replacing the edited user
-        setCategoryList((prevData) => {
-          const updatedData = prevData.map((category) =>
-            category._id === editedData._id ? editedData : category
-          );
-          return updatedData;
-        });
+        // Update the category list state
+        setCategoryList((prevData) =>
+          prevData.map((category) =>
+            category._id === data._id ? data : category
+          )
+        );
 
+        // Close modal and reset form
         closeModal();
         resetFormFields();
       } else {
-        alert('Error editing cateogry');
+        alert('Error updating category');
         console.error('Error:', data);
       }
     } catch (error) {
-      console.error('Error editing category:', error);
+      console.error('Error updating category:', error);
     }
   };
 
@@ -331,12 +339,12 @@ const AdminCategory = () => {
             <>
               <CustomTable
                 columns={columns}
-                data={categoryList}
+                data={paginatedData}
               />
               <ReactPaginate
                 previousLabel={'← Previous'}
                 nextLabel={'Next →'}
-                pageCount={Math.ceil(filteredData.length / itemsPerPage)}
+                pageCount={Math.ceil(categoryList.length / itemsPerPage)}
                 onPageChange={handlePageChange}
                 containerClassName={
                   'flex justify-center items-center space-x-2 mt-4 '
@@ -489,6 +497,21 @@ const AdminCategory = () => {
                   setEditedData((prevData) => ({
                     ...prevData,
                     name: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700">Upload Image</label>
+              <input
+                type="file"
+                accept=".jpg,.png,.svg"
+                onChange={(e) =>
+                  setEditedData((prevData) => ({
+                    ...prevData,
+                    imagePath: e.target.files[0], // Store the selected file
                   }))
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
