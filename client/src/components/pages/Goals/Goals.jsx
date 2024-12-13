@@ -24,13 +24,16 @@ const Goals = () => {
     const fetchGoals = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/goal`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
         const goalsData = await response.json();
         setGoals(Array.isArray(goalsData) ? goalsData : goalsData.goals || []);
       } catch (error) {
@@ -62,14 +65,17 @@ const Goals = () => {
         description: description,
       };
 
-      const response = await fetch('http://localhost:3000/api/goal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(newGoal),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(newGoal),
+        }
+      );
 
       const data = await response.json();
 
@@ -93,7 +99,9 @@ const Goals = () => {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/goal/${selectedGoal._id}`,
+      `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal/${
+        selectedGoal._id
+      }`,
       {
         method: 'PATCH',
         headers: {
@@ -141,14 +149,17 @@ const Goals = () => {
 
   const handleDelete = async (goal) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/goal`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ _id: goal._id }), // Assuming 'goal.id' uniquely identifies the goal
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ _id: goal._id }), // Assuming 'goal.id' uniquely identifies the goal
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to delete goal. Status: ${response.status}`);
@@ -175,7 +186,9 @@ const Goals = () => {
       };
 
       const response = await fetch(
-        `http://localhost:3000/api/goal/${selectedGoal._id}`,
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal/${
+          selectedGoal._id
+        }`,
         {
           method: 'PATCH',
           headers: {

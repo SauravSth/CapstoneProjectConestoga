@@ -72,14 +72,17 @@ const BillSplit = () => {
     }));
 
     try {
-      const response = await fetch('http://localhost:3000/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transaction),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/transaction`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(transaction),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
       console.log('NEW transaction', data);
@@ -110,14 +113,17 @@ const BillSplit = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/groupExpense', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newBill),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/groupExpense`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newBill),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
       console.log('NEW GROUP EXPENSE', data);
@@ -164,7 +170,9 @@ const BillSplit = () => {
       const fetchSplitData = async () => {
         try {
           const splitDataResponse = await fetch(
-            `http://localhost:3000/api/splitPerOneMember/${activeBill._id}`,
+            `${
+              import.meta.env.VITE_REACT_APP_SERVER_URL
+            }/api/splitPerOneMember/${activeBill._id}`,
             {
               method: 'GET',
               headers: {
@@ -196,7 +204,7 @@ const BillSplit = () => {
     const fetchGroupExpenses = async () => {
       try {
         const groupExpensesResponse = await fetch(
-          'http://localhost:3000/api/groupExpense',
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/groupExpense`,
           {
             method: 'GET',
             headers: {
@@ -215,13 +223,16 @@ const BillSplit = () => {
 
     const fetchGroups = async () => {
       try {
-        const groupResponse = await fetch(`http://localhost:3000/api/group`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
+        const groupResponse = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
         const groupData = await groupResponse.json();
         setGroups(groupData.groups);
       } catch (error) {
@@ -232,7 +243,7 @@ const BillSplit = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category`,
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`,
           {
             method: 'GET',
             headers: {
@@ -260,7 +271,7 @@ const BillSplit = () => {
       const fetchMembers = async () => {
         try {
           const groupDetailsResponse = await fetch(
-            `http://localhost:3000/api/group/${groupID}`,
+            `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group/${groupID}`,
             {
               method: 'GET',
               headers: {
@@ -274,7 +285,9 @@ const BillSplit = () => {
           const memberDetailsPromises = groupDetails.group.members.map(
             async (member) => {
               const userResponse = await fetch(
-                `http://localhost:3000/api/userDetail/${member.user_id}`,
+                `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/userDetail/${
+                  member.user_id
+                }`,
                 {
                   method: 'GET',
                   headers: {

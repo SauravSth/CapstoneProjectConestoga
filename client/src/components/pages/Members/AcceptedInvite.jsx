@@ -9,7 +9,9 @@ const AcceptInvite = () => {
   const handleAcceptInvite = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/group/acceptedInvite/${email}/${groupId}`
+        `${
+          import.meta.env.VITE_REACT_APP_SERVER_URL
+        }/api/group/acceptedInvite/${email}/${groupId}`
       );
 
       if (response.data.success) {

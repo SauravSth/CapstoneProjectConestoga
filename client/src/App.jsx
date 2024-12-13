@@ -17,6 +17,7 @@ import Login from './components/pages/Login/Login';
 import Signup from './components/pages/Signup/Signup';
 import VerifyUser from './components/pages/Signup/VerifyUser';
 import AdminUser from './components/pages/Admin/AdminUser/AdminUser';
+import AdminCategory from './components/pages/Admin/AdminCategory/AdminCategory';
 
 function App() {
   return (
@@ -85,17 +86,14 @@ function App() {
               path="/registerFromInvite/:groupID"
               element={<Signup />}
             />
-
             <Route
               path="/admin/users"
               element={<AdminUser />}
             />
-
             <Route
-              path="/admin/users"
-              element={<AdminUser />}
+              path="/admin/categories"
+              element={<AdminCategory />}
             />
-
             <Route
               path="/logout"
               element={<Login />}

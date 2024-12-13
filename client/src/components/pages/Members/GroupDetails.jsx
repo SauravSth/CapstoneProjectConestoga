@@ -39,7 +39,7 @@ const GroupDetails = () => {
       setLoading(true);
       try {
         const groupResponse = await fetch(
-          `http://localhost:3000/api/group/${id}`,
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group/${id}`,
           {
             method: 'GET',
             credentials: 'include',

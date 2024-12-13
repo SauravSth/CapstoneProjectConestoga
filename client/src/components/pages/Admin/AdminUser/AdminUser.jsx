@@ -61,13 +61,16 @@ const AdminUser = () => {
     const fetchUsersList = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/user`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
         const result = await response.json();
         setUsersList(Array.isArray(result.users) ? result.users : []);
       } catch (error) {
@@ -88,14 +91,17 @@ const AdminUser = () => {
     try {
       console.log(newUser);
 
-      const response = await fetch('http://localhost:3000/api/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newUser),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
 
@@ -151,7 +157,9 @@ const AdminUser = () => {
       console.log('EditedData:', editedData);
 
       const response = await fetch(
-        `http://localhost:3000/api/user/${editedData._id}`,
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user/${
+          editedData._id
+        }`,
         {
           method: 'PATCH',
           headers: {
@@ -188,14 +196,17 @@ const AdminUser = () => {
 
   const handleDelete = async (existingData) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/user`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id: existingData._id }),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ _id: existingData._id }),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
 

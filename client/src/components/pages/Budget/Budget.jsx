@@ -42,11 +42,14 @@ const Budget = () => {
       }
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/budget`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/budget`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          }
+        );
         if (!response.ok) {
           throw new Error('Failed to fetch budgets');
         }
@@ -73,14 +76,17 @@ const Budget = () => {
         description: description,
       };
 
-      const response = await fetch('http://localhost:3000/api/budget', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(newBudget),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/budget`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(newBudget),
+        }
+      );
 
       const data = await response.json();
 

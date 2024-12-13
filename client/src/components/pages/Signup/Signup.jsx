@@ -71,8 +71,10 @@ const Signup = () => {
       const isInvite = location.pathname.startsWith('/registerFromInvite');
 
       const apiUrl = isInvite
-        ? `http://localhost:3000/api/registerFromInvite/${groupID}`
-        : `http://localhost:3000/api/signup`;
+        ? `${
+            import.meta.env.VITE_REACT_APP_SERVER_URL
+          }/api/registerFromInvite/${groupID}`
+        : `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/signup`;
 
       try {
         let response = '';
