@@ -167,6 +167,7 @@ router.get(
 	authorization,
 	userController.getUserDetails
 );
+router.post('/user', authentication, authorization, userController.createUser);
 router.patch(
 	'/user/:_id',
 	authentication,
