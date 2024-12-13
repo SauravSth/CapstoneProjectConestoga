@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const VerifyUser = () => {
-  const { verificationCode } = useParams();
   const navigate = useNavigate();
+  const isInitial = React.useRef(true);
+  const { verificationCode } = useParams();
 
   const handleAcceptInvite = async () => {
     try {
@@ -13,9 +14,8 @@ const VerifyUser = () => {
       );
 
       if (response.data.success) {
-        console.log(response);
-        alert('Successfully Verified');
         navigate('/login');
+        alert('Successfully Verified');
       } else {
         alert(response.data.message);
       }
@@ -26,7 +26,10 @@ const VerifyUser = () => {
   };
 
   React.useEffect(() => {
-    handleAcceptInvite();
+    if (isInitial.current) {
+      isInitial.current = false;
+      handleAcceptInvite();
+    }
   }, []);
 
   return (
