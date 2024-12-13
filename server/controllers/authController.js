@@ -90,10 +90,13 @@ const authController = {
 			const user = await User.findOne({ verificationCode });
 
 			if (user) {
-				user.isVerified = true;
-				user.isActive = true;
-				await user.save();
-				res.status(400).json({
+				await user.updateOne({
+					$set: {
+						isVerified: true,
+						isActive: true,
+					},
+				});
+				res.status(200).json({
 					success: true,
 					message: 'Successfully verified',
 				});
