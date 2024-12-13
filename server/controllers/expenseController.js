@@ -67,7 +67,6 @@ const expenseController = {
 				category_id,
 				user_id: uid,
 				budget_id,
-				goal_id,
 			});
 
 			res.status(200).json({
