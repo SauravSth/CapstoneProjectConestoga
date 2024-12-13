@@ -9,7 +9,6 @@ import Navbar from './Navbar'; // Import Navbar component
 const Header = ({ title }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-  console.log('USER', user?.user);
 
   const { viewMode, toggleViewMode } = useViewModeStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
