@@ -1,14 +1,42 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import ReactPaginate from 'react-paginate';
 import Navbar from '../../../../layouts/Navbar';
 import Header from '../../../../layouts/Header';
 import CustomTable from '../../../table/CustomTable';
 import CustomModal from '../../../modal/CustomModal';
+import useAuthStore from '../../../../store/useAuthStore';
 
 import { FaCheck } from 'react-icons/fa';
 import { ImCross } from 'react-icons/im';
 
 const AdminUser = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated || user.message !== 'Admin Logged In') {
+      const handleLogout = async () => {
+        try {
+          await fetch(
+            `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/logout`,
+            {
+              method: 'GET',
+              credentials: 'include',
+            }
+          );
+          logout();
+        } catch (error) {
+          console.error('Error during logout:', error);
+        }
+      };
+      handleLogout();
+      logout();
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
   const [usersList, setUsersList] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
