@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Card = ({
   name,
   description,
@@ -24,10 +22,16 @@ const Card = ({
     100
   ).toFixed(2);
 
+  // Disable the onClick function if the goal is complete
+  const isGoalComplete = type === 'goal' && goalAmount === savedAmount;
+  const handleClick = isGoalComplete ? null : onClick;
+
   return (
     <div
-      className={`card p-6 bg-white rounded-lg shadow-xl cursor-pointer transition-transform transform hover:scale-105 ${type}-card`}
-      onClick={onClick}
+      className={`card p-6 bg-white rounded-lg shadow-xl cursor-pointer transition-transform transform hover:scale-105 ${type}-card ${
+        isGoalComplete ? 'opacity-50 pointer-events-none' : ''
+      }`}
+      onClick={handleClick}
     >
       {/* Card Header */}
       <div className="flex justify-between items-center">
