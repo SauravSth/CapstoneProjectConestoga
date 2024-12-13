@@ -5,10 +5,79 @@ import PieChartComponent from '../../ui/PieChart';
 import LineChartComponent from '../../ui/LineChart';
 
 const Home = () => {
+  const [expenseSum, setExpenseSum] = useState(null);
+  const [groups, setGroups] = useState(null);
+  const [goals, setGoals] = useState(null);
   const [pieChartData, setPieChartData] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
 
   useEffect(() => {
+    const fetchExpenseData = async () => {
+      try {
+        const expenseResponse = await fetch(
+          'http://localhost:3000/api/expense',
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+
+        if (!expenseResponse.ok) {
+          throw new Error(`HTTP error! Status: ${expenseResponse.status}`);
+        }
+
+        let expenseData = await expenseResponse.json();
+
+        let sumExpense = expenseData.expenses.reduce((sum, expense) => {
+          return sum + expense.amount;
+        }, 0); // Start with 0 as the initial sum
+
+        console.log(sumExpense); // This will log 5160
+
+        setExpenseSum(sumExpense);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchGroupData = async () => {
+      try {
+        const groupResponse = await fetch('http://localhost:3000/api/group', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!groupResponse.ok) {
+          throw new Error(`HTTP error! Status: ${groupResponse.status}`);
+        }
+
+        let groupData = await groupResponse.json();
+
+        setGroups(groupData.groups.length);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchGoalData = async () => {
+      try {
+        const goalResponse = await fetch('http://localhost:3000/api/goal', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!goalResponse.ok) {
+          throw new Error(`HTTP error! Status: ${goalResponse.status}`);
+        }
+
+        let goalData = await goalResponse.json();
+
+        setGoals(goalData.goals.length);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     const fetchPieData = async () => {
       const response = await fetch(
         'http://localhost:3000/api/graph/getExpensePerCategory',
@@ -49,6 +118,9 @@ const Home = () => {
       }
     };
 
+    fetchExpenseData();
+    fetchGroupData();
+    fetchGoalData();
     fetchPieData();
     fetchLineData();
   }, []);
@@ -111,17 +183,26 @@ const Home = () => {
           <div className="grid grid-cols-3 gap-6 p-6">
             {/* Messages Section */}
             <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold">Messages</h2>
+              <h2 className="text-xl font-semibold flex justify-between items-center">
+                Total Expenses
+                <span className="ml-auto">${expenseSum}</span>
+              </h2>
             </div>
 
             {/* Activity Section */}
             <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold">Activity</h2>
+              <h2 className="text-xl font-semibold flex justify-between items-center">
+                Total Groups
+                <span className="ml-auto">{groups}</span>
+              </h2>
             </div>
 
             {/* Messages Section */}
             <div className="col-span-1 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold">Messages</h2>
+              <h2 className="text-xl font-semibold flex justify-between items-center">
+                Total Goals
+                <span className="ml-auto">{goals}</span>
+              </h2>
             </div>
 
             <div className="col-span-1 md:col-span-2 bg-white p-6 rounded-lg shadow">

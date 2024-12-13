@@ -7,8 +7,10 @@ const Card = ({
   totalAmount, // Keep original name for budget
   remainingAmount, // Keep original name for budget
   goalAmount, // New name for goal
-  savedAmount, // New name for goal
-  onClick,
+  savedAmount,
+  onClick, // New name for goal
+  onEditClick,
+  onDeleteClick,
   type,
 }) => {
   // Determine the values based on the type
@@ -62,14 +64,25 @@ const Card = ({
         </p>
       </div>
 
-      {/* Action Button */}
-      <div className="mt-6">
-        <button
-          onClick={onClick}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
-        >
-          View Details
-        </button>
+      <div className="flex gap-4">
+        {/* Action Button */}
+        <div className="mt-6">
+          <button
+            onClick={onEditClick}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
+          >
+            Edit Details
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <button
+            onClick={onDeleteClick}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
