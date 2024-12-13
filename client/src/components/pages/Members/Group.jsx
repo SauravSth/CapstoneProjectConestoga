@@ -277,7 +277,7 @@ const Group = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row h-full bg-gray-100 overflow-x-hidden">
+    <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
       <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
