@@ -19,13 +19,13 @@ import { FaUsersCog } from 'react-icons/fa';
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [userType, setUserType] = useState('User');
+  const [userType, setUserType] = useState('');
 
   const { activePage, setActivePage } = useNavbarStore();
   const { viewMode } = useViewModeStore();
 
   useEffect(() => {
-    if (isAuthenticated || user?.message === 'Admin Logged In') {
+    if (isAuthenticated && user?.message === 'Admin Logged In') {
       setUserType('Admin');
     }
   }, [isAuthenticated, user]);
