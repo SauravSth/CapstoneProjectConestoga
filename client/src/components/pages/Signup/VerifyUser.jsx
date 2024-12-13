@@ -10,7 +10,9 @@ const VerifyUser = () => {
   const handleAcceptInvite = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/verify/${verificationCode}`
+        `${
+          import.meta.env.VITE_REACT_APP_SERVER_URL
+        }/api/verify/${verificationCode}`
       );
 
       if (response.data.success) {

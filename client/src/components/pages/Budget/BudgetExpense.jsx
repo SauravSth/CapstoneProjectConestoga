@@ -58,14 +58,17 @@ const BudgetExpense = () => {
       };
 
       console.log('HERE is the epxense data', newExpense);
-      const response = await fetch('http://localhost:3000/api/expense', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(newExpense),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(newExpense),
+        }
+      );
 
       const data = await response.json();
 
@@ -106,7 +109,9 @@ const BudgetExpense = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:3000/api/expense?budget_id=${budgetId}`,
+          `${
+            import.meta.env.VITE_REACT_APP_SERVER_URL
+          }/api/expense?budget_id=${budgetId}`,
           {
             method: 'GET',
             headers: {
@@ -136,7 +141,7 @@ const BudgetExpense = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          'http://localhost:3000/api/category',
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`,
           {
             method: 'GET',
             headers: {

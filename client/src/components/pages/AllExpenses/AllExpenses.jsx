@@ -78,14 +78,17 @@ const AllExpenses = () => {
 
   const handleDelete = async (existingData) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/expense/`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id: existingData._id }),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense/`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ _id: existingData._id }),
+          credentials: 'include',
+        }
+      );
 
       if (response.ok) {
         // Remove the deleted expense from the state
@@ -112,7 +115,9 @@ const AllExpenses = () => {
   const handleEditFormSubmit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/expense/${editedData._id}`,
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense/${
+          editedData._id
+        }`,
         {
           method: 'PATCH',
           headers: {
@@ -160,14 +165,17 @@ const AllExpenses = () => {
         category_id: category,
       };
 
-      const response = await fetch('http://localhost:3000/api/expense', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newExpense),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newExpense),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
 
@@ -227,7 +235,7 @@ const AllExpenses = () => {
       setLoading(true);
       try {
         const expenseResponse = await fetch(
-          'http://localhost:3000/api/expense',
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense`,
           {
             method: 'GET',
             credentials: 'include',
@@ -261,7 +269,7 @@ const AllExpenses = () => {
     const fetchCategories = async () => {
       try {
         const categoryResponse = await fetch(
-          `http://localhost:3000/api/category`,
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`,
           {
             method: 'GET',
             headers: {

@@ -25,10 +25,13 @@ const Group = () => {
   // Fetch groups from the backend
   useEffect(() => {
     const fetchGroups = async () => {
-      const response = await fetch('http://localhost:3000/api/group', {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
       const data = await response.json();
       console.log('groupData', data);
 
@@ -48,17 +51,20 @@ const Group = () => {
       console.log('Updated', newGroup);
 
       // Make the API call to post the new member to the group
-      await fetch('http://localhost:3000/api/group/inviteToGroup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: emailInput,
-          group_id: groupID,
-        }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group/inviteToGroup`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: emailInput,
+            group_id: groupID,
+          }),
+        }
+      );
 
       // Clear the input field after adding the email
       setEmailInput('');
@@ -77,24 +83,30 @@ const Group = () => {
   const handleAddNewGroup = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:3000/api/group', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(newGroup),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(newGroup),
+      }
+    );
 
     if (response.ok) {
       // const addedGroup = await response.json();
 
       // Refetch groups to ensure the UI updates correctly
       const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         const data = await response.json();
         setGroups(Array.isArray(data) ? data : data.groups || []);
@@ -117,22 +129,28 @@ const Group = () => {
     };
 
     // Make the API call to create the new group with the updated members list
-    const response = await fetch(`http://localhost:3000/api/group/${groupID}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(updatedGroup), // Send the updated group with emails
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group/${groupID}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedGroup), // Send the updated group with emails
+      }
+    );
 
     if (response.ok) {
       // Refetch groups to ensure the UI updates correctly
       const fetchGroups = async () => {
-        const response = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         const data = await response.json();
         setGroups(Array.isArray(data) ? data : data.groups || []);
@@ -188,7 +206,9 @@ const Group = () => {
         const memberDetails = await Promise.all(
           memberIds.map(async (userId) => {
             const response = await fetch(
-              `http://localhost:3000/api/userDetail/${userId}`,
+              `${
+                import.meta.env.VITE_REACT_APP_SERVER_URL
+              }/api/userDetail/${userId}`,
               {
                 method: 'GET',
                 credentials: 'include',
@@ -258,7 +278,6 @@ const Group = () => {
 
   return (
     <div className="flex flex-col sm:flex-row h-full bg-gray-100 overflow-x-hidden">
-
       <aside className="hidden sm:block sm:w-64 bg-white shadow-lg">
         <Navbar />
       </aside>
@@ -267,8 +286,7 @@ const Group = () => {
         <Header title="Groups" />
 
         <main className="p-6 space-y-6">
-        <div className="flex items-center space-x-4 max-w-lg">
-
+          <div className="flex items-center space-x-4 max-w-lg">
             <input
               type="text"
               placeholder="Search groups"
@@ -279,11 +297,9 @@ const Group = () => {
             <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none">
               Filter by Date
             </button>
-            
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
             {filteredGroups.map((group) => (
               <GroupCard
                 key={group._id}

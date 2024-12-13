@@ -2,14 +2,14 @@ import React from 'react';
 
 const CustomTable = ({ columns, data = [], onEdit, onDelete }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">
+    <div className="flex justify-center items-center overflow-x-auto">
+      <table className="table-auto w-[1200px] bg-white border border-gray-200 shadow-sm rounded-lg">
         <thead>
           <tr className="bg-gray-100">
             {columns.map((col) => (
               <th
                 key={col.field}
-                className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b"
+                className="px-6 py-3 text-base font-semibold text-gray-700 border-b"
               >
                 {col.headerName}
               </th>
@@ -27,7 +27,7 @@ const CustomTable = ({ columns, data = [], onEdit, onDelete }) => {
               {columns.map((col) => (
                 <td
                   key={col.field}
-                  className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap"
+                  className="px-6 py-4 text-center text-base text-gray-700 whitespace-nowrap"
                 >
                   {col.render ? col.render(row) : row[col.field]}
                 </td>

@@ -61,13 +61,16 @@ const AdminUser = () => {
     const fetchUsersList = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/user`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
         const result = await response.json();
         setUsersList(Array.isArray(result.users) ? result.users : []);
       } catch (error) {
@@ -88,14 +91,17 @@ const AdminUser = () => {
     try {
       console.log(newUser);
 
-      const response = await fetch('http://localhost:3000/api/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newUser),
+          credentials: 'include',
+        }
+      );
 
       const data = await response.json();
 
@@ -148,10 +154,12 @@ const AdminUser = () => {
 
   const handleEditFormSubmit = async () => {
     try {
-      console.log('EditdData', editedData);
+      console.log('EditedData:', editedData);
 
       const response = await fetch(
-        `http://localhost:3000/api/user/${editedData._id}`,
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user/${
+          editedData._id
+        }`,
         {
           method: 'PATCH',
           headers: {
@@ -167,52 +175,61 @@ const AdminUser = () => {
       if (response.ok) {
         console.log('OK');
 
+        // Update the usersList state by replacing the edited user
         setUsersList((prevData) => {
-          const updatedData = [...prevData, editedData];
-          console.log(updatedData);
+          const updatedData = prevData.map((user) =>
+            user._id === editedData._id ? editedData : user
+          );
           return updatedData;
         });
+
         closeModal();
         resetFormFields();
       } else {
-        alert('Error submitting expense');
+        alert('Error editing user');
         console.error('Error:', data);
       }
     } catch (error) {
-      console.error('Error submitting new expense:', error);
+      console.error('Error editing user:', error);
     }
   };
 
   const handleDelete = async (existingData) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/user`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id: existingData._id }),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/user`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ _id: existingData._id }),
+          credentials: 'include',
+        }
+      );
+
+      const data = await response.json();
 
       if (response.ok) {
-        // Remove the deleted expense from the state
-        setData((prevData) => {
-          const updatedData = prevData.filter(
-            (item) => item._id !== existingData._id
-          );
-          setFilteredData(updatedData); // Update filtered data if necessary
-          return updatedData;
-        });
+        console.log('User Deleted:', existingData);
 
-        alert('Expense successfully deleted');
+        // Update the usersList state directly
+        setUsersList((prevData) =>
+          prevData.map((user) =>
+            user._id === existingData._id
+              ? { ...existingData, isActive: false }
+              : user
+          )
+        );
+
+        alert('User successfully deleted.');
       } else {
-        const errorText = await response.text(); // Retrieve detailed error message
-        console.error('Error deleting expense:', errorText);
-        alert('Error deleting expense');
+        alert('Error deleting user');
+        console.error('Error:', data);
       }
     } catch (error) {
       console.error('Error during delete operation:', error);
-      alert('Something went wrong while deleting the expense.');
+      alert('Something went wrong while deleting the user.');
     }
   };
 

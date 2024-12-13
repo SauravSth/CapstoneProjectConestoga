@@ -10,7 +10,9 @@ const BillCard = ({ bills, onEdit, onDelete, onSettleUp }) => {
   return (
     <>
       {bills.map((bill) => {
-        const serverBaseUrl = 'http://localhost:3000/images/';
+        const serverBaseUrl = `${
+          import.meta.env.VITE_REACT_APP_SERVER_URL
+        }/images/`;
         const imageName = bill.category_id.imagePath.split('\\').pop();
         const formattedImagePath = `${serverBaseUrl}/${imageName}`;
 

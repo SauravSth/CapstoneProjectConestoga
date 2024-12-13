@@ -15,7 +15,7 @@ const Home = () => {
     const fetchExpenseData = async () => {
       try {
         const expenseResponse = await fetch(
-          'http://localhost:3000/api/expense',
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/expense`,
           {
             method: 'GET',
             credentials: 'include',
@@ -42,10 +42,13 @@ const Home = () => {
 
     const fetchGroupData = async () => {
       try {
-        const groupResponse = await fetch('http://localhost:3000/api/group', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const groupResponse = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/group`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         if (!groupResponse.ok) {
           throw new Error(`HTTP error! Status: ${groupResponse.status}`);
@@ -61,10 +64,13 @@ const Home = () => {
 
     const fetchGoalData = async () => {
       try {
-        const goalResponse = await fetch('http://localhost:3000/api/goal', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const goalResponse = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/goal`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         if (!goalResponse.ok) {
           throw new Error(`HTTP error! Status: ${goalResponse.status}`);
@@ -80,7 +86,9 @@ const Home = () => {
 
     const fetchPieData = async () => {
       const response = await fetch(
-        'http://localhost:3000/api/graph/getExpensePerCategory',
+        `${
+          import.meta.env.VITE_REACT_APP_SERVER_URL
+        }/api/graph/getExpensePerCategory`,
         {
           method: 'GET',
           credentials: 'include',
@@ -93,7 +101,9 @@ const Home = () => {
     const fetchLineData = async () => {
       try {
         const response = await fetch(
-          'http://localhost:3000/api/graph/getExpensePerMonth',
+          `${
+            import.meta.env.VITE_REACT_APP_SERVER_URL
+          }/api/graph/getExpensePerMonth`,
           {
             method: 'GET',
             credentials: 'include',

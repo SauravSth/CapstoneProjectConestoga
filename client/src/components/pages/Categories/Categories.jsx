@@ -78,12 +78,15 @@ const Categories = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/category`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         const result = await response.json();
         setData(Array.isArray(result.categories) ? result.categories : []);
       } catch (error) {
@@ -99,13 +102,18 @@ const Categories = () => {
   const handleStatusChange = async (rowData, newStatus) => {
     const updatedStatus = newStatus === 'Active';
     try {
-      await fetch(`http://localhost:3000/api/category/${rowData._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isActive: updatedStatus }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category/${
+          rowData._id
+        }`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ isActive: updatedStatus }),
+        }
+      );
       setData((prevData) =>
         prevData.map((item) =>
           item._id === rowData._id ? { ...item, isActive: updatedStatus } : item
@@ -123,13 +131,16 @@ const Categories = () => {
 
   const handleSaveEdit = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/category/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id: id, name: editCategoryName }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ _id: id, name: editCategoryName }),
+        }
+      );
       setData((prevData) =>
         prevData.map((item) =>
           item._id === id ? { ...item, name: editCategoryName } : item
@@ -144,7 +155,7 @@ const Categories = () => {
 
   const handleDelete = async (rowData) => {
     try {
-      await fetch(`http://localhost:3000/api/category`, {
+      await fetch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -172,13 +183,16 @@ const Categories = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3000/api/category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCategory),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/category`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newCategory),
+        }
+      );
       const savedCategory = await response.json();
 
       setData((prevData) => [savedCategory, ...prevData]);
