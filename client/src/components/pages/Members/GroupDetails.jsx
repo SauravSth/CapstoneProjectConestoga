@@ -68,7 +68,7 @@ const GroupDetails = () => {
       }
     };
 
-    if (user) {
+    if (user?.user) {
       fetchData();
     }
   }, [user]);

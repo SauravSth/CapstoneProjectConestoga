@@ -151,7 +151,7 @@ const BillSplit = () => {
     console.log('activebill', activeBill);
     if (activeBill) {
       const filteredSplitDetail = activeBill.splitDetails.find(
-        (splitDetail) => splitDetail.user_id._id === user
+        (splitDetail) => splitDetail.user_id._id === user?.user._id
       );
       setUserSplitDetail(filteredSplitDetail);
       console.log('YEEEET', userSplitDetail);

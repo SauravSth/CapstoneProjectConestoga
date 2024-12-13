@@ -49,7 +49,6 @@ const Login = () => {
         const data = await response.json();
 
         if (response.ok) {
-          console.log(data.message);
           login(data);
           data.message === 'Admin Logged In'
             ? navigate('/admin/users')

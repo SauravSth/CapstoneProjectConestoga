@@ -37,7 +37,7 @@ const Budget = () => {
 
   useEffect(() => {
     const fetchBudget = async () => {
-      if (!user) {
+      if (!user?.user) {
         return; // No user, no budget to fetch
       }
       try {
@@ -109,7 +109,9 @@ const Budget = () => {
         <main className="p-4 sm:p-6 space-y-6">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold">Budget</h1>
-            <p className="text-gray-500 mt-1">Organize your expenses by Budget</p>
+            <p className="text-gray-500 mt-1">
+              Organize your expenses by Budget
+            </p>
           </div>
 
           {/* Search, Filter, and Create Budget */}
