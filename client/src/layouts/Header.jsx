@@ -61,29 +61,30 @@ const Header = ({ title }) => {
       {/* Actions */}
       <div className="flex items-center space-x-6">
         {/* Toggle Switch */}
-        <div className="flex items-center space-x-2">
-          <span>{viewMode} View</span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only"
-              checked={viewMode === 'Group'}
-              onChange={toggleViewMode}
-            />
-            <div
-              className={`w-10 h-5 rounded-full transition ${
-                viewMode === 'Group' ? 'bg-green-500' : 'bg-gray-200'
-              }`}
-            >
+        {user?.message === 'User Logged In' && (
+          <div className="flex items-center space-x-2">
+            <span>{viewMode} View</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={viewMode === 'Group'}
+                onChange={toggleViewMode}
+              />
               <div
-                className={`w-4 h-4 bg-white rounded-full shadow transform transition ${
-                  viewMode === 'Group' ? 'translate-x-5' : 'translate-x-0'
+                className={`w-10 h-5 rounded-full transition ${
+                  viewMode === 'Group' ? 'bg-green-500' : 'bg-gray-200'
                 }`}
-              ></div>
-            </div>
-          </label>
-        </div>
-
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full shadow transform transition ${
+                    viewMode === 'Group' ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                ></div>
+              </div>
+            </label>
+          </div>
+        )}
         {/* Authenticated Actions */}
         {isAuthenticated ? (
           <div className="hidden sm:flex items-center space-x-4">
