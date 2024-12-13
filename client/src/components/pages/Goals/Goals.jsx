@@ -4,7 +4,6 @@ import Navbar from '../../../layouts/Navbar.jsx';
 import Header from '../../../layouts/Header.jsx';
 import CustomModal from '../../modal/CustomModal.jsx';
 import GoalCard from './GoalCard.jsx';
-import useAuthStore from '../../../store/useAuthStore.js';
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
@@ -19,8 +18,6 @@ const Goals = () => {
   const [goalTitle, setGoalTitle] = useState('');
   const [targetAmount, setTargetAmount] = useState(0);
   const [description, setDescription] = useState('');
-
-  const { user } = useAuthStore();
 
   // Fetch goals from the API
   useEffect(() => {

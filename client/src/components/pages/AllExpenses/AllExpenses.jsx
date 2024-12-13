@@ -7,11 +7,7 @@ import CustomModal from '../../modal/CustomModal';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ExpensePDF from '../../pdfs/expensePDF.jsx';
 
-import useAuthStore from '../../../store/useAuthStore.js';
-
 const AllExpenses = () => {
-  const { user } = useAuthStore();
-
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);

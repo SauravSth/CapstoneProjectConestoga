@@ -49,9 +49,11 @@ const Login = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Successfully logged in
+          console.log(data.message);
           login(data);
-          navigate('/');
+          data.message === 'Admin Logged In'
+            ? navigate('/admin/users')
+            : navigate('/');
         } else {
           // Handle login error
           setErrors({ ...newErrors, password: data.message });
@@ -67,7 +69,7 @@ const Login = () => {
       <img
         src={Logo}
         alt=""
-        className=" mx-24 mb-10"
+        className="mx-24 mb-10"
       />
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

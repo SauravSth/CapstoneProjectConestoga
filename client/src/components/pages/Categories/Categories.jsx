@@ -5,13 +5,7 @@ import CustomTable from '../../table/CustomTable';
 import { GoDotFill } from 'react-icons/go';
 import { FaEdit, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
 
-import useAuthStore from '../../../store/useAuthStore.js';
-import useViewModeStore from '../../../store/useViewModeStore.js';
-
 const Categories = () => {
-  const { user } = useAuthStore();
-  const { viewMode } = useViewModeStore();
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddingNew, setIsAddingNew] = useState(false);

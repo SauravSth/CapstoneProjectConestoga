@@ -7,6 +7,7 @@ import { FiLogIn, FiLogOut } from 'react-icons/fi';
 const Header = ({ title }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  console.log('USER', user?.message);
 
   const { viewMode, toggleViewMode } = useViewModeStore();
 
