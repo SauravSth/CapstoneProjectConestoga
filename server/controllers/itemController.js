@@ -7,9 +7,10 @@ const itemController = {
 	getItem: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const items = await Item.find({ user_id: uid }).populate(
-				'category_id'
-			);
+			const items = await Item.find({
+				user_id: uid,
+				isActive: true,
+			}).populate('category_id');
 
 			res.status(200).json({ items });
 		} catch (e) {
@@ -20,7 +21,10 @@ const itemController = {
 		try {
 			const id = req.params._id;
 
-			const item = await Item.findOne({ _id: id }).populate('category');
+			const item = await Item.findOne({
+				_id: id,
+				isActive: true,
+			}).populate('category');
 
 			res.status(200).json({ item });
 		} catch (e) {

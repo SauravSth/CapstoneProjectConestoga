@@ -66,7 +66,7 @@ const sendGroupInvite = async (
 		let mailInfo = {
 			from: {
 				name: 'PerCent Team',
-				address: 'piyush.mdhr@gmail.com',
+				address: process.env.USER,
 			},
 			to: email,
 			subject: `Group Invitation`,
@@ -79,13 +79,11 @@ const sendGroupInvite = async (
 					success: false,
 					message: 'Email not sent',
 				});
-				console.log('Could not send email: ' + err);
 			} else {
 				res.status(200).json({
 					success: true,
 					message: 'Group Invite Email Sent',
 				});
-				console.log('Group Invite email sent');
 			}
 		});
 	} catch (e) {

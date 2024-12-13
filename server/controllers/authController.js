@@ -38,11 +38,18 @@ const authController = {
 					message: 'Account has been deactivated.',
 				});
 			}
+
 			const token = createToken(
 				userData._id,
 				userData.userType,
 				userData.email
 			);
+
+			let successMessage =
+				userData.userType === 'admin'
+					? 'Admin Logged In'
+					: 'User Logged In';
+
 			res.cookie('jwt', token, {
 				httpOnly: true,
 				maxAge: MAX_AGE * 1000,
@@ -50,7 +57,7 @@ const authController = {
 				sameSite: 'none',
 			})
 				.status(200)
-				.json(userData._id);
+				.json({ success: true, message: successMessage });
 		} catch (e) {
 			const errors = errorHandler.handleAuthErrors(e);
 			res.status(400).json(errors);

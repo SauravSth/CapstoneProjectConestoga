@@ -8,7 +8,7 @@ import errorHandler from '../helpers/errorHandler.js';
 const categoryController = {
 	getCategory: async (req, res) => {
 		try {
-			const categories = await Category.find({});
+			const categories = await Category.find({ isActive: true });
 
 			res.status(200).json({ categories });
 		} catch (e) {
@@ -19,7 +19,10 @@ const categoryController = {
 		try {
 			const id = req.params._id;
 
-			const category = await Category.findOne({ _id: id });
+			const category = await Category.findOne({
+				_id: id,
+				isActive: true,
+			});
 
 			res.status(200).json({ category });
 		} catch (e) {
