@@ -96,14 +96,6 @@ const BudgetExpense = () => {
     resetFormFields();
   };
 
-  // Handle setting the budget for a category
-  const handleBudgetChange = (categoryId, budgetAmount) => {
-    setBudgets((prevBudgets) => ({
-      ...prevBudgets,
-      [categoryId]: budgetAmount,
-    }));
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -165,6 +157,7 @@ const BudgetExpense = () => {
       .filter((expense) => expense.category_id._id === categoryId)
       .reduce((total, expense) => total + expense.amount, 0);
   };
+
   return (
     <div className="flex flex-col sm:flex-row h-screen bg-gray-100 overflow-x-hidden">
       {/* Sidebar */}
@@ -177,7 +170,9 @@ const BudgetExpense = () => {
         <Header title="Budget Expenses" />
 
         <main className="p-4 sm:p-6 space-y-6">
-          <div className="text-3xl sm:text-5xl font-bold">Budget Management</div>
+          <div className="text-3xl sm:text-5xl font-bold">
+            Budget Management
+          </div>
           <div className="text-gray-500 text-sm sm:text-base">
             Keep track of your spending and budgets
           </div>
@@ -214,7 +209,10 @@ const BudgetExpense = () => {
             <>
               {/* Table View for larger screens */}
               <div className="hidden sm:block">
-                <BudgetTable columns={columns} data={data} />
+                <BudgetTable
+                  columns={columns}
+                  data={data}
+                />
               </div>
 
               {/* Mobile Card View */}
@@ -268,11 +266,17 @@ const BudgetExpense = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               >
-                <option value="" disabled>
+                <option
+                  value=""
+                  disabled
+                >
                   -- Select a Category --
                 </option>
                 {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
+                  <option
+                    key={category._id}
+                    value={category._id}
+                  >
                     {category.name}
                   </option>
                 ))}
@@ -292,10 +296,11 @@ const BudgetExpense = () => {
               type="submit"
               onClick={handleFormSubmit}
               disabled={!expenseName || !category || !amount}
-              className={`w-full px-4 py-2 text-white rounded-lg ${expenseName && category && amount
+              className={`w-full px-4 py-2 text-white rounded-lg ${
+                expenseName && category && amount
                   ? 'bg-blue-500'
                   : 'bg-gray-400 cursor-not-allowed'
-                }`}
+              }`}
             >
               Add Expense
             </button>
@@ -303,7 +308,6 @@ const BudgetExpense = () => {
         </CustomModal>
       </div>
     </div>
-
   );
 };
 

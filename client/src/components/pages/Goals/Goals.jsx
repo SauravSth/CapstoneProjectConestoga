@@ -157,7 +157,7 @@ const Goals = () => {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({ _id: goal._id }), // Assuming 'goal.id' uniquely identifies the goal
+          body: JSON.stringify({ _id: goal._id }), // Assuming '_id' uniquely identifies the goal
         }
       );
 
@@ -167,6 +167,9 @@ const Goals = () => {
 
       const data = await response.json();
       console.log('Goal deleted successfully:', data);
+
+      // Update the state to remove the deleted goal
+      setGoals((prevGoals) => prevGoals.filter((g) => g._id !== goal._id));
     } catch (error) {
       console.error('Error deleting goal:', error);
     } finally {

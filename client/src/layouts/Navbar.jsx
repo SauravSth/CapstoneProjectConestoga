@@ -25,7 +25,7 @@ const Navbar = () => {
   const { viewMode } = useViewModeStore();
 
   useEffect(() => {
-    if (isAuthenticated || user?.message === 'Admin Logged In') {
+    if (isAuthenticated && user?.message === 'Admin Logged In') {
       setUserType('Admin');
     }
   }, [isAuthenticated, user]);
