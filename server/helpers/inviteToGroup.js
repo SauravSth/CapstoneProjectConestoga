@@ -75,15 +75,9 @@ const sendGroupInvite = async (
 
 		transporter.sendMail(mailInfo, (err, res) => {
 			if (err) {
-				res.status(400).json({
-					success: false,
-					message: 'Email not sent',
-				});
+				console.log('Email not sent');
 			} else {
-				res.status(200).json({
-					success: true,
-					message: 'Group Invite Email Sent',
-				});
+				console.log('Group invite sent');
 			}
 		});
 	} catch (e) {
