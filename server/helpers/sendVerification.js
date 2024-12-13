@@ -5,7 +5,7 @@ const sendVerification = async (email, verificationCode) => {
 		let mailInfo = {
 			from: {
 				name: 'PerCent Team',
-				address: 'piyush.mdhr@gmail.com',
+				address: process.env.USER,
 			},
 			to: email,
 			subject: 'Verify your account at PerCent',
@@ -37,17 +37,9 @@ const sendVerification = async (email, verificationCode) => {
 
 		transporter.sendMail(mailInfo, (err, res) => {
 			if (err) {
-				res.status(400).json({
-					success: false,
-					message: 'Email not sent',
-				});
-				console.log('Could not send email: ' + err);
+				console.log('Email not sent', err);
 			} else {
-				res.status(200).json({
-					success: true,
-					message: 'Verification Email Sent',
-				});
-				console.log('Verification email sent');
+				console.log('Email Sent');
 			}
 		});
 	} catch (e) {
