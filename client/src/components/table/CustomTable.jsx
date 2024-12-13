@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomTable = ({ columns, data = [] }) => {
+const CustomTable = ({ columns, data = [], onEdit, onDelete }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">

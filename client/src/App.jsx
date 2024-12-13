@@ -16,6 +16,7 @@ import Settings from './components/pages/Settings/Settings';
 import Login from './components/pages/Login/Login';
 import Signup from './components/pages/Signup/Signup';
 import VerifyUser from './components/pages/Signup/VerifyUser';
+import AdminUser from './components/pages/Admin/AdminUser/AdminUser';
 
 function App() {
   return (
@@ -84,9 +85,20 @@ function App() {
               path="/registerFromInvite/:groupID"
               element={<Signup />}
             />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUser />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUser />}
+            />
+
             <Route
               path="/logout"
-              element={<Signup />}
+              element={<Login />}
             />
             <Route
               path="*"
@@ -95,17 +107,6 @@ function App() {
           </Routes>
         </div>
       </Router>
-      {/* <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
     </>
   );
 }

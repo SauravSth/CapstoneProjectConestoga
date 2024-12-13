@@ -6,7 +6,7 @@ import errorHandler from '../helpers/errorHandler.js';
 const storeController = {
 	getStore: async (req, res) => {
 		try {
-			const stores = await Store.find({ isActive: true });
+			const stores = await Store.find({ isActive: true, isActive: true });
 
 			res.status(200).json({ stores });
 		} catch (e) {
@@ -17,7 +17,7 @@ const storeController = {
 		try {
 			const id = req.params._id;
 
-			const store = await Store.findOne({ _id: id });
+			const store = await Store.findOne({ _id: id, isActive: true });
 
 			res.status(200).json({ store });
 		} catch (e) {

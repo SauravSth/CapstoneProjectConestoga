@@ -4,22 +4,20 @@ import Navbar from '../../../layouts/Navbar.jsx';
 import Header from '../../../layouts/Header.jsx';
 import CustomModal from '../../modal/CustomModal.jsx';
 import GoalCard from './GoalCard.jsx';
-import useAuthStore from '../../../store/useAuthStore.js';
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Modal for updating goal
+  const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false); // Modal for updating goal
   const [selectedGoal, setSelectedGoal] = useState(null); // Track the selected goal
   const [savedAmount, setSavedAmount] = useState('');
 
   // Form state for creating a new goal
   const [goalTitle, setGoalTitle] = useState('');
-  const [targetAmount, setTargetAmount] = useState('');
+  const [targetAmount, setTargetAmount] = useState(0);
   const [description, setDescription] = useState('');
-
-  const { user } = useAuthStore();
 
   // Fetch goals from the API
   useEffect(() => {
@@ -49,8 +47,10 @@ const Goals = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setEditDetailsModalOpen(false);
+    setIsDetailsModalOpen(false);
     setGoalTitle('');
-    setTargetAmount('');
+    setTargetAmount(0);
     setDescription('');
   };
 
@@ -84,11 +84,83 @@ const Goals = () => {
     }
   };
 
+  const handleEditFormSubmit = async () => {
+    const updatedGoal = {
+      title: goalTitle,
+      goalAmount: targetAmount,
+      description: description,
+      savedAmount: 0,
+    };
+
+    const response = await fetch(
+      `http://localhost:3000/api/goal/${selectedGoal._id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedGoal), // Send updated goal details
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to update the goal');
+    }
+
+    const updatedData = await response.json();
+
+    // Update state with the modified goal
+    setGoals((prevGoals) =>
+      prevGoals.map((goal) =>
+        goal._id === selectedGoal._id ? { ...goal, ...updatedData } : goal
+      )
+    );
+
+    // Close the modal
+    setEditDetailsModalOpen(false);
+    console.log('Goal updated successfully:', updatedData);
+    console.error('Error updating goal:', error);
+  };
+
   // Handle view details to open the update modal
   const handleViewDetails = (goal) => {
     setSelectedGoal(goal);
-    setSavedAmount(goal.savedAmount ?? 0); // Pre-fill the saved amount
+    setSavedAmount(0); // Pre-fill the saved amount
     setIsDetailsModalOpen(true);
+  };
+
+  // Handle view details to open the update modal
+  const handleEditDetails = (goal) => {
+    setGoalTitle(goal.title);
+    setTargetAmount(goal.goalAmount);
+    setDescription(goal.description);
+    setSelectedGoal(goal);
+    setEditDetailsModalOpen(true);
+  };
+
+  const handleDelete = async (goal) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/goal`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ _id: goal._id }), // Assuming 'goal.id' uniquely identifies the goal
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete goal. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Goal deleted successfully:', data);
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+    } finally {
+      console.log('Delete operation complete');
+    }
   };
 
   // Handle updating the saved amount
@@ -99,7 +171,7 @@ const Goals = () => {
       const updatedGoal = {
         ...selectedGoal,
         _id: selectedGoal._id,
-        savedAmount: Number(savedAmount),
+        savedAmount: selectedGoal.savedAmount + Number(savedAmount),
       };
 
       const response = await fetch(
@@ -172,6 +244,8 @@ const Goals = () => {
                   goalAmount={goal.goalAmount}
                   savedAmount={goal.savedAmount ?? 0}
                   onClick={() => handleViewDetails(goal)}
+                  onEditClick={() => handleEditDetails(goal)}
+                  onDeleteClick={() => handleDelete(goal)}
                 />
               ))}
             </div>
@@ -286,6 +360,85 @@ const Goals = () => {
                 onClick={handleUpdateSavedAmount}
               >
                 Update
+              </button>
+            </div>
+          </form>
+        </CustomModal>
+
+        <CustomModal
+          title="Edit Goal"
+          isOpen={editDetailsModalOpen}
+          onClose={() => setEditDetailsModalOpen(false)}
+        >
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label
+                htmlFor="goalTitle"
+                className="block text-gray-700"
+              >
+                Goal Title
+              </label>
+              <input
+                id="goalTitle"
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={goalTitle}
+                onChange={(e) => setGoalTitle(e.target.value)}
+                placeholder="Enter your goal title"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="targetAmount"
+                className="block text-gray-700"
+              >
+                Goal Amount
+              </label>
+              <input
+                id="targetAmount"
+                type="number"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
+                placeholder="Enter the target amount"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="description"
+                className="block text-gray-700"
+              >
+                Description
+              </label>
+              <textarea
+                id="description"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter a brief description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+                onClick={() => setEditDetailsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 ml-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+                onClick={handleEditFormSubmit}
+              >
+                Save Changes
               </button>
             </div>
           </form>

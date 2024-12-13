@@ -9,7 +9,10 @@ const groupController = {
 	getGroup: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const groups = await Group.find({ 'members.user_id': uid });
+			const groups = await Group.find({
+				'members.user_id': uid,
+				isActive: true,
+			});
 
 			res.status(200).json({ groups });
 		} catch (e) {
@@ -20,7 +23,7 @@ const groupController = {
 		try {
 			const id = req.params._id;
 
-			const group = await Group.findOne({ _id: id });
+			const group = await Group.findOne({ _id: id, isActive: true });
 
 			res.status(200).json({ group });
 		} catch (e) {
@@ -38,7 +41,7 @@ const groupController = {
 					{
 						email,
 						user_id: uid,
-						isInvited: true,
+						invited: true,
 					},
 				],
 				user_id: uid,

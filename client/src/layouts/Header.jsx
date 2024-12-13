@@ -9,6 +9,8 @@ import Navbar from './Navbar'; // Import Navbar component
 const Header = ({ title }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  console.log('USER', user?.message);
+
   const { viewMode, toggleViewMode } = useViewModeStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -96,7 +98,10 @@ const Header = ({ title }) => {
             </button>
           </div>
         ) : (
-          <Link to="/login" className="hidden sm:flex items-center space-x-2">
+          <Link
+            to="/login"
+            className="hidden sm:flex items-center space-x-2"
+          >
             <FiLogIn />
             <span>Login</span>
           </Link>

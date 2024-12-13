@@ -11,6 +11,7 @@ const groupExpenseController = {
 			const { uid } = req.user;
 			const groupExpenses = await GroupExpense.find({
 				user_id: uid,
+				isActive: true,
 			}).populate([
 				{ path: 'category_id' },
 				{ path: 'user_id' },
@@ -30,6 +31,7 @@ const groupExpenseController = {
 
 			const groupExpense = await GroupExpense.findOne({
 				_id: id,
+				isActive: true,
 			}).populate('category_id user_id paid_by group_id');
 
 			res.status(200).json({ groupExpense });

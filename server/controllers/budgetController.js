@@ -4,9 +4,10 @@ const budgetController = {
 	getBudget: async (req, res) => {
 		try {
 			const { uid } = req.user;
-			const budgets = await Budget.find({ user_id: uid }).populate(
-				'user_id'
-			);
+			const budgets = await Budget.find({
+				user_id: uid,
+				isActive: true,
+			}).populate('user_id');
 
 			res.status(200).json({ budgets });
 		} catch (e) {
@@ -17,9 +18,10 @@ const budgetController = {
 		try {
 			const id = req.params._id;
 
-			const budget = await Budget.findOne({ _id: id }).populate(
-				'user_id'
-			);
+			const budget = await Budget.findOne({
+				_id: id,
+				isActive: true,
+			}).populate('user_id');
 
 			res.status(200).json({ budget });
 		} catch (e) {

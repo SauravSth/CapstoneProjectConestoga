@@ -42,16 +42,18 @@ const Login = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include', // Important for sending cookies
+          credentials: 'include',
           body: JSON.stringify({ email, password }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          // Successfully logged in
-          login(data); // Assuming login updates your app state
-          navigate('/');
+          console.log(data.message);
+          login(data);
+          data.message === 'Admin Logged In'
+            ? navigate('/admin/users')
+            : navigate('/');
         } else {
           // Handle login error
           setErrors({ ...newErrors, password: data.message });
@@ -67,7 +69,7 @@ const Login = () => {
       <img
         src={Logo}
         alt=""
-        className=" mx-24 mb-10"
+        className="mx-24 mb-10"
       />
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

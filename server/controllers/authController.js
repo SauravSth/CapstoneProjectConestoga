@@ -27,26 +27,29 @@ const authController = {
 			const userData = await User.login(email, password);
 
 			if (!userData.isVerified) {
-				return res
-					.status(400)
-					.json({
-						success: false,
-						message: 'Please verify user before logging in.',
-					});
+				return res.status(400).json({
+					success: false,
+					message: 'Please verify user before logging in.',
+				});
 			}
 			if (!userData.isActive) {
-				return res
-					.status(400)
-					.json({
-						success: false,
-						message: 'Account has been deactivated.',
-					});
+				return res.status(400).json({
+					success: false,
+					message: 'Account has been deactivated.',
+				});
 			}
+
 			const token = createToken(
 				userData._id,
 				userData.userType,
 				userData.email
 			);
+
+			let successMessage =
+				userData.userType === 'admin'
+					? 'Admin Logged In'
+					: 'User Logged In';
+
 			res.cookie('jwt', token, {
 				httpOnly: true,
 				maxAge: MAX_AGE * 1000,
@@ -54,7 +57,7 @@ const authController = {
 				sameSite: 'none',
 			})
 				.status(200)
-				.json(userData._id);
+				.json({ success: true, message: successMessage });
 		} catch (e) {
 			const errors = errorHandler.handleAuthErrors(e);
 			res.status(400).json(errors);
@@ -94,9 +97,16 @@ const authController = {
 			const user = await User.findOne({ verificationCode });
 
 			if (user) {
-				user.isVerified = true;
-				user.isActive = true;
-				await user.save();
+				await user.updateOne({
+					$set: {
+						isVerified: true,
+						isActive: true,
+					},
+				});
+				res.status(200).json({
+					success: true,
+					message: 'Successfully verified',
+				});
 			} else {
 				res.status(400).json({
 					success: false,

@@ -1,14 +1,32 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Sample colors for the chart
-const COLORS = ['#007bff', '#28a745', '#ffc107', '#dc3545'];
+const COLORS = [
+  '#007bff',
+  '#28a745',
+  '#ffc107',
+  '#dc3545',
+  '#17a2b8',
+  '#6c757d',
+  '#6610f2',
+  '#e83e8c',
+  '#fd7e14',
+  '#20c997',
+  '#343a40',
+  '#ff5733',
+  '#c70039',
+  '#900c3f',
+  '#581845',
+  '#1e90ff',
+  '#2ecc71',
+  '#f1c40f',
+  '#e74c3c',
+  '#8e44ad',
+];
 
-// PieChartComponent: Takes data as a prop
 const PieChartComponent = ({ data }) => {
   return (
     <div className="w-full h-[28rem]">
-      {' '}
       {/* Increased height */}
       <ResponsiveContainer
         width="100%"
