@@ -26,8 +26,8 @@ const GroupCard = ({
           <div className="flex flex-col gap-4">
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Prevent triggering the `onClick`
-                onEdit && onEdit(_id); // Call onEdit only if provided
+                e.stopPropagation();
+                onEdit && onEdit(_id);
               }}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 focus:outline-none"
             >
@@ -35,8 +35,8 @@ const GroupCard = ({
             </button>
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Prevent triggering the `onClick`
-                onDelete && onDelete(_id); // Call onDelete only if provided
+                e.stopPropagation();
+                onDelete && onDelete(_id);
               }}
               className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 focus:outline-none"
             >
