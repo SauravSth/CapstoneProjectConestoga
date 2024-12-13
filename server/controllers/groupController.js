@@ -38,7 +38,7 @@ const groupController = {
 					{
 						email,
 						user_id: uid,
-						isInvited: true,
+						invited: true,
 					},
 				],
 				user_id: uid,
