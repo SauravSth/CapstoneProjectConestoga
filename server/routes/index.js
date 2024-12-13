@@ -16,7 +16,6 @@ import goalController from '../controllers/goalController.js';
 // Middleware Imports
 import validate from '../middlewares/validate.js';
 import sanitize from '../middlewares/sanitize.js';
-import tokenDecoder from '../middlewares/tokenDecoder.js';
 import authentication from '../middlewares/authentication.js';
 import authorization from '../middlewares/authorization.js';
 
@@ -33,13 +32,13 @@ router.post('/group', authentication, groupController.postGroup);
 router.patch('/group/:_id', authentication, groupController.updateGroup);
 router.delete('/group', authentication, groupController.deleteGroup);
 router.post(
-	'/group/inviteToGroup',
-	authentication,
-	groupController.inviteToGroup
+  '/group/inviteToGroup',
+  authentication,
+  groupController.inviteToGroup
 );
 router.post(
-	'/group/acceptedInvite/:email/:groupId',
-	groupController.acceptedInvite
+  '/group/acceptedInvite/:email/:groupId',
+  groupController.acceptedInvite
 );
 
 // Budget Routes
@@ -58,35 +57,35 @@ router.delete('/goal', authentication, goalController.deleteGoal);
 
 // Category Routes
 router.get(
-	'/category',
-	authentication,
-	// authorization,
-	categoryController.getCategory
+  '/category',
+  authentication,
+  // authorization,
+  categoryController.getCategory
 );
 router.get(
-	'/category/:_id',
-	authentication,
-	// authorization,
-	categoryController.getOneCategory
+  '/category/:_id',
+  authentication,
+  // authorization,
+  categoryController.getOneCategory
 );
 router.post(
-	'/category',
-	authentication,
-	// authorization,
-	fileUploadHelper.single('image'),
-	categoryController.postCategory
+  '/category',
+  authentication,
+  // authorization,
+  fileUploadHelper.single('image'),
+  categoryController.postCategory
 );
 router.patch(
-	'/category/:_id',
-	authentication,
-	// authorization,
-	categoryController.updateCategory
+  '/category/:_id',
+  authentication,
+  // authorization,
+  categoryController.updateCategory
 );
 router.delete(
-	'/category',
-	authentication,
-	// authorization,
-	categoryController.deleteCategory
+  '/category',
+  authentication,
+  // authorization,
+  categoryController.deleteCategory
 );
 
 // Item Routes
@@ -113,107 +112,107 @@ router.delete('/expense', authentication, expenseController.deleteExpense);
 // GroupExpense Routes
 router.get('/groupExpense', authentication, groupExpenseController.getExpense);
 router.get(
-	'/groupExpense/:_id',
-	authentication,
-	groupExpenseController.getOneExpense
+  '/groupExpense/:_id',
+  authentication,
+  groupExpenseController.getOneExpense
 );
 router.post(
-	'/groupExpense',
-	authentication,
-	groupExpenseController.postExpense
+  '/groupExpense',
+  authentication,
+  groupExpenseController.postExpense
 );
 router.patch(
-	'/groupExpense/:_id',
-	authentication,
-	groupExpenseController.updateExpense
+  '/groupExpense/:_id',
+  authentication,
+  groupExpenseController.updateExpense
 );
 router.delete(
-	'/groupExpense',
-	authentication,
-	groupExpenseController.deleteExpense
+  '/groupExpense',
+  authentication,
+  groupExpenseController.deleteExpense
 );
 
 // Transaction Routes
 router.get(
-	'/transaction',
-	authentication,
-	transactionController.getTransaction
+  '/transaction',
+  authentication,
+  transactionController.getTransaction
 );
 router.get(
-	'/transaction/:_id',
-	authentication,
-	transactionController.getOneTransaction
+  '/transaction/:_id',
+  authentication,
+  transactionController.getOneTransaction
 );
 router.post(
-	'/transaction',
-	authentication,
-	transactionController.postTransaction
+  '/transaction',
+  authentication,
+  transactionController.postTransaction
 );
 router.patch(
-	'/transaction/:_id',
-	authentication,
-	transactionController.updateTransaction
+  '/transaction/:_id',
+  authentication,
+  transactionController.updateTransaction
 );
 router.delete(
-	'/transaction',
-	authentication,
-	transactionController.deleteTransaction
+  '/transaction',
+  authentication,
+  transactionController.deleteTransaction
 );
 
 // Admin Routes
 router.get('/user', authentication, authorization, userController.getUser);
 router.get(
-	'/userDetail',
-	authentication,
-	authorization,
-	userController.getUserDetails
+  '/userDetail',
+  authentication,
+  authorization,
+  userController.getUserDetails
 );
 router.post('/user', authentication, authorization, userController.createUser);
 router.patch(
-	'/user/:_id',
-	authentication,
-	authorization,
-	userController.updateUser
+  '/user/:_id',
+  authentication,
+  authorization,
+  userController.updateUser
 );
 router.delete(
-	'/user',
-	authentication,
-	authorization,
-	userController.deleteUser
+  '/user',
+  authentication,
+  authorization,
+  userController.deleteUser
 );
 
 // SPLIT PER MEMBER ROUTES
 router.get(
-	'/splitPerOneMember/:groupExpense_id',
-	authentication,
-	splitPerMemberController.getSplitPerOneMember
+  '/splitPerOneMember/:groupExpense_id',
+  authentication,
+  splitPerMemberController.getSplitPerOneMember
 );
 router.get(
-	'/splitPerMember/:groupExpense_id',
-	authentication,
-	splitPerMemberController.getSplitPerMember
+  '/splitPerMember/:groupExpense_id',
+  authentication,
+  splitPerMemberController.getSplitPerMember
 );
 
 // GRAPH DATA
 router.get(
-	'/graph/getExpensePerCategory',
-	authentication,
-	graphController.getExpensePerCategory
+  '/graph/getExpensePerCategory',
+  authentication,
+  graphController.getExpensePerCategory
 );
 router.get(
-	'/graph/getExpensePerMonth',
-	authentication,
-	graphController.getGraphForExpensePerMonth
+  '/graph/getExpensePerMonth',
+  authentication,
+  graphController.getGraphForExpensePerMonth
 );
 
 // Auth Routes
 router.get('/userDetail/:_id', authentication, userController.getOneUser);
 router.post('/login', authController.postUserLogin);
 router.post(
-	'/signup',
-	sanitize.trimmer,
-	validate.doPasswordsMatch,
-	authController.postUserSignUp
+  '/signup',
+  sanitize.trimmer,
+  validate.doPasswordsMatch,
+  authController.postUserSignUp
 );
 router.get('/logout', authController.getUserLogout);
 router.post('/verify/:verificationCode', authController.verifyUser);

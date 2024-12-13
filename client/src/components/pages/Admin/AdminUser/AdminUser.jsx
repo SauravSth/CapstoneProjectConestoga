@@ -148,7 +148,7 @@ const AdminUser = () => {
 
   const handleEditFormSubmit = async () => {
     try {
-      console.log('EditdData', editedData);
+      console.log('EditedData:', editedData);
 
       const response = await fetch(
         `http://localhost:3000/api/user/${editedData._id}`,
@@ -167,19 +167,22 @@ const AdminUser = () => {
       if (response.ok) {
         console.log('OK');
 
+        // Update the usersList state by replacing the edited user
         setUsersList((prevData) => {
-          const updatedData = [...prevData, editedData];
-          console.log(updatedData);
+          const updatedData = prevData.map((user) =>
+            user._id === editedData._id ? editedData : user
+          );
           return updatedData;
         });
+
         closeModal();
         resetFormFields();
       } else {
-        alert('Error submitting expense');
+        alert('Error editing user');
         console.error('Error:', data);
       }
     } catch (error) {
-      console.error('Error submitting new expense:', error);
+      console.error('Error editing user:', error);
     }
   };
 
@@ -194,25 +197,28 @@ const AdminUser = () => {
         credentials: 'include',
       });
 
-      if (response.ok) {
-        // Remove the deleted expense from the state
-        setData((prevData) => {
-          const updatedData = prevData.filter(
-            (item) => item._id !== existingData._id
-          );
-          setFilteredData(updatedData); // Update filtered data if necessary
-          return updatedData;
-        });
+      const data = await response.json();
 
-        alert('Expense successfully deleted');
+      if (response.ok) {
+        console.log('User Deleted:', existingData);
+
+        // Update the usersList state directly
+        setUsersList((prevData) =>
+          prevData.map((user) =>
+            user._id === existingData._id
+              ? { ...existingData, isActive: false }
+              : user
+          )
+        );
+
+        alert('User successfully deleted.');
       } else {
-        const errorText = await response.text(); // Retrieve detailed error message
-        console.error('Error deleting expense:', errorText);
-        alert('Error deleting expense');
+        alert('Error deleting user');
+        console.error('Error:', data);
       }
     } catch (error) {
       console.error('Error during delete operation:', error);
-      alert('Something went wrong while deleting the expense.');
+      alert('Something went wrong while deleting the user.');
     }
   };
 
